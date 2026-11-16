@@ -53,6 +53,8 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `sources` | `auto` | `auto` oder eine Liste von Quellen (siehe unten) |
 | `stores` | – | Nur diese Märkte, z. B. `[REWE]` – im Editor auswählbar (eine Karte je Markt) |
 | `entities` | – | Nur diese Angebots-Sensoren – im Editor auswählbar |
+| `add_to` | – | In diese Liste hinzufügen, z. B. die eigene Quell-Liste einer kombinierten Liste (leer = `list`) |
+| `mine_only` | `false` | Kombinierte SmartLists-Liste: nur Artikel aus Listen berücksichtigen, die zum angemeldeten Benutzer gehören |
 | `show_list_tab` | `true` | Reiter „Meine Liste“ anzeigen |
 | `group_by` | `store` | „Alle Angebote“ nach `store` (Markt) oder `category` (Kategorie) einsortieren; 🗂️ in der Karte schaltet um |
 | `categories_open` | `true` | Kategorien ausgeklappt; `false` = zugeklappt starten |
