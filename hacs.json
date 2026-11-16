@@ -1,0 +1,7 @@
+{
+  "name": "SmartDiscounts Card",
+  "filename": "ha_smartdiscounts-card.js",
+  "content_in_root": false,
+  "render_readme": true,
+  "homeassistant": "2025.3.0"
+}
