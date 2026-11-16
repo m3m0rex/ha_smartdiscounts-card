@@ -1,5 +1,7 @@
 # SmartDiscounts Card
 
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fm3m0rex%2Fha_smartlists%2Fmain%2Fcustom_components%2Fsmartlists%2Fmanifest.json&query=%24.version&label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartlists/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartlists/blob/main/LICENSE)
+
 **English** · [Deutsch](README.de.md)
 
 A Home Assistant dashboard card that shows **supermarket offers matched with your shopping list**.
