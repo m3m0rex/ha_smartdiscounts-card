@@ -1,5 +1,7 @@
 # SmartDiscounts Card
 
+**English** · [Deutsch](README.de.md)
+
 A Home Assistant dashboard card that shows **supermarket offers matched with your shopping list**.
 
 - **My list:** for every open item of a to-do list the matching offers per store, the cheapest marked ★.
@@ -8,6 +10,7 @@ A Home Assistant dashboard card that shows **supermarket offers matched with you
 - **All offers:** one shelf per store with search and category filter – as tiles or as a compact list with
   small images; "＋ Add to list" adds an offer.
 - **Wide cards** (≥ 720 px) show a table of items × stores.
+- **Expired offers** on the list are pointed out and can be removed in one go.
 - Works **on its own** – it only needs offer sensors and (optionally) a to-do list. With
   [SmartLists](https://github.com/m3m0rex/ha_smartlists) the selected offer appears as a badge on the item.
 
@@ -228,12 +231,17 @@ sources:
 The store is taken from `store:`, a `store` field of the offer, or the entity name
 (REWE, EDEKA, Lidl, ALDI, Norma, Penny, Kaufland, Netto, dm, Rossmann and Globus are recognised).
 
+## Expired offers
+
+When an offer you applied to the list has run out, the card shows a note above "My list" with **Remove** and
+**Later**. "Remove" takes store, price and validity off the items – the items themselves and their notes stay.
+
 ## How "Apply to list" works
 
 - **With SmartLists:** the offer is attached to the item and shown there as a badge with store, price and
-  validity. Nothing is stored permanently – when the offer expires, the price disappears.
+  validity. Once it has expired it is marked as such and can be removed (see above).
 - **Without SmartLists:** a readable line is written to the description of the to-do item,
-  e.g. `🏷️ REWE · 1,29 € · until 21.11. · Landliebe Butter`.
+  e.g. `🏷️ REWE · 1,29 € · until 21.11.2026 · Landliebe Butter`.
 
 ## License
 
