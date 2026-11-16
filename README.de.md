@@ -34,6 +34,8 @@ Aufnahmen der Karte mit Beispieldaten aus drei Quellen (REWE, EDEKA, Lidl); die 
 **HACS:** `https://github.com/m3m0rex/ha_smartdiscounts-card` als benutzerdefiniertes Repository hinzufügen
 (Typ *Dashboard*), „SmartDiscounts Card“ installieren und den Browser neu laden.
 
+Voraussetzung: Home Assistant 2024.9 oder neuer.
+
 **Manuell:** `dist/ha_smartdiscounts-card.js` nach `config/www/` kopieren und `/local/ha_smartdiscounts-card.js`
 als Dashboard-Ressource (JavaScript-Modul) eintragen.
 
