@@ -246,10 +246,9 @@ grid_options:
 ## Quellen
 
 Mit `sources: auto` wird jeder Sensor verwendet, der in einem der Attribute `discounts`, `offers`, `deals`, `items`,
-`results` oder `products` eine Liste von Angeboten hat. Das deckt die Integrationen
-[ha-rewe](https://github.com/FaserF/ha-rewe), [ha-edeka](https://github.com/FaserF/ha-edeka),
-[ha-lidl](https://github.com/FaserF/ha-lidl), [ha-aldi](https://github.com/FaserF/ha-aldi) und
-[ha-norma](https://github.com/FaserF/ha-norma) ab – und deine eigenen REST- oder Template-Sensoren.
+`results` oder `products` eine Liste von Angeboten hat. Das deckt z. B. die REWE-Integration
+[ha-rewe](https://github.com/FaserF/ha-rewe) von FaserF ab – und jeden anderen Sensor mit einer solchen Liste (EDEKA, Lidl, ALDI …),
+auch deine eigenen REST- oder Template-Sensoren.
 
 Die Feldnamen werden automatisch erkannt:
 
@@ -354,6 +353,11 @@ selbst und ihre Notizen bleiben.
   gezeigt.
 - **Ohne SmartLists:** In die Beschreibung des To-do-Eintrags kommt eine lesbare Zeile,
   z. B. `🏷️ REWE · 1,29 € · bis 21.11.2026 · Landliebe Butter`.
+
+## Dank
+
+Die Karte ist mit den Daten der REWE-Integration [ha-rewe](https://github.com/FaserF/ha-rewe) von [FaserF](https://github.com/FaserF) entstanden.
+Sie ist ein eigenständiges Projekt und nicht mit FaserF oder den genannten Märkten verbunden.
 
 ## Lizenz
 
