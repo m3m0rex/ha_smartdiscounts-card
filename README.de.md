@@ -69,7 +69,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
-| `list_view` | `chips` | „Meine Liste“: `chips` (Preise nebeneinander; auf breiten Karten eine Tabelle) oder `rows` (ein Angebot je Zeile mit kleinem Bild). ☰ in der Karte schaltet um. |
+| `list_view` | `chips` | „Meine Liste“: `chips` (Preise nebeneinander; auf breiten Karten eine Tabelle), `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
 | `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint |
 | `currency` | `EUR` | ISO-Code der Währung |
@@ -90,7 +90,7 @@ list: todo.einkauf            # To-do-Liste zum Abgleichen (optional)
 sources: auto                 # "auto" oder eine Liste, siehe „Quellen“
 match: word                   # word | exact | part
 default_tab: list             # list | all | watch
-list_view: chips              # chips | rows
+list_view: chips              # chips | rows | compact | table
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder
 compact: false                # kompakte Zeilen

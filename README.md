@@ -69,7 +69,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
 | `hide_without_offer` | `false` | Hide list items without an offer |
-| `list_view` | `chips` | "My list": `chips` (prices side by side; a table on wide cards) or `rows` (one offer per row with a small image). ☰ in the card switches. |
+| `list_view` | `chips` | "My list": `chips` (prices side by side; a table on wide cards), `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
 | `max_per_store` | `10` | Offers per store before "all →" |
 | `currency` | `EUR` | ISO currency code for prices |
@@ -90,7 +90,7 @@ list: todo.shopping           # to-do list to match against (optional)
 sources: auto                 # "auto" or a list, see "Sources"
 match: word                   # word | exact | part
 default_tab: list             # list | all | watch
-list_view: chips              # chips | rows
+list_view: chips              # chips | rows | compact | table
 all_view: tiles               # tiles | list
 show_images: true             # product images
 compact: false                # compact rows
