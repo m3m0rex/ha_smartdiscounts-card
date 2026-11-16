@@ -72,7 +72,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Nutella]` |
 | `watch_list` | – | Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar |
 | `notify` | `false` | Benachrichtigung in Home Assistant, wenn etwas von der Merkliste neu im Angebot ist |
-| `notify_service` | – | Zusätzlich an diesen Dienst senden, z. B. `notify.mobile_app_pixel` |
+| `notify_targets` | – | Zusätzlich an diese Ziele senden – im Editor auswählbar, z. B. `[notify.mobile_app_pixel]` (mehrere möglich) |
 
 ### Alle Optionen in einer Konfiguration
 
@@ -100,7 +100,8 @@ watch:                        # Merkliste: feste Produkte (optional)
   - Nutella
 watch_list: todo.merkliste    # Merkliste als To-do-Liste (optional)
 notify: false                 # benachrichtigen bei neuem Angebot für die Merkliste
-notify_service: notify.mobile_app_pixel   # zusätzlich aufs Smartphone (optional)
+notify_targets:               # zusätzlich aufs Smartphone (optional)
+  - notify.mobile_app_pixel
 ```
 
 ### Beispiele
@@ -215,7 +216,8 @@ list: todo.einkauf
 default_tab: watch
 watch_list: todo.merkliste
 notify: true
-notify_service: notify.mobile_app_pixel
+notify_targets:
+  - notify.mobile_app_pixel
 ```
 
 **Eigenes Währungssymbol** (für Währungen ohne passenden ISO-Code):
@@ -308,7 +310,7 @@ Woher die Merkliste kommt:
 - Ohne SmartLists und ohne `watch_list` speichert die Karte, was du im Reiter einträgst, **nur auf diesem Gerät**.
 
 Mit `notify: true` legt die Karte eine Benachrichtigung in Home Assistant an, sobald ein gemerktes Produkt neu im
-Angebot ist; `notify_service` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät nur einmal
+Angebot ist; `notify_targets` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät nur einmal
 gemeldet.
 
 > **Wichtig:** Die Prüfung läuft in der Karte. Gemeldet wird also, wenn ein Dashboard mit der Karte geöffnet ist

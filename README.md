@@ -72,7 +72,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `watch` | – | Watch list: a list of products, e.g. `[coffee, Nutella]` |
 | `watch_list` | – | Watch list as a to-do list – the same on all devices, editable in the card |
 | `notify` | `false` | Home Assistant notification when something on the watch list is newly on offer |
-| `notify_service` | – | Also send it to this service, e.g. `notify.mobile_app_pixel` |
+| `notify_targets` | – | Also send to these targets – selectable in the editor, e.g. `[notify.mobile_app_pixel]` (several possible) |
 
 ### Every option in one configuration
 
@@ -100,7 +100,8 @@ watch:                        # watch list: fixed products (optional)
   - Nutella
 watch_list: todo.watchlist    # watch list as a to-do list (optional)
 notify: false                 # notify when a watched product is newly on offer
-notify_service: notify.mobile_app_pixel   # also send to the phone (optional)
+notify_targets:               # also send to the phone (optional)
+  - notify.mobile_app_pixel
 ```
 
 ### Examples
@@ -215,7 +216,8 @@ list: todo.shopping
 default_tab: watch
 watch_list: todo.watchlist
 notify: true
-notify_service: notify.mobile_app_pixel
+notify_targets:
+  - notify.mobile_app_pixel
 ```
 
 **Own currency symbol** (for currencies without a matching ISO code):
@@ -308,7 +310,7 @@ Where the watch list comes from:
 - Without SmartLists and without `watch_list` the card stores what you enter in the tab **on this device only**.
 
 With `notify: true` the card creates a Home Assistant notification as soon as a watched product is newly on offer;
-`notify_service` also sends it e.g. to your phone. Every offer is reported once per device.
+`notify_targets` also sends it e.g. to your phone. Every offer is reported once per device.
 
 > **Important:** the check runs in the card. It reports while a dashboard with the card is open (e.g. on a wall
 > tablet). If Home Assistant should notify without an open dashboard, use an automation:
