@@ -21,13 +21,9 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
 > Dieses Repository wird bei jedem Release automatisch aus [ha_smartlists](https://github.com/m3m0rex/ha_smartlists)
 > befüllt. Fehler und Wünsche bitte dort melden.
 
-## So sieht es aus
+## Live-Demo
 
-| Meine Liste: Preise nebeneinander | Meine Liste: ein Angebot je Zeile | Alle Angebote als Liste | Merkliste |
-|---|---|---|---|
-| <img src="docs/my-list.png" alt="Meine Liste: Preise nebeneinander" width="210"> | <img src="docs/my-list-rows.png" alt="Meine Liste: ein Angebot je Zeile" width="210"> | <img src="docs/all-offers.png" alt="Alle Angebote als Liste" width="210"> | <img src="docs/watch-list.png" alt="Merkliste" width="210"> |
-
-Aufnahmen der Karte mit Beispieldaten aus drei Quellen (REWE, EDEKA, Lidl); die Produktbilder sind Platzhalter.
+Die echte Karte mit Beispieldaten zum Ausprobieren: **[ha-smartlists.com → Discounts Card](https://ha-smartlists.com/#card)**
 
 ## Installation
 
@@ -71,7 +67,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
 | `list_view` | `chips` | „Meine Liste“: `chips` (Preise nebeneinander; auf breiten Karten eine Tabelle), `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
-| `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint |
+| `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint (1–20) |
 | `currency` | `EUR` | ISO-Code der Währung |
 | `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
 | `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Nutella]` |

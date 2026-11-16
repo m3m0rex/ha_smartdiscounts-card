@@ -21,13 +21,9 @@ A Home Assistant dashboard card that shows **supermarket offers matched with you
 > This repository is synced automatically from [ha_smartlists](https://github.com/m3m0rex/ha_smartlists)
 > with every release. Please open issues and pull requests there.
 
-## Screenshots
+## Live demo
 
-| My list: prices side by side | My list: one offer per row | All offers as a list | Watch list |
-|---|---|---|---|
-| <img src="docs/my-list.png" alt="My list: prices side by side" width="210"> | <img src="docs/my-list-rows.png" alt="My list: one offer per row" width="210"> | <img src="docs/all-offers.png" alt="All offers as a list" width="210"> | <img src="docs/watch-list.png" alt="Watch list" width="210"> |
-
-The card with sample data from three sources (REWE, EDEKA, Lidl); the product images are placeholders.
+Try the real card with sample data: **[ha-smartlists.com → Discounts Card](https://ha-smartlists.com/en/#card)**
 
 ## Installation
 
@@ -71,7 +67,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `hide_without_offer` | `false` | Hide list items without an offer |
 | `list_view` | `chips` | "My list": `chips` (prices side by side; a table on wide cards), `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
-| `max_per_store` | `10` | Offers per store before "all →" |
+| `max_per_store` | `10` | Offers per store before "all →" (1–20) |
 | `currency` | `EUR` | ISO currency code for prices |
 | `currency_symbol` | – | Own symbol instead of `currency`, e.g. `₺` – shown after the amount |
 | `watch` | – | Watch list: a list of products, e.g. `[coffee, Nutella]` |
