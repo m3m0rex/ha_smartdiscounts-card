@@ -246,9 +246,9 @@ grid_options:
 ## Quellen
 
 Mit `sources: auto` wird jeder Sensor verwendet, der in einem der Attribute `discounts`, `offers`, `deals`, `items`,
-`results` oder `products` eine Liste von Angeboten hat. Das deckt z. B. die REWE-Integration
-[ha-rewe](https://github.com/FaserF/ha-rewe) von FaserF ab – und jeden anderen Sensor mit einer solchen Liste (EDEKA, Lidl, ALDI …),
-auch deine eigenen REST- oder Template-Sensoren.
+`results` oder `products` eine Liste von Angeboten hat. Das deckt die Integrationen von [FaserF](https://github.com/FaserF) ab –
+[ha-rewe](https://github.com/FaserF/ha-rewe), [ha-edeka](https://github.com/FaserF/ha-edeka), [ha-lidl](https://github.com/FaserF/ha-lidl), [ha-aldi](https://github.com/FaserF/ha-aldi), [ha-norma](https://github.com/FaserF/ha-norma) –
+und deine eigenen REST- oder Template-Sensoren.
 
 Die Feldnamen werden automatisch erkannt:
 
@@ -354,10 +354,22 @@ selbst und ihre Notizen bleiben.
 - **Ohne SmartLists:** In die Beschreibung des To-do-Eintrags kommt eine lesbare Zeile,
   z. B. `🏷️ REWE · 1,29 € · bis 21.11.2026 · Landliebe Butter`.
 
-## Dank
+## Dank an FaserF
 
-Die Karte ist mit den Daten der REWE-Integration [ha-rewe](https://github.com/FaserF/ha-rewe) von [FaserF](https://github.com/FaserF) entstanden.
-Sie ist ein eigenständiges Projekt und nicht mit FaserF oder den genannten Märkten verbunden.
+Die Angebots-Daten kommen nicht von dieser Karte, sondern aus den Integrationen von [FaserF](https://github.com/FaserF) – ohne sie gäbe es
+hier nichts anzuzeigen. Vielen Dank dafür! Alle seine Projekte: [hassio-addons.fabiseitz.de](https://hassio-addons.fabiseitz.de/)
+
+| | Integration | Was sie liefert |
+|---|---|---|
+| 🏷️ | [ha-grocery-deals](https://github.com/FaserF/ha-grocery-deals) | Preisvergleich über mehrere Märkte: fasst die Markt-Integrationen zusammen |
+| 🔴 | [ha-rewe](https://github.com/FaserF/ha-rewe) | REWE: Wochenangebote, Bonuspunkte und Rabatte |
+| 🟡 | [ha-edeka](https://github.com/FaserF/ha-edeka) | EDEKA: Wochenangebote, Rabatte und PAYBACK-Karte |
+| 🔵 | [ha-lidl](https://github.com/FaserF/ha-lidl) | Lidl Plus: Wochenangebote, Coupons und digitale Kassenbons |
+| ⚪ | [ha-aldi](https://github.com/FaserF/ha-aldi) | ALDI Süd und ALDI Nord: Wochenprospekte |
+| 🔴 | [ha-norma](https://github.com/FaserF/ha-norma) | Norma: Wochenangebote und Prospekt |
+| 🔴 | [ha-penny](https://github.com/FaserF/ha-penny) | PENNY: digitale Kassenbons (eBons) und Treuepunkte |
+
+Die Karte ist ein eigenständiges Projekt und nicht mit FaserF oder den genannten Märkten verbunden.
 
 ## Lizenz
 

@@ -246,9 +246,9 @@ grid_options:
 ## Sources
 
 With `sources: auto` every sensor is used that has a list of offers in one of the attributes
-`discounts`, `offers`, `deals`, `items`, `results` or `products`. This covers e.g. the REWE integration
-[ha-rewe](https://github.com/FaserF/ha-rewe) by FaserF – and any other sensor with such a list (EDEKA, Lidl, ALDI …),
-including your own REST or template sensors.
+`discounts`, `offers`, `deals`, `items`, `results` or `products`. This covers the integrations by [FaserF](https://github.com/FaserF) –
+[ha-rewe](https://github.com/FaserF/ha-rewe), [ha-edeka](https://github.com/FaserF/ha-edeka), [ha-lidl](https://github.com/FaserF/ha-lidl), [ha-aldi](https://github.com/FaserF/ha-aldi), [ha-norma](https://github.com/FaserF/ha-norma) –
+and your own REST or template sensors.
 
 Field names are recognised automatically:
 
@@ -352,10 +352,22 @@ When an offer you applied to the list has run out, the card shows a note above "
 - **Without SmartLists:** a readable line is written to the description of the to-do item,
   e.g. `🏷️ REWE · 1,29 € · until 21.11.2026 · Landliebe Butter`.
 
-## Thanks
+## Thanks to FaserF
 
-The card was built with the data of the REWE integration [ha-rewe](https://github.com/FaserF/ha-rewe) by [FaserF](https://github.com/FaserF).
-It is an independent project and not affiliated with FaserF or the stores mentioned.
+The offer data does not come from this card but from the integrations by [FaserF](https://github.com/FaserF) – without them there would be
+nothing to show here. Thank you! All his projects: [hassio-addons.fabiseitz.de](https://hassio-addons.fabiseitz.de/)
+
+| | Integration | What it provides |
+|---|---|---|
+| 🏷️ | [ha-grocery-deals](https://github.com/FaserF/ha-grocery-deals) | Multi-store price comparison: aggregates the store integrations |
+| 🔴 | [ha-rewe](https://github.com/FaserF/ha-rewe) | REWE: weekly offers, bonus points and discounts |
+| 🟡 | [ha-edeka](https://github.com/FaserF/ha-edeka) | EDEKA: weekly offers, discounts and PAYBACK card |
+| 🔵 | [ha-lidl](https://github.com/FaserF/ha-lidl) | Lidl Plus: weekly offers, coupons and digital receipts |
+| ⚪ | [ha-aldi](https://github.com/FaserF/ha-aldi) | ALDI Süd and ALDI Nord: weekly flyers |
+| 🔴 | [ha-norma](https://github.com/FaserF/ha-norma) | Norma: weekly discounts and flyer offers |
+| 🔴 | [ha-penny](https://github.com/FaserF/ha-penny) | PENNY: digital receipts (eBons) and loyalty points |
+
+The card is an independent project and not affiliated with FaserF or the stores mentioned.
 
 ## License
 
