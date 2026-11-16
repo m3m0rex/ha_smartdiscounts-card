@@ -71,7 +71,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
 | `list_view` | `chips` | „Meine Liste“: `chips` (Preise nebeneinander; auf breiten Karten eine Tabelle) oder `rows` (ein Angebot je Zeile mit kleinem Bild). ☰ in der Karte schaltet um. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
-| `max_per_store` | `12` | Angebote je Markt, bevor „alle →“ erscheint |
+| `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint |
 | `currency` | `EUR` | ISO-Code der Währung |
 | `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
 | `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Nutella]` |
@@ -97,7 +97,7 @@ compact: false                # kompakte Zeilen
 show_unit_price: true         # Grundpreis (€/kg, €/l)
 show_valid_until: true        # „bis 21.11.“
 hide_without_offer: false     # Artikel ohne Angebot ausblenden
-max_per_store: 12             # Angebote je Markt, bevor „alle →“ erscheint
+max_per_store: 10             # Angebote je Markt, bevor „alle →“ erscheint
 currency: EUR                 # ISO-Code der Währung
 currency_symbol: "₺"          # eigenes Symbol statt currency (optional)
 watch:                        # Merkliste: feste Produkte (optional)
