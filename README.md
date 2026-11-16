@@ -58,7 +58,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `add_to` | – | Add to this list, e.g. your own source list of a combined list (empty = `list`) |
 | `mine_only` | `false` | Combined SmartLists list: only consider items from lists that belong to the signed-in user |
 | `tile_flow` | `grid` | Tiles top to bottom in a grid (`grid`) or in one row to swipe (`scroll`) |
-| `show_list_tab` | `true` | Show the "My list" tab |
+| `tabs` | `[list, all, watch]` | Which tabs in which order – e.g. `[all, watch]`; with only one tab the bar disappears |
 | `group_by` | `store` | Group "All offers" by `store` or by `category`; 🗂️ in the card switches |
 | `categories_open` | `true` | Categories expanded; `false` = start folded |
 | `category_source` | `auto` | `auto`: categories from SmartLists, otherwise from the store · `store`: always the store's own |
