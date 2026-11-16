@@ -19,6 +19,14 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
 > Dieses Repository wird bei jedem Release automatisch aus [ha_smartlists](https://github.com/m3m0rex/ha_smartlists)
 > befüllt. Fehler und Wünsche bitte dort melden.
 
+## So sieht es aus
+
+| Meine Liste: Preise nebeneinander | Meine Liste: ein Angebot je Zeile | Alle Angebote als Liste | Merkliste |
+|---|---|---|---|
+| <img src="docs/my-list.png" alt="Meine Liste: Preise nebeneinander" width="210"> | <img src="docs/my-list-rows.png" alt="Meine Liste: ein Angebot je Zeile" width="210"> | <img src="docs/all-offers.png" alt="Alle Angebote als Liste" width="210"> | <img src="docs/watch-list.png" alt="Merkliste" width="210"> |
+
+Aufnahmen der Karte mit Beispieldaten aus drei Quellen (REWE, EDEKA, Lidl); die Produktbilder sind Platzhalter.
+
 ## Installation
 
 **HACS:** `https://github.com/m3m0rex/ha_smartdiscounts-card` als benutzerdefiniertes Repository hinzufügen
@@ -274,7 +282,9 @@ Woher die Merkliste kommt:
 - `watch:` – feste Produkte in der Konfiguration.
 - `watch_list:` – eine To-do-Liste von Home Assistant. Sie gilt auf allen Geräten und lässt sich in der Karte
   ergänzen und kürzen.
-- Ohne `watch_list` speichert die Karte, was du im Reiter einträgst, **nur auf diesem Gerät**.
+- **Mit SmartLists** (ab 4.0.0-beta.2) nutzt die Karte ohne `watch_list` die Merkliste des Haushalts: Sie gilt auf allen
+  Geräten, und Home Assistant meldet neue Angebote auch ohne geöffnetes Dashboard (Einstellungen → Preise & Währung).
+- Ohne SmartLists und ohne `watch_list` speichert die Karte, was du im Reiter einträgst, **nur auf diesem Gerät**.
 
 Mit `notify: true` legt die Karte eine Benachrichtigung in Home Assistant an, sobald ein gemerktes Produkt neu im
 Angebot ist; `notify_service` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät nur einmal
