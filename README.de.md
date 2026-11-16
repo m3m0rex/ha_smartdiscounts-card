@@ -354,10 +354,11 @@ selbst und ihre Notizen bleiben.
 - **Ohne SmartLists:** In die Beschreibung des To-do-Eintrags kommt eine lesbare Zeile,
   z. B. `🏷️ REWE · 1,29 € · bis 21.11.2026 · Landliebe Butter`.
 
-## Dank an FaserF
+## Empfohlene Integrationen – Dank an FaserF
 
-Die Angebots-Daten kommen nicht von dieser Karte, sondern aus den Integrationen von [FaserF](https://github.com/FaserF) – ohne sie gäbe es
-hier nichts anzuzeigen. Vielen Dank dafür! Alle seine Projekte: [hassio-addons.fabiseitz.de](https://hassio-addons.fabiseitz.de/)
+Die Karte bringt selbst keine Angebots-Daten mit: Sie zeigt, was Sensoren in deinem Home Assistant liefern. Dafür
+empfehlen wir die Integrationen von [FaserF](https://github.com/FaserF) – vielen Dank für diese Arbeit! Alle seine Projekte:
+[hassio-addons.fabiseitz.de](https://hassio-addons.fabiseitz.de/)
 
 | | Integration | Was sie liefert |
 |---|---|---|

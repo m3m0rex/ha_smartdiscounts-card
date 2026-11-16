@@ -352,10 +352,11 @@ When an offer you applied to the list has run out, the card shows a note above "
 - **Without SmartLists:** a readable line is written to the description of the to-do item,
   e.g. `🏷️ REWE · 1,29 € · until 21.11.2026 · Landliebe Butter`.
 
-## Thanks to FaserF
+## Recommended integrations – thanks to FaserF
 
-The offer data does not come from this card but from the integrations by [FaserF](https://github.com/FaserF) – without them there would be
-nothing to show here. Thank you! All his projects: [hassio-addons.fabiseitz.de](https://hassio-addons.fabiseitz.de/)
+The card does not bring any offer data itself: it shows what sensors in your Home Assistant deliver. For that we
+recommend the integrations by [FaserF](https://github.com/FaserF) – many thanks for this work! All his projects:
+[hassio-addons.fabiseitz.de](https://hassio-addons.fabiseitz.de/)
 
 | | Integration | What it provides |
 |---|---|---|
