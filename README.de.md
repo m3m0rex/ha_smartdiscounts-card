@@ -11,6 +11,8 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
 - **Breite Karten** (ab 720 px) zeigen eine Tabelle Artikel × Märkte.
 - **Abgelaufene Angebote** auf der Liste werden angezeigt und lassen sich auf einmal entfernen.
+- **Merkliste:** Produkte, bei denen du auf ein Angebot wartest – auf Wunsch mit Benachrichtigung in Home Assistant.
+- **Sechs Sprachen:** Deutsch, Englisch, Französisch, Spanisch, Italienisch, Polnisch – nach der Sprache von Home Assistant.
 - Läuft **eigenständig** – nötig sind nur Angebots-Sensoren und (optional) eine To-do-Liste. Mit
   [SmartLists](https://github.com/m3m0rex/ha_smartlists) erscheint das gewählte Angebot als Badge am Artikel.
 
@@ -40,7 +42,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `title` | „Angebote“ | Überschrift |
 | `sources` | `auto` | `auto` oder eine Liste von Quellen (siehe unten) |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
-| `default_tab` | `list` | `list` oder `all` |
+| `default_tab` | `list` | `list`, `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
 | `compact` | `false` | kompakte Zeilen |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
@@ -50,6 +52,11 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
 | `max_per_store` | `12` | Angebote je Markt, bevor „alle →“ erscheint |
 | `currency` | `EUR` | ISO-Code der Währung |
+| `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
+| `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Nutella]` |
+| `watch_list` | – | Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar |
+| `notify` | `false` | Benachrichtigung in Home Assistant, wenn etwas von der Merkliste neu im Angebot ist |
+| `notify_service` | – | Zusätzlich an diesen Dienst senden, z. B. `notify.mobile_app_pixel` |
 
 ### Alle Optionen in einer Konfiguration
 
@@ -61,7 +68,7 @@ title: Angebote               # Überschrift (Standard: „Angebote“ in deiner
 list: todo.einkauf            # To-do-Liste zum Abgleichen (optional)
 sources: auto                 # "auto" oder eine Liste, siehe „Quellen“
 match: word                   # word | exact | part
-default_tab: list             # list | all
+default_tab: list             # list | all | watch
 list_view: chips              # chips | rows
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder
@@ -71,6 +78,13 @@ show_valid_until: true        # „bis 21.11.“
 hide_without_offer: false     # Artikel ohne Angebot ausblenden
 max_per_store: 12             # Angebote je Markt, bevor „alle →“ erscheint
 currency: EUR                 # ISO-Code der Währung
+currency_symbol: "₺"          # eigenes Symbol statt currency (optional)
+watch:                        # Merkliste: feste Produkte (optional)
+  - Kaffee
+  - Nutella
+watch_list: todo.merkliste    # Merkliste als To-do-Liste (optional)
+notify: false                 # benachrichtigen bei neuem Angebot für die Merkliste
+notify_service: notify.mobile_app_pixel   # zusätzlich aufs Smartphone (optional)
 ```
 
 ### Beispiele
@@ -164,6 +178,25 @@ list: todo.einkauf
 currency: CHF
 ```
 
+**Merkliste mit Benachrichtigung aufs Smartphone:**
+
+```yaml
+type: custom:smartdiscounts-card
+list: todo.einkauf
+default_tab: watch
+watch_list: todo.merkliste
+notify: true
+notify_service: notify.mobile_app_pixel
+```
+
+**Eigenes Währungssymbol** (für Währungen ohne passenden ISO-Code):
+
+```yaml
+type: custom:smartdiscounts-card
+list: todo.einkauf
+currency_symbol: "₺"
+```
+
 **Breites Dashboard-Feld** – mit `list_view: chips` zeigt eine Karte ab 720 px die Tabelle Artikel × Märkte:
 
 ```yaml
@@ -230,6 +263,46 @@ sources:
 
 Der Markt kommt aus `store:`, aus einem Feld `store` des Angebots oder aus dem Namen der Entität
 (REWE, EDEKA, Lidl, ALDI, Norma, Penny, Kaufland, Netto, dm, Rossmann und Globus werden erkannt).
+
+## Merkliste und Benachrichtigungen
+
+Im Reiter **⭐ Merkliste** stehen Produkte, bei denen du auf ein Angebot wartest. Zu jedem siehst du die aktuellen
+Angebote; die Zahl am Reiter zeigt, wie viele gemerkte Produkte gerade im Angebot sind.
+
+Woher die Merkliste kommt:
+
+- `watch:` – feste Produkte in der Konfiguration.
+- `watch_list:` – eine To-do-Liste von Home Assistant. Sie gilt auf allen Geräten und lässt sich in der Karte
+  ergänzen und kürzen.
+- Ohne `watch_list` speichert die Karte, was du im Reiter einträgst, **nur auf diesem Gerät**.
+
+Mit `notify: true` legt die Karte eine Benachrichtigung in Home Assistant an, sobald ein gemerktes Produkt neu im
+Angebot ist; `notify_service` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät nur einmal
+gemeldet.
+
+> **Wichtig:** Die Prüfung läuft in der Karte. Gemeldet wird also, wenn ein Dashboard mit der Karte geöffnet ist
+> (z. B. auf einem Wand-Tablet). Soll Home Assistant auch ohne offenes Dashboard melden, nimm eine Automation:
+
+```yaml
+automation:
+  - alias: Kaffee im Angebot
+    triggers:
+      - trigger: state
+        entity_id: sensor.rewe_123456
+    conditions:
+      - condition: template
+        value_template: >
+          {{ state_attr('sensor.rewe_123456', 'discounts') | default([], true)
+             | selectattr('product', 'search', 'kaffee', ignorecase=true) | list | count > 0 }}
+    actions:
+      - action: notify.mobile_app_pixel
+        data:
+          title: Kaffee im Angebot
+          message: >
+            {{ state_attr('sensor.rewe_123456', 'discounts')
+               | selectattr('product', 'search', 'kaffee', ignorecase=true)
+               | map(attribute='product') | join(', ') }}
+```
 
 ## Abgelaufene Angebote
 

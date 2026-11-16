@@ -11,6 +11,8 @@ A Home Assistant dashboard card that shows **supermarket offers matched with you
   small images; "＋ Add to list" adds an offer.
 - **Wide cards** (≥ 720 px) show a table of items × stores.
 - **Expired offers** on the list are pointed out and can be removed in one go.
+- **Watch list:** products you are waiting to see on offer – with a Home Assistant notification if you like.
+- **Six languages:** German, English, French, Spanish, Italian, Polish – following the language of Home Assistant.
 - Works **on its own** – it only needs offer sensors and (optionally) a to-do list. With
   [SmartLists](https://github.com/m3m0rex/ha_smartlists) the selected offer appears as a badge on the item.
 
@@ -40,7 +42,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `title` | "Offers" | Heading |
 | `sources` | `auto` | `auto`, or a list of sources (see below) |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
-| `default_tab` | `list` | `list` or `all` |
+| `default_tab` | `list` | `list`, `all` or `watch` |
 | `show_images` | `true` | Product images |
 | `compact` | `false` | Compact rows |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
@@ -50,6 +52,11 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
 | `max_per_store` | `12` | Offers per store before "all →" |
 | `currency` | `EUR` | ISO currency code for prices |
+| `currency_symbol` | – | Own symbol instead of `currency`, e.g. `₺` – shown after the amount |
+| `watch` | – | Watch list: a list of products, e.g. `[coffee, Nutella]` |
+| `watch_list` | – | Watch list as a to-do list – the same on all devices, editable in the card |
+| `notify` | `false` | Home Assistant notification when something on the watch list is newly on offer |
+| `notify_service` | – | Also send it to this service, e.g. `notify.mobile_app_pixel` |
 
 ### Every option in one configuration
 
@@ -61,7 +68,7 @@ title: Offers                 # heading (default: "Offers" in your language)
 list: todo.shopping           # to-do list to match against (optional)
 sources: auto                 # "auto" or a list, see "Sources"
 match: word                   # word | exact | part
-default_tab: list             # list | all
+default_tab: list             # list | all | watch
 list_view: chips              # chips | rows
 all_view: tiles               # tiles | list
 show_images: true             # product images
@@ -71,6 +78,13 @@ show_valid_until: true        # "until 21.11."
 hide_without_offer: false     # hide list items without an offer
 max_per_store: 12             # offers per store before "all →"
 currency: EUR                 # ISO code for prices
+currency_symbol: "₺"          # own symbol instead of currency (optional)
+watch:                        # watch list: fixed products (optional)
+  - coffee
+  - Nutella
+watch_list: todo.watchlist    # watch list as a to-do list (optional)
+notify: false                 # notify when a watched product is newly on offer
+notify_service: notify.mobile_app_pixel   # also send to the phone (optional)
 ```
 
 ### Examples
@@ -164,6 +178,25 @@ list: todo.einkauf
 currency: CHF
 ```
 
+**Watch list with a notification on the phone:**
+
+```yaml
+type: custom:smartdiscounts-card
+list: todo.shopping
+default_tab: watch
+watch_list: todo.watchlist
+notify: true
+notify_service: notify.mobile_app_pixel
+```
+
+**Own currency symbol** (for currencies without a matching ISO code):
+
+```yaml
+type: custom:smartdiscounts-card
+list: todo.shopping
+currency_symbol: "₺"
+```
+
 **Wide dashboard panel** – with `list_view: chips` a card of 720 px or more shows the table of items × stores:
 
 ```yaml
@@ -230,6 +263,45 @@ sources:
 
 The store is taken from `store:`, a `store` field of the offer, or the entity name
 (REWE, EDEKA, Lidl, ALDI, Norma, Penny, Kaufland, Netto, dm, Rossmann and Globus are recognised).
+
+## Watch list and notifications
+
+The **⭐ Watch list** tab holds products you are waiting to see on offer. For each one you see the current offers;
+the number on the tab shows how many watched products are on offer right now.
+
+Where the watch list comes from:
+
+- `watch:` – fixed products in the configuration.
+- `watch_list:` – a Home Assistant to-do list. It is the same on all devices and can be extended and shortened in
+  the card.
+- Without `watch_list` the card stores what you enter in the tab **on this device only**.
+
+With `notify: true` the card creates a Home Assistant notification as soon as a watched product is newly on offer;
+`notify_service` also sends it e.g. to your phone. Every offer is reported once per device.
+
+> **Important:** the check runs in the card. It reports while a dashboard with the card is open (e.g. on a wall
+> tablet). If Home Assistant should notify without an open dashboard, use an automation:
+
+```yaml
+automation:
+  - alias: Coffee on offer
+    triggers:
+      - trigger: state
+        entity_id: sensor.rewe_123456
+    conditions:
+      - condition: template
+        value_template: >
+          {{ state_attr('sensor.rewe_123456', 'discounts') | default([], true)
+             | selectattr('product', 'search', 'coffee', ignorecase=true) | list | count > 0 }}
+    actions:
+      - action: notify.mobile_app_pixel
+        data:
+          title: Coffee on offer
+          message: >
+            {{ state_attr('sensor.rewe_123456', 'discounts')
+               | selectattr('product', 'search', 'coffee', ignorecase=true)
+               | map(attribute='product') | join(', ') }}
+```
 
 ## Expired offers
 
