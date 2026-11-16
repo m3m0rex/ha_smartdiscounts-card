@@ -70,7 +70,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint (1–20) |
 | `currency` | `EUR` | ISO-Code der Währung |
 | `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
-| `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Nutella]` |
+| `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Schokocreme]` |
 | `watch_list` | – | Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar |
 | `notify` | `false` | Benachrichtigung in Home Assistant, wenn etwas von der Merkliste neu im Angebot ist |
 | `notify_targets` | – | Zusätzlich an diese Ziele senden – im Editor auswählbar, z. B. `[notify.mobile_app_pixel]` (mehrere möglich) |
@@ -98,7 +98,7 @@ currency: EUR                 # ISO-Code der Währung
 currency_symbol: "₺"          # eigenes Symbol statt currency (optional)
 watch:                        # Merkliste: feste Produkte (optional)
   - Kaffee
-  - Nutella
+  - Schokocreme
 watch_list: todo.merkliste    # Merkliste als To-do-Liste (optional)
 notify: false                 # benachrichtigen bei neuem Angebot für die Merkliste
 notify_targets:               # zusätzlich aufs Smartphone (optional)
@@ -348,7 +348,7 @@ selbst und ihre Notizen bleiben.
 - **Mit SmartLists:** Das Angebot wird an den Artikel gehängt und dort als Badge mit Markt, Preis und Gültigkeit
   gezeigt.
 - **Ohne SmartLists:** In die Beschreibung des To-do-Eintrags kommt eine lesbare Zeile,
-  z. B. `🏷️ REWE · 1,29 € · bis 21.11.2026 · Landliebe Butter`.
+  z. B. `🏷️ REWE · 1,29 € · bis 21.11.2026 · Markenbutter`.
 
 ## Empfohlene Integrationen – Dank an FaserF
 

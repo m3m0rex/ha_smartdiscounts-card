@@ -70,7 +70,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `max_per_store` | `10` | Offers per store before "all →" (1–20) |
 | `currency` | `EUR` | ISO currency code for prices |
 | `currency_symbol` | – | Own symbol instead of `currency`, e.g. `₺` – shown after the amount |
-| `watch` | – | Watch list: a list of products, e.g. `[coffee, Nutella]` |
+| `watch` | – | Watch list: a list of products, e.g. `[coffee, chocolate spread]` |
 | `watch_list` | – | Watch list as a to-do list – the same on all devices, editable in the card |
 | `notify` | `false` | Home Assistant notification when something on the watch list is newly on offer |
 | `notify_targets` | – | Also send to these targets – selectable in the editor, e.g. `[notify.mobile_app_pixel]` (several possible) |
@@ -98,7 +98,7 @@ currency: EUR                 # ISO code for prices
 currency_symbol: "₺"          # own symbol instead of currency (optional)
 watch:                        # watch list: fixed products (optional)
   - coffee
-  - Nutella
+  - chocolate spread
 watch_list: todo.watchlist    # watch list as a to-do list (optional)
 notify: false                 # notify when a watched product is newly on offer
 notify_targets:               # also send to the phone (optional)
@@ -346,7 +346,7 @@ When an offer you applied to the list has run out, the card shows a note above "
 - **With SmartLists:** the offer is attached to the item and shown there as a badge with store, price and
   validity. Once it has expired it is marked as such and can be removed (see above).
 - **Without SmartLists:** a readable line is written to the description of the to-do item,
-  e.g. `🏷️ REWE · 1,29 € · until 21.11.2026 · Landliebe Butter`.
+  e.g. `🏷️ REWE · 1,29 € · until 21.11.2026 · Markenbutter`.
 
 ## Recommended integrations – thanks to FaserF
 
