@@ -51,6 +51,12 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `list` | – | To-do list to match offers against |
 | `title` | "Offers" | Heading |
 | `sources` | `auto` | `auto`, or a list of sources (see below) |
+| `stores` | – | Only these stores, e.g. `[REWE]` – selectable in the editor (one card per store) |
+| `entities` | – | Only these offer sensors – selectable in the editor |
+| `show_list_tab` | `true` | Show the "My list" tab |
+| `group_by` | `store` | Group "All offers" by `store` or by `category`; 🗂️ in the card switches |
+| `categories_open` | `true` | Categories expanded; `false` = start folded |
+| `category_source` | `auto` | `auto`: categories from SmartLists, otherwise from the store · `store`: always the store's own |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
 | `default_tab` | `list` | `list`, `all` or `watch` |
 | `show_images` | `true` | Product images |
@@ -178,6 +184,19 @@ sources:
       price: prices.current
       old_price: prices.regular
       until: validity.to
+```
+
+**A card only for REWE, grouped by category:**
+
+```yaml
+type: custom:smartdiscounts-card
+title: REWE
+list: todo.shopping
+stores:
+  - REWE
+default_tab: all
+group_by: category
+categories_open: false
 ```
 
 **Swiss francs:**

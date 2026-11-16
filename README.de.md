@@ -51,6 +51,12 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `list` | – | To-do-Liste, mit der die Angebote abgeglichen werden |
 | `title` | „Angebote“ | Überschrift |
 | `sources` | `auto` | `auto` oder eine Liste von Quellen (siehe unten) |
+| `stores` | – | Nur diese Märkte, z. B. `[REWE]` – im Editor auswählbar (eine Karte je Markt) |
+| `entities` | – | Nur diese Angebots-Sensoren – im Editor auswählbar |
+| `show_list_tab` | `true` | Reiter „Meine Liste“ anzeigen |
+| `group_by` | `store` | „Alle Angebote“ nach `store` (Markt) oder `category` (Kategorie) einsortieren; 🗂️ in der Karte schaltet um |
+| `categories_open` | `true` | Kategorien ausgeklappt; `false` = zugeklappt starten |
+| `category_source` | `auto` | `auto`: Kategorien von SmartLists, sonst vom Markt · `store`: immer die des Markts |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
 | `default_tab` | `list` | `list`, `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
@@ -178,6 +184,19 @@ sources:
       price: prices.current
       old_price: prices.regular
       until: validity.to
+```
+
+**Eine Karte nur für REWE, nach Kategorie einsortiert:**
+
+```yaml
+type: custom:smartdiscounts-card
+title: REWE
+list: todo.einkauf
+stores:
+  - REWE
+default_tab: all
+group_by: category
+categories_open: false
 ```
 
 **Schweizer Franken:**
