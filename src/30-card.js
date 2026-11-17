@@ -5,13 +5,20 @@ class SmartDiscountsCard extends HTMLElement {
     return { list: todo || "" };
   }
   setConfig(config) {
+    const before = this._config;
     this._config = { ...DEFAULTS, ...(config || {}) };
-    this._tab = ["all", "watch"].includes(this._config.default_tab) ? this._config.default_tab : "list";
+    // Beim Ändern einer Einstellung (Editor) bleibt man, wo man ist: Reiter, Suche, Auf- und Zugeklapptes. Nur beim
+    // ersten Aufbau – oder wenn gerade der Start-Reiter geändert wurde – gilt `default_tab`.
+    if (!before || before.default_tab !== this._config.default_tab || !this._tab) {
+      this._tab = ["all", "watch"].includes(this._config.default_tab) ? this._config.default_tab : "list";
+    }
     if (!this._tabs().includes(this._tab)) this._tab = this._tabs()[0];
-    this._closed = new Set(); this._allCats = false;
-    this._sel = {};       // Artikel-UID → gewähltes Angebot
-    this._open = new Set();
-    this._query = ""; this._cat = "";
+    if (!before) {
+      this._closed = new Set(); this._allCats = false;
+      this._sel = {};       // Artikel-UID → gewähltes Angebot
+      this._open = new Set();
+      this._query = ""; this._cat = "";
+    }
     this._view = this._config.all_view === "list" ? "list" : "tiles";
     // "locked": was hier steht, ist in der Karte nicht umschaltbar – es gilt die Einstellung, nicht die gemerkte Wahl
     const free = (k) => !this._locked(k);
@@ -199,7 +206,7 @@ class SmartDiscountsCard extends HTMLElement {
         c.show_images ? h("div", { class: "thumb", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image ? null : "🏷️") : null,
         h("div", { class: "n" }, o.name, h("small", {}, this._storeBadge(o), sub ? ` ${sub}` : "")),
         h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null),
-        this._addCtl(o, false));
+        this._slot(o));
     };
     const blocks = terms.map((term) => {
       const offers = dealsForCached(this._all, term.name, c.match);
@@ -342,9 +349,10 @@ class SmartDiscountsCard extends HTMLElement {
         !offers.length ? null : asRows ? h("div", { class: "orows" }, offers.map((o, i) => this._offerRow(it, o, i === 0 && offers.length > 1, low.has(o.id))))
           : h("div", { class: "prices" }, offers.map((o, i) => this._priceChip(it, o, i === 0 && offers.length > 1, low.has(o.id)))));
     };
-    // breite Karte: Tabelle Artikel × Märkte
+    // Tabelle Artikel × Märkte – nur in der Ansicht „Preise nebeneinander“. Früher schaltete eine breite Karte von
+    // selbst darauf um; dann sah dieselbe Ansicht schmal anders aus (mit Bildern) als breit (ohne).
     const mstores = cover.map(([s]) => s);
-    const mx = h("div", { class: `mx ${asTable && mstores.length ? "force" : mstores.length > 1 && !asRows && !asCompact ? "has" : ""}`,
+    const mx = h("div", { class: `mx ${asTable && mstores.length ? "force" : ""}`,
       style: asTable ? `grid-template-columns:minmax(84px,1.3fr) repeat(${mstores.length}, minmax(66px,1fr))` : `grid-template-columns:minmax(150px,1.4fr) repeat(${mstores.length}, minmax(110px,1fr))` },
       h("div", { class: "hd l" }, t.item), mstores.map((s) => h("div", { class: "hd" }, this._storeBadge(this._all.find((o) => o.store === s)))),
       rows.filter((r) => r.offers.length || !c.hide_without_offer).map((r) => [h("div", { class: "l" }, r.it.name || r.it.text),
@@ -415,14 +423,14 @@ class SmartDiscountsCard extends HTMLElement {
     // Listen-Darstellung: kleine Bilder, eine Zeile je Angebot
     const row = (o) => {
       const got = this._onListCount(o), mine = !got && onList(o);
-      const sub = [c.show_unit_price ? this._unitLabel(o) : "", c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : "", byCat ? "" : o.category].filter(Boolean).join(" · ");
+      const sub = [c.show_unit_price ? this._unitLabel(o) : "", c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : "", byCat ? "" : this._ownCat(o)].filter(Boolean).join(" · ");
       return h("div", { class: `lrow ${got ? "got" : ""}`, title: o.name },
         c.show_images ? h("div", { class: "thumb", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image || got ? null : "🏷️",
           got ? h("span", { class: "gotck", "aria-hidden": "true" }, "✓") : null) : null,
         h("div", { class: "n" }, mine ? h("span", { title: t.on_list }, "📝 ") : null, o.name,
           sub || byCat || got ? h("small", {}, got ? h("b", { class: "gott" }, `✓ ${t.on_n.replace("{n}", got)}${sub || byCat ? " · " : ""}`) : null, byCat ? [this._storeBadge(o), " "] : null, sub) : null),
         h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null),
-        this._addCtl(o, false));
+        this._slot(o));
     };
     const asList = this._view === "list";
     const toggle = h("button", { type: "button", class: "btn vbtn", title: asList ? t.v_tiles : t.v_list, "aria-label": asList ? t.v_tiles : t.v_list,
@@ -561,6 +569,16 @@ class SmartDiscountsCard extends HTMLElement {
       else await this._hass.callService("todo", "update_item", { item: it.uid, rename: this._withCount(it.text, n) }, { entity_id: this._config.list });
       this._sig = null; await this._loadList(); this._render();
     } catch (e) { if (btn) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; } }
+  }
+  // Listenansicht: in jeder Zeile derselbe Zähler (− 0 +), bei 0 nur blasser – so steht alles in einer Flucht
+  // und nichts springt, wenn ein Artikel auf die Liste kommt
+  _slot(o) {
+    const t = this._t, n = this._onListCount(o);
+    if (!this._config.list || !this._may("add")) return null;  // ohne Recht zum Hinzufügen: nur ansehen
+    return h("span", { class: `stepper slot ${n ? "" : "zero"}`, title: n ? t.on_n.replace("{n}", n) : t.add },
+      h("button", { type: "button", "aria-label": `− ${o.name}`, disabled: n ? null : "", onclick: (e) => this._step(o, -1, e.currentTarget) }, "−"),
+      h("b", {}, String(n)),
+      h("button", { type: "button", "aria-label": `${n ? "+" : t.add + ":"} ${o.name}`, onclick: (e) => (n ? this._step(o, 1, e.currentTarget) : this._add(o, e.currentTarget)) }, "+"));
   }
   // ＋ oder – steht der Artikel schon auf der Liste – ein Zähler (− 2× +)
   _addCtl(o, wide) {

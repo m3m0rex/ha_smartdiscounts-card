@@ -54,7 +54,13 @@ const STYLE = `
   .lrow:last-child { border-bottom:0; }
   .lrow .n { flex:1; min-width:0; font-size:.9rem; overflow-wrap:anywhere; }
   .lrow .n small { display:block; color:var(--secondary-text-color); font-size:.74rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .lrow .pr { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  /* Listenansicht: Preis in fester Spalte, daneben in jeder Zeile derselbe Zähler (bei 0 blass) – nichts springt */
+  .lrow .pr { width:74px; flex:none; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .lrow .stepper.slot { flex:none; }
+  .lrow .stepper.zero { border-color:var(--divider-color,#ccc); background:none; }
+  .lrow .stepper.zero b { color:var(--secondary-text-color); font-weight:500; opacity:.7; }
+  .lrow .stepper.zero button { color:var(--sd-accent); }
+  .lrow .stepper.zero button:disabled { opacity:.3; cursor:default; }
   .lrow .pr b { display:block; } .lrow .pr s { color:var(--secondary-text-color); font-size:.72rem; }
   .lrow .pr .pct { color:var(--error-color,#db4437); font-weight:800; font-size:.72rem; margin-left:4px; }
   .lrow .plus { width:34px; height:34px; padding:0; font-size:1.1rem; flex:none; }
