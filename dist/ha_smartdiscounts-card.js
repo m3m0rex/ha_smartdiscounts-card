@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.0.1";
+const VERSION = "1.0.2";
 const TAG = "smartdiscounts-card";
 if (customElements.get(TAG)) return;  // schon geladen (z. B. doppelt als Ressource eingetragen)
 
@@ -282,13 +282,16 @@ const STYLE = `
   .tl .btn { padding:3px 6px; font-size:.74rem; margin-top:auto; }
   .mx { display:none; }
   /* Ansicht „Tabelle“: auch auf schmalen Karten, dichter gesetzt */
-  .mx.force { display:grid; font-size:.82rem; margin-top:8px; overflow-x:auto; }
+  /* Tabelle „Märkte als Spalten“: wächst mit der Karte, aber nicht endlos (Standard: 760 px für den Artikel und
+     260 px je Markt, einstellbar mit table_max_width – sonst liefen die Spalten sehr weit auseinander); Trennlinien gerade */
+  .mx.force { display:grid; font-size:.84rem; margin-top:8px; overflow-x:auto; }
   .mx.force + .rows { display:none; }
-  .mx.force > div { padding:7px 5px; border-bottom:1px solid var(--divider-color,#e0e0e0); display:flex; align-items:center; gap:4px; justify-content:flex-end; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0; }
-  .mx.force > div.l { justify-content:flex-start; white-space:normal; overflow-wrap:anywhere; }
+  .mx.force > div { padding:8px 10px; border-bottom:1px solid var(--divider-color,#e0e0e0); display:flex; align-items:center; gap:4px; justify-content:flex-end; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0; border-radius:0; }
+  .mx.force > div.l { justify-content:flex-start; white-space:normal; overflow-wrap:anywhere; padding-left:4px; }
   .mx.force .hd { color:var(--secondary-text-color); font-size:.72rem; font-weight:700; }
-  .mx.force .cell { cursor:pointer; border-radius:8px; } .mx.force .cell.best { color:var(--sd-ok); font-weight:700; }
-  .mx.force .cell.sel { box-shadow:0 0 0 2px var(--sd-accent) inset; } .mx.force .na { color:var(--secondary-text-color); }
+  .mx.force .cell { cursor:pointer; align-items:flex-end; } .mx.force .cell.best { color:var(--sd-ok); font-weight:700; }
+  .mx.force .cell:hover { background:color-mix(in srgb, var(--sd-accent) 8%, transparent); }
+  .mx.force .cell.sel { background:color-mix(in srgb, var(--sd-accent) 16%, transparent); box-shadow:0 0 0 2px var(--sd-accent) inset; } .mx.force .na { color:var(--secondary-text-color); }
   .vsw { display:inline-flex; gap:4px; } .vbtn.on { border-color:var(--sd-accent); color:var(--sd-accent); }
   /* Ansicht „kompakt“ */
   .cl { display:flex; align-items:center; gap:8px; padding:8px 2px; border-bottom:1px solid var(--divider-color,#e0e0e0); cursor:pointer; font-size:.92rem; }
@@ -301,16 +304,6 @@ const STYLE = `
   .addpick { display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; font-size:.8rem; margin-bottom:6px; color:var(--primary-text-color); }
   .addsel { font:inherit; color:var(--primary-text-color); background:var(--secondary-background-color,#f6f6f6); border:1px solid var(--divider-color,#ddd); border-radius:8px; padding:4px 8px; max-width:100%; }
   @container (min-width: 720px) {
-    .mx.has { display:grid; font-size:.86rem; margin-top:10px; }
-    .mx.has + .rows { display:none; }
-    .mx > div { padding:8px; border-bottom:1px solid var(--divider-color,#e0e0e0); display:flex; align-items:center; gap:6px; justify-content:flex-end; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0; }
-    .mx > div.l { justify-content:flex-start; white-space:normal; }
-    .mx .hd { color:var(--secondary-text-color); font-size:.76rem; font-weight:700; }
-    .mx .cell { cursor:pointer; border-radius:8px; }
-    .mx .cell.best { color:var(--sd-ok); font-weight:700; }
-    .mx .cell.sel { box-shadow:0 0 0 2px var(--sd-accent) inset; }
-    .mx .na { color:var(--secondary-text-color); }
-    .mx small { color:var(--secondary-text-color); font-weight:400; font-size:.72rem; }
   }
 `;
 
@@ -341,8 +334,9 @@ class SmartDiscountsCard extends HTMLElement {
     try { const v = localStorage.getItem(this._memKey("view")); if (free("all_view") && (v === "list" || v === "tiles")) this._view = v; } catch (e) { /* */ }
     this._group = this._config.group_by === "category" ? "category" : "store";
     try { const v = localStorage.getItem(this._memKey("group")); if (free("group_by") && (v === "category" || v === "store")) this._group = v; } catch (e) { /* */ }
-    const LV = ["chips", "rows", "compact", "table"];
-    this._lview = LV.includes(this._config.list_view) ? this._config.list_view : "chips";
+    // drei Ansichten; die frühere „Preise nebeneinander“ (chips) gibt es nicht mehr – wer sie eingetragen hat, sieht „rows“
+    const LV = ["rows", "compact", "table"];
+    this._lview = LV.includes(this._config.list_view) ? this._config.list_view : "rows";
     try { const v = localStorage.getItem(this._memKey("list-view")); if (free("list_view") && LV.includes(v)) this._lview = v; } catch (e) { /* */ }
     this._cexp = new Set();
     if (!this.shadowRoot) { this._card = h("div", { class: "wrap" }); this.attachShadow({ mode: "open" }).append(h("style", {}, STYLE), h("ha-card", {}, this._card)); }
@@ -541,7 +535,7 @@ class SmartDiscountsCard extends HTMLElement {
     const stores = [...new Set(this._all.map((o) => o.store))];
     const head = h("div", { class: "head" }, h("h1", {}, c.title || t.title), h("small", {}, `${this._all.length} ${t.offers} · ${stores.length ? stores.join(", ") : "–"}`));
     const hits = this._watchHits();
-    const names = { list: "📝 " + t.tab_list, all: t.tab_all, watch: "⭐ " + t.tab_watch + (hits ? ` · ${hits}` : "") };
+    const names = { list: "📝 " + t.tab_list, all: "🏷️ " + t.tab_all, watch: "⭐ " + t.tab_watch + (hits ? ` · ${hits}` : "") };
     const shown = this._tabs();
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>
@@ -629,9 +623,9 @@ class SmartDiscountsCard extends HTMLElement {
     const choose = (fn) => { this._sel = {}; hit.forEach((r) => { const o = fn(r); if (o) this._sel[r.it.uid] = o; }); this._render(); };
     const clear = () => { this._sel = {}; this._render(); };  // noch einmal antippen hebt die Auswahl wieder auf
     const isCheapest = hit.length && hit.every((r) => this._sel[r.it.uid] && this._sel[r.it.uid].id === r.offers[0].id);
-    const asRows = this._lview === "rows", asCompact = this._lview === "compact", asTable = this._lview === "table";
-    // vier Ansichten zum Umschalten: Preise nebeneinander · ein Angebot je Zeile · kompakt (eine Zeile je Artikel) · Tabelle
-    const toggle = h("span", { class: "vsw", role: "group", "aria-label": t.e_lview }, [["chips", "▦", t.v_chips], ["rows", "☰", t.v_rows], ["compact", "≡", t.v_compact], ["table", "▤", t.v_table]].map(([v, icon, label]) =>
+    const asCompact = this._lview === "compact", asTable = this._lview === "table", asRows = !asCompact && !asTable;
+    // drei Ansichten zum Umschalten: ein Angebot je Zeile · kompakt (eine Zeile je Artikel) · Tabelle
+    const toggle = h("span", { class: "vsw", role: "group", "aria-label": t.e_lview }, [["rows", "☰", t.v_rows], ["compact", "≡", t.v_compact], ["table", "▤", t.v_table]].map(([v, icon, label]) =>
       h("button", { type: "button", class: `btn vbtn sm ${this._lview === v ? "on" : ""}`, title: label, "aria-label": label, "aria-pressed": String(this._lview === v),
         onclick: () => { this._lview = v; try { localStorage.setItem(this._memKey("list-view"), v); } catch (e) { /* */ } this._render(); } }, icon)));
     const plan = h("div", { class: "plan" }, h("div", { class: "ph" }, h("b", {}, "💡 " + t.on_offer.replace("{n}", hit.length).replace("{m}", items.length)), hit.length && !this._locked("list_view") ? toggle : null),
@@ -669,7 +663,7 @@ class SmartDiscountsCard extends HTMLElement {
     // selbst darauf um; dann sah dieselbe Ansicht schmal anders aus (mit Bildern) als breit (ohne).
     const mstores = cover.map(([s]) => s);
     const mx = h("div", { class: `mx ${asTable && mstores.length ? "force" : ""}`,
-      style: asTable ? `grid-template-columns:minmax(84px,1.3fr) repeat(${mstores.length}, minmax(66px,1fr))` : `grid-template-columns:minmax(150px,1.4fr) repeat(${mstores.length}, minmax(110px,1fr))` },
+      style: `grid-template-columns:minmax(84px,1.6fr) repeat(${mstores.length}, minmax(84px,1fr));max-width:${this._tableMax(mstores.length)}` },
       h("div", { class: "hd l" }, t.item), mstores.map((s) => h("div", { class: "hd" }, this._storeBadge(this._all.find((o) => o.store === s)))),
       rows.filter((r) => r.offers.length || !c.hide_without_offer).map((r) => [h("div", { class: "l" }, r.it.name || r.it.text),
         mstores.map((s) => { const o = r.offers.find((x) => x.store === s), low = r.low || (r.low = this._unitLow(r.offers));
@@ -886,6 +880,13 @@ class SmartDiscountsCard extends HTMLElement {
       this._sig = null; await this._loadList(); this._render();
     } catch (e) { if (btn) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; } }
   }
+  // Breite der Tabelle „Märkte als Spalten“: wächst mit der Karte bis zu einer Grenze. `table_max_width` (in px) setzt
+  // sie selbst, 0 = keine Grenze (immer die ganze Breite).
+  _tableMax(stores) {
+    const own = this._config.table_max_width;
+    if (own !== undefined && own !== null && own !== "" && Number.isFinite(Number(own))) return Number(own) > 0 ? `${Number(own)}px` : "none";
+    return `${760 + stores * 260}px`;
+  }
   // Listenansicht: in jeder Zeile derselbe Zähler (− 0 +), bei 0 nur blasser – so steht alles in einer Flucht
   // und nichts springt, wenn ein Artikel auf die Liste kommt
   _slot(o) {
@@ -948,7 +949,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "entities", selector: { entity: { multiple: true, ...(found.length ? { include_entities: [...new Set([...found, ...(this._config.entities || [])])] } : { domain: "sensor" }) } } },
       { name: "match", selector: { select: { mode: "dropdown", options: [["word", t.m_word], ["exact", t.m_exact], ["part", t.m_part]].map(([value, label]) => ({ value, label })) } } },
       { name: "default_tab", selector: { select: { mode: "dropdown", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
-      { name: "list_view", selector: { select: { mode: "dropdown", options: [["chips", t.v_chips], ["rows", t.v_rows], ["compact", t.v_compact], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
+      { name: "list_view", selector: { select: { mode: "dropdown", options: [["rows", t.v_rows], ["compact", t.v_compact], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
       b("mine_only"),
       { name: "add_to", selector: { entity: { domain: "todo" } } },
       { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },

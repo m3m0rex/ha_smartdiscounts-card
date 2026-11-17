@@ -13,7 +13,7 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
   Gültigkeit an die Einträge.
 - **Alle Angebote:** ein Regal je Markt mit Suche und Kategorie-Filter – als Kacheln oder als kompakte Liste mit
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
-- **Breite Karten** (ab 720 px) zeigen eine Tabelle Artikel × Märkte.
+- **Meine Liste** in drei Darstellungen: ein Angebot je Zeile, eine Zeile je Artikel oder eine Tabelle mit den Märkten als Spalten.
 - **Abgelaufene Angebote** auf der Liste werden angezeigt und lassen sich auf einmal entfernen.
 - **Merkliste:** Produkte, bei denen du auf ein Angebot wartest – auf Wunsch mit Benachrichtigung in Home Assistant.
 - **Sechs Sprachen:** Deutsch, Englisch, Französisch, Spanisch, Italienisch, Polnisch – nach der Sprache von Home Assistant.
@@ -73,7 +73,8 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
-| `list_view` | `chips` | „Meine Liste“: `chips` (Preise nebeneinander; auf breiten Karten eine Tabelle), `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
+| `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
+| `table_max_width` | – | „Meine Liste“ als Tabelle: größte Breite der Tabelle in px. Standard: 760 plus 260 je Markt. `0` = keine Grenze, immer die ganze Breite. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
 | `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint (1–20) |
 | `currency` | `EUR` | ISO-Code der Währung |
@@ -94,7 +95,7 @@ list: todo.einkauf            # To-do-Liste zum Abgleichen (optional)
 sources: auto                 # "auto" oder eine Liste, siehe „Quellen“
 match: word                   # word | exact | part
 default_tab: list             # list | all | watch
-list_view: chips              # chips | rows | compact | table
+list_view: rows               # rows | compact | table
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder
 show_unit_price: true         # Grundpreis (€/kg, €/l)
@@ -235,12 +236,12 @@ list: todo.einkauf
 currency_symbol: "₺"
 ```
 
-**Breites Dashboard-Feld** – mit `list_view: chips` zeigt eine Karte ab 720 px die Tabelle Artikel × Märkte:
+**Breites Dashboard-Feld** – die Tabelle Artikel × Märkte:
 
 ```yaml
 type: custom:smartdiscounts-card
 list: todo.einkauf
-list_view: chips
+list_view: table
 grid_options:
   columns: full
 ```

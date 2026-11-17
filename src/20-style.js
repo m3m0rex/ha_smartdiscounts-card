@@ -113,13 +113,16 @@ const STYLE = `
   .tl .btn { padding:3px 6px; font-size:.74rem; margin-top:auto; }
   .mx { display:none; }
   /* Ansicht „Tabelle“: auch auf schmalen Karten, dichter gesetzt */
-  .mx.force { display:grid; font-size:.82rem; margin-top:8px; overflow-x:auto; }
+  /* Tabelle „Märkte als Spalten“: wächst mit der Karte, aber nicht endlos (Standard: 760 px für den Artikel und
+     260 px je Markt, einstellbar mit table_max_width – sonst liefen die Spalten sehr weit auseinander); Trennlinien gerade */
+  .mx.force { display:grid; font-size:.84rem; margin-top:8px; overflow-x:auto; }
   .mx.force + .rows { display:none; }
-  .mx.force > div { padding:7px 5px; border-bottom:1px solid var(--divider-color,#e0e0e0); display:flex; align-items:center; gap:4px; justify-content:flex-end; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0; }
-  .mx.force > div.l { justify-content:flex-start; white-space:normal; overflow-wrap:anywhere; }
+  .mx.force > div { padding:8px 10px; border-bottom:1px solid var(--divider-color,#e0e0e0); display:flex; align-items:center; gap:4px; justify-content:flex-end; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0; border-radius:0; }
+  .mx.force > div.l { justify-content:flex-start; white-space:normal; overflow-wrap:anywhere; padding-left:4px; }
   .mx.force .hd { color:var(--secondary-text-color); font-size:.72rem; font-weight:700; }
-  .mx.force .cell { cursor:pointer; border-radius:8px; } .mx.force .cell.best { color:var(--sd-ok); font-weight:700; }
-  .mx.force .cell.sel { box-shadow:0 0 0 2px var(--sd-accent) inset; } .mx.force .na { color:var(--secondary-text-color); }
+  .mx.force .cell { cursor:pointer; align-items:flex-end; } .mx.force .cell.best { color:var(--sd-ok); font-weight:700; }
+  .mx.force .cell:hover { background:color-mix(in srgb, var(--sd-accent) 8%, transparent); }
+  .mx.force .cell.sel { background:color-mix(in srgb, var(--sd-accent) 16%, transparent); box-shadow:0 0 0 2px var(--sd-accent) inset; } .mx.force .na { color:var(--secondary-text-color); }
   .vsw { display:inline-flex; gap:4px; } .vbtn.on { border-color:var(--sd-accent); color:var(--sd-accent); }
   /* Ansicht „kompakt“ */
   .cl { display:flex; align-items:center; gap:8px; padding:8px 2px; border-bottom:1px solid var(--divider-color,#e0e0e0); cursor:pointer; font-size:.92rem; }
@@ -132,16 +135,6 @@ const STYLE = `
   .addpick { display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; font-size:.8rem; margin-bottom:6px; color:var(--primary-text-color); }
   .addsel { font:inherit; color:var(--primary-text-color); background:var(--secondary-background-color,#f6f6f6); border:1px solid var(--divider-color,#ddd); border-radius:8px; padding:4px 8px; max-width:100%; }
   @container (min-width: 720px) {
-    .mx.has { display:grid; font-size:.86rem; margin-top:10px; }
-    .mx.has + .rows { display:none; }
-    .mx > div { padding:8px; border-bottom:1px solid var(--divider-color,#e0e0e0); display:flex; align-items:center; gap:6px; justify-content:flex-end; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0; }
-    .mx > div.l { justify-content:flex-start; white-space:normal; }
-    .mx .hd { color:var(--secondary-text-color); font-size:.76rem; font-weight:700; }
-    .mx .cell { cursor:pointer; border-radius:8px; }
-    .mx .cell.best { color:var(--sd-ok); font-weight:700; }
-    .mx .cell.sel { box-shadow:0 0 0 2px var(--sd-accent) inset; }
-    .mx .na { color:var(--secondary-text-color); }
-    .mx small { color:var(--secondary-text-color); font-weight:400; font-size:.72rem; }
   }
 `;
 

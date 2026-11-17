@@ -21,7 +21,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "entities", selector: { entity: { multiple: true, ...(found.length ? { include_entities: [...new Set([...found, ...(this._config.entities || [])])] } : { domain: "sensor" }) } } },
       { name: "match", selector: { select: { mode: "dropdown", options: [["word", t.m_word], ["exact", t.m_exact], ["part", t.m_part]].map(([value, label]) => ({ value, label })) } } },
       { name: "default_tab", selector: { select: { mode: "dropdown", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
-      { name: "list_view", selector: { select: { mode: "dropdown", options: [["chips", t.v_chips], ["rows", t.v_rows], ["compact", t.v_compact], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
+      { name: "list_view", selector: { select: { mode: "dropdown", options: [["rows", t.v_rows], ["compact", t.v_compact], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
       b("mine_only"),
       { name: "add_to", selector: { entity: { domain: "todo" } } },
       { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },

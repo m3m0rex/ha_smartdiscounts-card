@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.2] – 2026-11-17
+
+### ⚠️ Removed
+
+- **"Prices side by side"** (`list_view: chips`) is gone from "My list": it looked different on a wide card than on a
+  small one. Three layouts remain – one offer per row (`rows`, the new default), one line per item (`compact`) and the
+  table (`table`). A card that still has `list_view: chips` shows `rows`.
+
+### Fixed
+
+- The tab "All offers" has an icon like the other two.
+- **My list → table:** on a very wide card the columns ran far apart and the lines between the rows were bent at the
+  price cells. The table now grows with the card up to a limit (760 px for the item plus 260 px per store; set your
+  own with `table_max_width` in px, `0` = no limit), the lines run straight through the row and the prices stand
+  right-aligned under their store.
+
 ## [1.0.1] – 2026-11-17
 
 ### Changed

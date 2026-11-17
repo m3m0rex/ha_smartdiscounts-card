@@ -13,7 +13,7 @@ A Home Assistant dashboard card that shows **supermarket offers matched with you
   to the items.
 - **All offers:** one shelf per store with search and category filter – as tiles or as a compact list with
   small images; "＋ Add to list" adds an offer.
-- **Wide cards** (≥ 720 px) show a table of items × stores.
+- **My list** in three layouts: one offer per row, one line per item, or a table with the stores as columns.
 - **Expired offers** on the list are pointed out and can be removed in one go.
 - **Watch list:** products you are waiting to see on offer – with a Home Assistant notification if you like.
 - **Six languages:** German, English, French, Spanish, Italian, Polish – following the language of Home Assistant.
@@ -73,7 +73,8 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
 | `hide_without_offer` | `false` | Hide list items without an offer |
-| `list_view` | `chips` | "My list": `chips` (prices side by side; a table on wide cards), `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
+| `list_view` | `rows` | "My list": `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
+| `table_max_width` | – | "My list" as a table: widest the table gets, in px. Default: 760 plus 260 per store. `0` = no limit, always the full width. |
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
 | `max_per_store` | `10` | Offers per store before "all →" (1–20) |
 | `currency` | `EUR` | ISO currency code for prices |
@@ -94,7 +95,7 @@ list: todo.shopping           # to-do list to match against (optional)
 sources: auto                 # "auto" or a list, see "Sources"
 match: word                   # word | exact | part
 default_tab: list             # list | all | watch
-list_view: chips              # chips | rows | compact | table
+list_view: rows               # rows | compact | table
 all_view: tiles               # tiles | list
 show_images: true             # product images
 show_unit_price: true         # unit price (€/kg, €/l)
@@ -235,12 +236,12 @@ list: todo.shopping
 currency_symbol: "₺"
 ```
 
-**Wide dashboard panel** – with `list_view: chips` a card of 720 px or more shows the table of items × stores:
+**Wide dashboard panel** – the table of items × stores:
 
 ```yaml
 type: custom:smartdiscounts-card
 list: todo.shopping
-list_view: chips
+list_view: table
 grid_options:
   columns: full
 ```
