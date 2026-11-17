@@ -109,5 +109,17 @@
   "e_lview": "Vista de «Mi lista»",
   "v_chips": "Precios lado a lado",
   "v_rows": "una oferta por fila",
-  "e_sources": "Las fuentes se detectan automáticamente. Sensores propios y asignación de campos: en el editor de código, en «sources» (ver README)."
+  "e_sources": "Las fuentes se detectan automáticamente. Sensores propios y asignación de campos: en el editor de código, en «sources» (ver README).",
+  "from": "desde",
+  "w_now": "Ahora",
+  "w_next": "Desde el {date}",
+  "tr_up": "▲ {price} el {date}",
+  "tr_down": "▼ antes {price}",
+  "bk_title": "La compra más barata",
+  "bk_one": "Una tienda",
+  "bk_two": "Dos tiendas",
+  "bk_items": "{n} de {m} artículos en oferta",
+  "bk_saves": "ahorra {sum}",
+  "soon_title": "Pronto en oferta:",
+  "e_trend": "Aviso si una oferta era antes más barata o más cara"
 }

@@ -64,6 +64,35 @@ class SmartDiscountsCard extends HTMLElement {
   _money(v) { if (this._config.currency_symbol) { try { return `${new Intl.NumberFormat(this._hass.language || "de", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v)}\u00a0${this._config.currency_symbol}`; } catch (e) { return `${v.toFixed(2)} ${this._config.currency_symbol}`; } }
     try { return new Intl.NumberFormat(this._hass.language || "de", { style: "currency", currency: this._config.currency || "EUR" }).format(v); } catch (e) { return `${v.toFixed(2)} €`; } }
   _day(d) { const p = String(d || "").split("-"); return p.length === 3 ? `${p[2]}.${p[1]}.` : d || ""; }
+  // „bis 21.11.“, „nur noch heute“ – oder bei Angeboten, die erst später gelten, „ab 23.11.“
+  _valid(o) {
+    const t = this._t;
+    if (!this._config.show_valid_until) return "";
+    if (o.soon) return `${t.from} ${this._day(o.from)}`;
+    return o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : "";
+  }
+  // Preis-Gedächtnis dieses Browsers: Angebote mit ihrem Preis merken; ändert er sich, den alten mit Datum behalten
+  _remember() {
+    this._hints = {};
+    if (this._config.show_price_trend === false) return;
+    const today = new Date().toISOString().slice(0, 10);
+    let seen = {};
+    try { seen = JSON.parse(localStorage.getItem("smartdiscounts-prices") || "{}") || {}; } catch (e) { seen = {}; }
+    const r = rememberPrices(seen, this._all, today);
+    this._hints = r.hints;
+    try { localStorage.setItem("smartdiscounts-prices", JSON.stringify(r.seen)); } catch (e) { /* Speicher voll oder gesperrt: ohne Gedächtnis */ }
+  }
+  // „▲ am 10.11. 0,99 €“ (war billiger) bzw. „▼ zuletzt 1,49 €“ (jetzt billiger)
+  _trendText(o) {
+    const x = this._hints && this._hints[o.id], t = this._t;
+    if (!x) return "";
+    return (x.dir === "up" ? t.tr_up : t.tr_down).replace("{price}", this._money(x.price)).replace("{date}", this._day(x.date));
+  }
+  // kurz unter dem Preis: „▲ 9,99 €“ (war billiger) / „▼ 1,79 €“ (war teurer); der ganze Satz steht im Tooltip
+  _trendEl(o) {
+    const x = this._hints && this._hints[o.id];
+    return x ? h("span", { class: `trend ${x.dir}`, title: this._trendText(o) }, `${x.dir === "up" ? "▲" : "▼"} ${this._money(x.price)}`) : null;
+  }
   _unitLabel(o) { return o.unit ? `${this._money(o.unit.value)}/${o.unit.unit}` : ""; }
   // Grundpreis als eigene Zeile; grün, wenn er unter mehreren Angeboten mit derselben Einheit der niedrigste ist
   _unitEl(o, low) { return this._config.show_unit_price && o.unit ? h("span", { class: `u ${low ? "low" : ""}`, title: low ? this._t.unit_low : null }, h("b", {}, this._money(o.unit.value)), `/${o.unit.unit}`) : null; }
@@ -111,7 +140,11 @@ class SmartDiscountsCard extends HTMLElement {
     const sig = ids.map((e) => (st[e] ? st[e].last_updated || st[e].state : "")).join("|") + "|" + (this._hass.language || "");
     if (!force && sig === this._sig) return;
     this._sig = sig;
-    this._all = this._offers();
+    // „demnächst“ (gilt erst ab einem späteren Tag) getrennt führen: alles Übrige rechnet nur mit dem, was jetzt gilt
+    this._every = this._offers();
+    this._next = this._every.filter((o) => o.soon);
+    this._all = this._every.filter((o) => !o.soon);
+    this._remember();
     await this._loadList();
     this._tellSources();
     await this._loadCats();
@@ -202,11 +235,11 @@ class SmartDiscountsCard extends HTMLElement {
     const go = async () => { const v = input.value; input.value = ""; try { await this._watchAdd(v); } catch (e) { input.value = v; } };
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") go(); });
     const row = (o) => {
-      const sub = [c.show_unit_price ? this._unitLabel(o) : "", c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : ""].filter(Boolean).join(" · ");
+      const sub = [c.show_unit_price ? this._unitLabel(o) : "", this._valid(o)].filter(Boolean).join(" · ");
       return h("div", { class: "lrow", title: o.name },
         c.show_images ? h("div", { class: "thumb", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image ? null : "🏷️") : null,
         h("div", { class: "n" }, o.name, h("small", {}, this._storeBadge(o), sub ? ` ${sub}` : "")),
-        h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null),
+        h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
         this._slot(o));
     };
     const blocks = terms.map((term) => {
@@ -238,10 +271,10 @@ class SmartDiscountsCard extends HTMLElement {
   // Kategorie eines Angebots: mit SmartLists dessen Einkaufs-Kategorien (einheitlich über alle Märkte), sonst die des Sensors
   async _loadCats() {
     // "store": Kategorien des Markts – SmartLists wird nur noch für Angebote gefragt, deren Markt keine brauchbare liefert
-    const need = this._config.category_source === "store" ? this._all.filter((o) => !this._ownCat(o)) : this._all;
+    const need = this._config.category_source === "store" ? this._every.filter((o) => !this._ownCat(o)) : this._every;
     if (!need.length || !(this._hass.config.components || []).includes("smartlists")) { this._catMap = null; return; }
-    if (this._catFor === this._all && this._catLang === this._hass.language) return;  // gleiche Angebote: nicht erneut fragen
-    this._catMap = null; this._catFor = this._all; this._catLang = this._hass.language;
+    if (this._catFor === this._every && this._catLang === this._hass.language) return;  // gleiche Angebote: nicht erneut fragen
+    this._catMap = null; this._catFor = this._every; this._catLang = this._hass.language;
     try {
       const r = await this._hass.callWS({ type: "smartlists/categorize", names: [...new Set(need.map((o) => o.name))], language: this._hass.language });
       const labels = Object.fromEntries((r.categories || []).map((x) => [x.id, x.label]));
@@ -284,7 +317,7 @@ class SmartDiscountsCard extends HTMLElement {
   _storeBadge(o) { return h("span", { class: "store", style: `background:${o.color};${/^#(f|e)[0-9a-f]{5}$/i.test(o.color) ? "color:#1a1a1a" : ""}` }, o.store); }
   _priceChip(item, o, best, low) {
     const t = this._t, c = this._config, sel = this._sel[item.uid] && this._sel[item.uid].id === o.id;
-    const extra = [c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : ""].filter(Boolean).join(" · ");
+    const extra = [this._valid(o), this._trendText(o)].filter(Boolean).join(" · ");
     return h("button", { type: "button", class: `pc ${best ? "best" : ""} ${sel ? "sel" : ""}`, title: o.name, "aria-pressed": String(!!sel),
       onclick: () => { if (sel) delete this._sel[item.uid]; else this._sel[item.uid] = o; this._render(); } },
       h("span", { class: "s" }, h("span", { class: "dot", style: `background:${o.color}` }), o.store, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, best ? h("span", { class: "star", title: t.best }, "★") : null),
@@ -294,7 +327,7 @@ class SmartDiscountsCard extends HTMLElement {
   // „Meine Liste“ als Zeilen: ein Angebot je Zeile mit kleinem Bild, antippen wählt es
   _offerRow(item, o, best, low) {
     const t = this._t, c = this._config, sel = this._sel[item.uid] && this._sel[item.uid].id === o.id;
-    const sub = [c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : ""].filter(Boolean).join(" · ");
+    const sub = [this._valid(o), this._trendText(o)].filter(Boolean).join(" · ");
     return h("button", { type: "button", class: `orow ${sel ? "sel" : ""} ${best ? "best" : ""}`, "aria-pressed": String(!!sel), title: o.name,
       onclick: () => { if (sel) delete this._sel[item.uid]; else this._sel[item.uid] = o; this._render(); } },
       h("span", { class: `radio ${sel ? "on" : ""}` }, sel ? "✓" : ""),
@@ -326,6 +359,20 @@ class SmartDiscountsCard extends HTMLElement {
         cover.map(([s, n]) => { const col = (this._all.find((o) => o.store === s) || {}).color;
           const on = hit.some((r) => r.offers.some((o) => o.store === s)) && hit.every((r) => { const o = r.offers.find((x) => x.store === s); return o ? this._sel[r.it.uid] && this._sel[r.it.uid].id === o.id : !this._sel[r.it.uid]; });
           return h("button", { type: "button", class: `chip ${on ? "on" : ""}`, "aria-pressed": String(!!on), onclick: () => (on ? clear() : choose((r) => r.offers.find((o) => o.store === s))) }, h("span", { class: "dot", style: `background:${col}` }), `${t.only.replace("{store}", s)} · ${n}`); })) : null);
+    // Günstigster Einkauf: ein Markt für möglichst viel – und ob ein zweiter Markt etwas bringt
+    const bb = hit.length > 1 ? bestBasket(hit.map((r) => ({ uid: r.it.uid, offers: r.offers }))) : { one: null, two: null };
+    const isBasket = (b) => b && hit.every((r) => (b.picks[r.it.uid] ? this._sel[r.it.uid] && this._sel[r.it.uid].id === b.picks[r.it.uid].id : !this._sel[r.it.uid]));
+    const basketRow = (b, label) => h("button", { type: "button", class: `bk ${isBasket(b) ? "on" : ""}`, "aria-pressed": String(!!isBasket(b)),
+      onclick: () => (isBasket(b) ? clear() : choose((r) => b.picks[r.it.uid])) },
+      h("span", { class: "bl" }, h("b", {}, label), " ", b.stores.map((s) => this._storeBadge(this._all.find((o) => o.store === s)))),
+      h("span", { class: "bm" }, t.bk_items.replace("{n}", b.count).replace("{m}", hit.length), b.saving ? h("span", { class: "sv" }, " · " + t.bk_saves.replace("{sum}", this._money(b.saving))) : null),
+      h("b", { class: "bs" }, this._money(b.total)));
+    const basket = bb.one && (stores.length > 1 || bb.two) ? h("div", { class: "basket" }, h("div", { class: "bh" }, "🧮 " + t.bk_title),
+      basketRow(bb.one, t.bk_one), bb.two ? basketRow(bb.two, t.bk_two) : null) : null;
+    // demnächst im Angebot (gilt erst ab einem späteren Tag)
+    const soon = this._next.length ? items.map((it) => [it, it.name ? dealsForCached(this._next, it.name, c.match)[0] : null]).filter(([, o]) => o) : [];
+    const soonBox = soon.length ? h("div", { class: "soonbox" }, h("b", {}, "📅 " + t.soon_title), " ",
+      soon.slice(0, 6).map(([it, o], i) => [i ? ", " : "", `${it.name} (${o.store} ${this._money(o.price)}, ${t.from} ${this._day(o.from)})`]), soon.length > 6 ? " …" : "") : null;
     const line = (r) => {
       const { it, offers } = r, sel = this._sel[it.uid];
       if (!offers.length && c.hide_without_offer) return null;
@@ -378,7 +425,7 @@ class SmartDiscountsCard extends HTMLElement {
       h("span", { class: "sp" }), h("button", { type: "button", class: "btn", onclick: () => { this._expLater = true; this._render(); } }, t.exp_later),
       h("button", { type: "button", class: "btn pri", onclick: (e) => this._clearExpired(e.currentTarget) }, t.exp_remove)) : null;
     const ro = this._may("add") && this._may("rename") ? null : h("div", { class: "foot", role: "status" }, "🔒 " + t.read_only);
-    return h("div", {}, ro, expBox, dupBox, plan, mx, h("div", { class: "rows" }, rows.map(line)), sum, this._foot());
+    return h("div", {}, ro, expBox, dupBox, plan, basket, soonBox, mx, h("div", { class: "rows" }, rows.map(line)), sum, this._foot());
   }
   _renderAll(stores) {
     const t = this._t, c = this._config;
@@ -386,7 +433,14 @@ class SmartDiscountsCard extends HTMLElement {
     const names = (this._items || []).map((i) => i.name).filter(Boolean);
     const onList = (o) => names.some((n) => matches(n, o.name, c.match));
     const q = norm(this._query);
-    const shown = this._all.filter((o) => (!q || norm(`${o.name} ${o.brand} ${o.category} ${this._catOf(o)} ${o.store}`).includes(q)) && (!this._cat || this._catOf(o) === this._cat));
+    // gibt es Angebote, die erst später gelten (Prospekt der nächsten Woche)? Dann oben umschaltbar
+    const soonFrom = this._next.length ? this._next.map((o) => o.from).sort()[0] : null;
+    if (!soonFrom) this._when = "now";
+    const pool = this._when === "next" ? this._next : this._all;
+    const whenSel = soonFrom ? h("div", { class: "catbar when" }, [["now", t.w_now, this._all.length], ["next", t.w_next.replace("{date}", this._day(soonFrom)), this._next.length]].map(([v, label, n]) =>
+      h("button", { type: "button", class: `chip ${(this._when || "now") === v ? "on" : ""}`, "aria-pressed": String((this._when || "now") === v),
+        onclick: () => { this._when = v; this._cat = ""; this._render(); } }, label, h("small", {}, ` ${n}`)))) : null;
+    const shown = pool.filter((o) => (!q || norm(`${o.name} ${o.brand} ${o.category} ${this._catOf(o)} ${o.store}`).includes(q)) && (!this._cat || this._catOf(o) === this._cat));
     const search = h("input", { class: "search", type: "search", placeholder: t.search, "aria-label": t.search, value: this._query });
     // Tippen: nicht die ganze Karte neu zeichnen – kurz warten und nur die Treffer unter dem Suchfeld ersetzen
     // (das Feld selbst bleibt stehen, Cursor und Bildschirmtastatur bleiben, wo sie sind)
@@ -403,12 +457,12 @@ class SmartDiscountsCard extends HTMLElement {
     });
     // Kategorien zum Antippen mit Anzahl: die größten zuerst, der Rest hinter „+N mehr“ – umbrechend, kein Scrollbalken
     const catKey = (o) => this._catOf(o);
-    const counts = this._all.reduce((a, o) => { const k = catKey(o); if (k) a[k] = (a[k] || 0) + 1; return a; }, {});
+    const counts = pool.reduce((a, o) => { const k = catKey(o); if (k) a[k] = (a[k] || 0) + 1; return a; }, {});
     const ranked = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
     const FIRST = 5, visible = this._allCats ? ranked : [...new Set([...ranked.slice(0, FIRST), ...(this._cat ? [this._cat] : [])])];
     const cchip = (key, label, n) => h("button", { type: "button", class: `chip ${this._cat === key ? "on" : ""}`, "aria-pressed": String(this._cat === key),
       onclick: () => { this._cat = this._cat === key ? "" : key; this._render(); } }, label, h("small", {}, ` ${n}`));
-    const catSel = ranked.length > 1 ? h("div", { class: "catbar" }, cchip("", t.all, this._all.length), visible.map((k) => cchip(k, k, counts[k])),
+    const catSel = ranked.length > 1 ? h("div", { class: "catbar" }, cchip("", t.all, pool.length), visible.map((k) => cchip(k, k, counts[k])),
       ranked.length > visible.length || this._allCats ? h("button", { type: "button", class: "chip more", onclick: () => { this._allCats = !this._allCats; this._render(); } },
         this._allCats ? t.less : t.more_n.replace("{n}", ranked.length - visible.length)) : null) : null;
     const tile = (o) => {
@@ -418,19 +472,19 @@ class SmartDiscountsCard extends HTMLElement {
         c.show_images ? h("div", { class: "img", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}")` : "background:none" },
           got ? [h("span", { class: "gotck", "aria-hidden": "true" }, "✓"), h("span", { class: "gotn" }, `${got}×`)] : null) : null,
         h("div", { class: "t" }, !c.show_images && got ? h("span", { class: "gott" }, "✓ ") : null, o.name), byCat ? h("div", { class: "x" }, this._storeBadge(o)) : null, h("div", {}, h("b", {}, this._money(o.price)), o.old ? h("s", { style: "margin-left:4px;font-size:.7rem;opacity:.7" }, this._money(o.old)) : null),
-        h("div", { class: "x" }, [c.show_unit_price ? this._unitLabel(o) : "", c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : ""].filter(Boolean).join(" · ") || " "),
+        h("div", { class: "x" }, [c.show_unit_price ? this._unitLabel(o) : "", this._valid(o), this._trendText(o)].filter(Boolean).join(" · ") || " "),
         this._addCtl(o, true));
     };
     // Listen-Darstellung: kleine Bilder, eine Zeile je Angebot
     const row = (o) => {
       const got = this._onListCount(o), mine = !got && onList(o);
-      const sub = [c.show_unit_price ? this._unitLabel(o) : "", c.show_valid_until && o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : "", byCat ? "" : this._ownCat(o)].filter(Boolean).join(" · ");
+      const sub = [c.show_unit_price ? this._unitLabel(o) : "", this._valid(o), byCat ? "" : this._ownCat(o)].filter(Boolean).join(" · ");
       return h("div", { class: `lrow ${got ? "got" : ""}`, title: o.name },
         c.show_images ? h("div", { class: "thumb", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image || got ? null : "🏷️",
           got ? h("span", { class: "gotck", "aria-hidden": "true" }, "✓") : null) : null,
         h("div", { class: "n" }, mine ? h("span", { title: t.on_list }, "📝 ") : null, o.name,
           sub || byCat || got ? h("small", {}, got ? h("b", { class: "gott" }, `✓ ${t.on_n.replace("{n}", got)}${sub || byCat ? " · " : ""}`) : null, byCat ? [this._storeBadge(o), " "] : null, sub) : null),
-        h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null),
+        h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
         this._slot(o));
     };
     const asList = this._view === "list";
@@ -464,7 +518,7 @@ class SmartDiscountsCard extends HTMLElement {
         all.length > lim && !q && !this._cat ? h("button", { type: "button", onclick: () => { if (open) this._open.delete(s); else this._open.add(s); this._render(); } }, open ? t.less : `${t.all} →`) : null),
         asList ? h("div", { class: "lrows" }, list.map(row)) : h("div", { class: `rail ${open || c.tile_flow !== "scroll" ? "open" : ""}` }, list.map(tile)));  // Standard: Raster von oben nach unten; "scroll" = eine Zeile zum Wischen
     });
-    return h("div", {}, h("div", { class: "filters" }, search, this._locked("group_by") ? null : gbtn, this._locked("all_view") ? null : toggle), catSel, shown.length ? shelves : h("div", { class: "msg" }, t.no_hits), this._foot());
+    return h("div", {}, h("div", { class: "filters" }, search, this._locked("group_by") ? null : gbtn, this._locked("all_view") ? null : toggle), whenSel, catSel, shown.length ? shelves : h("div", { class: "msg" }, t.no_hits), this._foot());
   }
   _foot() {
     const ts = this._sources().map((s) => this._hass.states[s.entity].last_updated).filter(Boolean).sort().pop();

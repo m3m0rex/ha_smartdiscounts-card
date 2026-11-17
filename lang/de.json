@@ -109,5 +109,17 @@
   "e_lview": "Darstellung „Meine Liste“",
   "v_chips": "Preise nebeneinander",
   "v_rows": "ein Angebot je Zeile",
-  "e_sources": "Quellen werden automatisch erkannt. Eigene Sensoren und Feld-Zuordnung: im Code-Editor unter „sources“ (siehe README)."
+  "e_sources": "Quellen werden automatisch erkannt. Eigene Sensoren und Feld-Zuordnung: im Code-Editor unter „sources“ (siehe README).",
+  "from": "ab",
+  "w_now": "Jetzt",
+  "w_next": "Ab {date}",
+  "tr_up": "▲ am {date} {price}",
+  "tr_down": "▼ zuletzt {price}",
+  "bk_title": "Günstigster Einkauf",
+  "bk_one": "Ein Markt",
+  "bk_two": "Zwei Märkte",
+  "bk_items": "{n} von {m} Angebots-Artikeln",
+  "bk_saves": "spart {sum}",
+  "soon_title": "Demnächst im Angebot:",
+  "e_trend": "Hinweis, wenn ein Angebot vorher billiger oder teurer war"
 }

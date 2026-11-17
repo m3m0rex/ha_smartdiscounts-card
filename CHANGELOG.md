@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0] – 2026-11-17
+
+### Added
+
+- **Cheapest shopping trip.** "My list" works out which single shop has the most of your items on offer and what
+  that costs – and whether a second shop covers more items or saves money. Tap a line to select those offers.
+- **Offers that start later** (for example next week's leaflet) are kept apart: "All offers" gets a switch
+  "Now / From 23.11.", and "My list" names the items that will be on offer soon. They no longer mix with what is
+  valid today. The start date comes from `valid_from` / `start_date` (field `from` in `map`).
+- **Was it cheaper before?** The card remembers the price of every offer in this browser. When the same product in
+  the same shop comes back at a different price, it shows "▲ 0,99 €" (was cheaper) or "▼ 1,79 €" (was dearer) with
+  the date. Switch it off with `show_price_trend: false`. Nothing leaves the browser.
+
 ## [1.0.2] – 2026-11-17
 
 ### ⚠️ Removed

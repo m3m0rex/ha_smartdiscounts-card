@@ -72,6 +72,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `show_images` | `true` | Produktbilder |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
+| `show_price_trend` | `true` | „▲ 0,99 €“ / „▼ 1,79 €“, wenn dasselbe Produkt im selben Markt vorher billiger oder teurer war. Die Karte merkt sich die Preise nur in diesem Browser. |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
 | `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
 | `table_max_width` | – | „Meine Liste“ als Tabelle: größte Breite der Tabelle in px. Standard: 760 plus 260 je Markt. `0` = keine Grenze, immer die ganze Breite. |
@@ -264,6 +265,7 @@ Die Feldnamen werden automatisch erkannt:
 | `unit` | Grundpreis als Text, z. B. „1 kg = 5,16 €“ – damit werden Märkte verglichen | `price_per_unit`, `base_price`, `unit_price` |
 | `image` | Adresse des Bildes | `picture_link`, `image_url`, `image`, `picture`, `img`, `thumbnail` |
 | `until` | gültig bis (`JJJJ-MM-TT`); abgelaufene Angebote werden ausgeblendet | `valid_until`, `end_date`, `valid_to`, `until` |
+| `from` | Gültig ab (`JJJJ-MM-TT`); Angebote, die erst später gelten, stehen getrennt unter „Ab …“ | `valid_from`, `start_date`, `valid_start`, `from` |
 | `category` | Kategorie für den Filter | `category`, `categories`, `group` |
 | `brand` | Marke (durchsuchbar) | `brand`, `manufacturer` |
 | `store` | Markt dieses einen Angebots (für Sensoren, die mehrere Märkte mischen) | `store`, `market`, `retailer`, `advertiser` |

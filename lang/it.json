@@ -109,5 +109,17 @@
   "e_lview": "Vista «La mia lista»",
   "v_chips": "Prezzi affiancati",
   "v_rows": "un'offerta per riga",
-  "e_sources": "Le fonti vengono riconosciute automaticamente. Sensori propri e mappatura dei campi: nell'editor di codice in «sources» (vedi README)."
+  "e_sources": "Le fonti vengono riconosciute automaticamente. Sensori propri e mappatura dei campi: nell'editor di codice in «sources» (vedi README).",
+  "from": "dal",
+  "w_now": "Adesso",
+  "w_next": "Dal {date}",
+  "tr_up": "▲ {price} il {date}",
+  "tr_down": "▼ prima {price}",
+  "bk_title": "La spesa più conveniente",
+  "bk_one": "Un negozio",
+  "bk_two": "Due negozi",
+  "bk_items": "{n} di {m} voci in offerta",
+  "bk_saves": "risparmi {sum}",
+  "soon_title": "Presto in offerta:",
+  "e_trend": "Avviso se un’offerta prima costava meno o di più"
 }

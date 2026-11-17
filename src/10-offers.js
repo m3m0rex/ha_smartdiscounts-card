@@ -1,11 +1,11 @@
-const DEFAULTS = { list: "", match: "word", default_tab: "list", show_images: true, show_unit_price: true, show_valid_until: true, hide_without_offer: false, max_per_store: 10, all_view: "tiles", list_view: "chips", sources: "auto", group_by: "store", tile_flow: "grid", mine_only: false, add_to: "", category_source: "auto", categories_open: true, watch: [], watch_list: "", notify: false, notify_service: "" };
+const DEFAULTS = { list: "", match: "word", default_tab: "list", show_images: true, show_unit_price: true, show_valid_until: true, show_price_trend: true, hide_without_offer: false, max_per_store: 10, all_view: "tiles", list_view: "chips", sources: "auto", group_by: "store", tile_flow: "grid", mine_only: false, add_to: "", category_source: "auto", categories_open: true, watch: [], watch_list: "", notify: false, notify_service: "" };
 // bekannte Märkte: Erkennung über entity_id / Namen der Quelle, Farbe des Badges
 const STORES = [["rewe", "REWE", "#cc071e"], ["edeka", "EDEKA", "#f5c400"], ["lidl", "Lidl", "#0050aa"], ["aldi_sued", "ALDI Süd", "#00a0e0"], ["aldi_nord", "ALDI Nord", "#1a4d9f"], ["aldi", "ALDI", "#00549f"],
   ["norma", "Norma", "#d40f14"], ["penny", "Penny", "#cd1414"], ["kaufland", "Kaufland", "#e10915"], ["netto", "Netto", "#ffd400"], ["rossmann", "Rossmann", "#c3002d"], ["dm", "dm", "#002878"], ["globus", "Globus", "#f39200"]];
 // Feldnamen der Angebote: der erste vorhandene zählt (je Quelle mit `map:` überschreibbar)
 const FIELDS = { name: ["product", "title", "name", "product_name", "description"], price: ["price", "new_price", "discount_price", "offer_price", "sale_price", "price_euro", "current_price"],
   old_price: ["old_price", "regular_price", "original_price", "was_price", "oldPrice", "base_price_old"], image: ["picture_link", "image_url", "image", "picture", "img", "thumbnail"],
-  until: ["valid_until", "end_date", "valid_to", "until", "valid_through", "validTo"], unit: ["price_per_unit", "base_price", "unit_price", "grundpreis"], category: ["category", "categories", "group"], discount: ["discount", "discount_percent", "savings"], brand: ["brand", "manufacturer"], store: ["store", "market", "retailer", "advertiser"] };
+  until: ["valid_until", "end_date", "valid_to", "until", "valid_through", "validTo"], from: ["valid_from", "start_date", "valid_start", "from", "validFrom", "starts"], unit: ["price_per_unit", "base_price", "unit_price", "grundpreis"], category: ["category", "categories", "group"], discount: ["discount", "discount_percent", "savings"], brand: ["brand", "manufacturer"], store: ["store", "market", "retailer", "advertiser"] };
 const LIST_ATTRS = ["discounts", "offers", "deals", "items", "results", "products"];
 
 const h = (tag, attrs, ...kids) => {
@@ -85,6 +85,9 @@ function collectOffers(hass, cfg) {
       if (!name || price == null) return;
       const unitText = pick(o, "unit"), until = pick(o, "until") ? String(pick(o, "until")).slice(0, 10) : null;
       if (until && /^\d{4}-\d\d-\d\d$/.test(until) && until < today) return;  // abgelaufen
+      // gilt erst ab einem späteren Tag (z. B. das Prospekt der nächsten Woche): als „demnächst“ führen
+      const fromRaw = pick(o, "from") ? String(pick(o, "from")).slice(0, 10) : null;
+      const from = fromRaw && /^\d{4}-\d\d-\d\d$/.test(fromRaw) ? fromRaw : null;
       const st = pick(o, "store");
       const cat = pick(o, "category"), old = num(pick(o, "old_price"));
       // Rabatt: Angabe der Quelle („-44%“) oder aus altem und neuem Preis berechnet
@@ -94,7 +97,7 @@ function collectOffers(hass, cfg) {
       if (twin) { if (!twin.image) twin.image = pick(o, "image"); if (!twin.unit && unitText) { twin.unitText = String(unitText).replace(/ /g, " "); twin.unit = unitPrice(unitText); } if (!twin.category) twin.category = Array.isArray(cat) ? cat[0] : cat || ""; return; }
       out.push({ id: `${src.entity}#${i}`, name: String(name), price, old: old && old > price ? old : null, pct, brand: pick(o, "brand") || "", image: pick(o, "image"), until, today: until === today,
         unitText: unitText ? String(unitText).replace(/ /g, " ") : "", unit: unitPrice(unitText), category: Array.isArray(cat) ? cat[0] : cat || "",
-        store: label, color: store.color, entity: src.entity });
+        store: label, color: store.color, entity: src.entity, from, soon: !!from && from > today });
       seen.set(dk, out[out.length - 1]);
     });
   }
@@ -128,6 +131,56 @@ function dealsForCached(offers, name, mode = "word") {
   const k = `${mode}|${name}`;
   if (!m.has(k)) m.set(k, dealsFor(offers, name, mode));
   return m.get(k);
+}
+// Günstigster Einkauf: Welcher Markt deckt die meisten Artikel der Liste ab und kostet dafür am wenigsten – und lohnt
+// es sich, zwei Märkte anzufahren? rows = [{ uid, offers: [{ id, store, price }] }] (Angebote günstigstes zuerst).
+// Ergebnis: { one, two } mit { stores, count, total, picks: { uid: Angebot } }; two nur, wenn es mehr Artikel abdeckt
+// oder bei gleich vielen billiger ist. „saving“ ist die Ersparnis von two gegenüber one bei den Artikeln, die one hat.
+function bestBasket(rows) {
+  const stores = [...new Set(rows.flatMap((r) => r.offers.map((o) => o.store)))];
+  const basket = (set) => {
+    const picks = {};
+    let total = 0, count = 0;
+    for (const r of rows) {
+      const o = r.offers.filter((x) => set.includes(x.store)).sort((a, b) => a.price - b.price)[0];
+      if (o) { picks[r.uid] = o; total += o.price; count += 1; }
+    }
+    return { stores: [...new Set(Object.values(picks).map((o) => o.store))], count, total: Math.round(total * 100) / 100, picks };
+  };
+  const better = (a, b) => !b || a.count > b.count || (a.count === b.count && a.total < b.total - 0.004);
+  let one = null, two = null;
+  for (const s of stores) { const b = basket([s]); if (b.count && better(b, one)) one = b; }
+  for (let i = 0; i < stores.length; i++) for (let j = i + 1; j < stores.length; j++) {
+    const b = basket([stores[i], stores[j]]);
+    if (b.stores.length === 2 && better(b, two)) two = b;
+  }
+  if (!one || !two || !better(two, one)) return { one, two: null };
+  const same = Object.keys(one.picks).reduce((a, uid) => a + (two.picks[uid] ? two.picks[uid].price : one.picks[uid].price), 0);
+  return { one, two: { ...two, saving: Math.max(0, Math.round((one.total - same) * 100) / 100) } };
+}
+// Preis-Gedächtnis: merkt je Angebot (Markt + Name) den Preis und, wenn er sich ändert, den vorherigen mit Datum.
+// So lässt sich sagen „war am 10.11. billiger“. seen = { key: { p, d, pp?, pd? } }; liefert das neue seen und je
+// Angebot einen Hinweis { dir: "up" | "down", price, date }. Einträge älter als 120 Tage fallen weg.
+function rememberPrices(seen, offers, today) {
+  const next = {}, hints = {};
+  const limit = new Date(new Date(today + "T12:00:00Z").getTime() - 120 * 864e5).toISOString().slice(0, 10);
+  for (const [k, v] of Object.entries(seen || {})) if (v && v.d >= limit) next[k] = v;
+  // zwei Angebote mit demselben Namen im selben Markt (z. B. zwei Packungsgrößen): nicht unterscheidbar, auslassen
+  const twice = new Set(), once = new Set();
+  for (const o of offers) { const k = `${norm(o.store)}|${norm(o.name)}`; (once.has(k) ? twice : once).add(k); }
+  for (const o of offers) {
+    if (o.soon) continue;
+    const k = `${norm(o.store)}|${norm(o.name)}`, was = next[k];
+    if (twice.has(k)) { delete next[k]; continue; }
+    if (!was) { next[k] = { p: o.price, d: today }; continue; }
+    if (Math.abs(was.p - o.price) > 0.004 && was.d < today) next[k] = { p: o.price, d: today, pp: was.p, pd: was.d };
+    else next[k] = { ...was, d: today };
+    const now = next[k];
+    if (now.pp != null && Math.abs(now.pp - now.p) > 0.004) hints[o.id] = { dir: now.pp < now.p ? "up" : "down", price: now.pp, date: now.pd };
+  }
+  const keys = Object.keys(next);
+  if (keys.length > 3000) keys.sort((a, b) => (next[a].d < next[b].d ? -1 : 1)).slice(0, keys.length - 3000).forEach((k) => delete next[k]);
+  return { seen: next, hints };
 }
 const cheaper = (a, b) => (a.unit && b.unit && a.unit.unit === b.unit.unit ? a.unit.value - b.unit.value || a.price - b.price : a.price - b.price);
 // passende Angebote für einen Artikelnamen: je Markt das günstigste, günstigstes zuerst

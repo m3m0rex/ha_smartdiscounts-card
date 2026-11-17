@@ -109,5 +109,17 @@
   "e_lview": "Affichage « Ma liste »",
   "v_chips": "Prix côte à côte",
   "v_rows": "une promo par ligne",
-  "e_sources": "Les sources sont détectées automatiquement. Capteurs personnels et correspondance des champs : dans l'éditeur de code sous « sources » (voir README)."
+  "e_sources": "Les sources sont détectées automatiquement. Capteurs personnels et correspondance des champs : dans l'éditeur de code sous « sources » (voir README).",
+  "from": "dès le",
+  "w_now": "Maintenant",
+  "w_next": "Dès le {date}",
+  "tr_up": "▲ {price} le {date}",
+  "tr_down": "▼ avant {price}",
+  "bk_title": "Courses les moins chères",
+  "bk_one": "Un magasin",
+  "bk_two": "Deux magasins",
+  "bk_items": "{n} articles en promo sur {m}",
+  "bk_saves": "économise {sum}",
+  "soon_title": "Bientôt en promo :",
+  "e_trend": "Indication si une offre était moins chère ou plus chère avant"
 }

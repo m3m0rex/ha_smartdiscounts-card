@@ -131,6 +131,18 @@ const STYLE = `
   .cl.none { opacity:.55; cursor:default; } .cl.none small { color:var(--secondary-text-color); }
   .cl .radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--secondary-text-color); flex:none; display:grid; place-items:center; font-size:.72rem; color:#fff; }
   .cl .radio.on { background:var(--sd-accent); border-color:var(--sd-accent); }
+  /* Günstigster Einkauf und „demnächst im Angebot“ */
+  .basket { margin-top:10px; border:1px solid var(--divider-color,#e0e0e0); border-radius:12px; padding:8px 10px; }
+  .basket .bh { font-weight:700; font-size:.86rem; margin:2px 2px 6px; }
+  .bk { display:flex; align-items:center; gap:10px; width:100%; text-align:left; font:inherit; color:inherit; background:none; border:1px solid transparent; border-radius:10px; padding:7px 8px; cursor:pointer; }
+  .bk:hover { background:var(--secondary-background-color,#f6f6f6); } .bk.on { border-color:var(--sd-accent); background:color-mix(in srgb, var(--sd-accent) 12%, transparent); }
+  .bk .bl { flex:1; min-width:0; display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.86rem; }
+  .bk .bm { color:var(--secondary-text-color); font-size:.76rem; white-space:nowrap; } .bk .sv { color:var(--sd-ok); font-weight:700; }
+  .bk .bs { font-variant-numeric:tabular-nums; min-width:62px; text-align:right; }
+  .soonbox { margin-top:10px; font-size:.8rem; color:var(--secondary-text-color); padding:8px 10px; border-radius:10px; background:var(--secondary-background-color,#f6f6f6); }
+  .soonbox b { color:var(--primary-text-color); }
+  .lrow .pr .trend { display:block; font-size:.68rem; font-weight:600; } .trend.up { color:var(--error-color,#db4437); } .trend.down { color:var(--sd-ok); }
+  .catbar.when { margin-bottom:2px; }
   .foot { color:var(--secondary-text-color); font-size:.72rem; text-align:center; margin-top:10px; }
   .addpick { display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; font-size:.8rem; margin-bottom:6px; color:var(--primary-text-color); }
   .addsel { font:inherit; color:var(--primary-text-color); background:var(--secondary-background-color,#f6f6f6); border:1px solid var(--divider-color,#ddd); border-radius:8px; padding:4px 8px; max-width:100%; }

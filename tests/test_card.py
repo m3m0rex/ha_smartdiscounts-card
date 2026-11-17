@@ -83,3 +83,63 @@ def test_same_offer_from_two_sensors_once(tmp_path):
     } };
     console.log(JSON.stringify(S.offers(hass).map((o) => [o.store, o.name, o.price, o.image || ""])));""")
     assert out == [["REWE", "Bio Bananen", 1.79, "http://x/b.png"], ["REWE", "Broccoli", 0.99, ""], ["REWE", "Broccoli", 0.89, ""]]
+
+
+@NODE
+def test_best_basket_one_and_two_shops(tmp_path):
+    out = _node(tmp_path, """
+const o = (id, store, price) => ({ id, store, price });
+const rows = [
+  { uid: "butter", offers: [o("a", "REWE", 1.29), o("b", "EDEKA", 1.49)] },
+  { uid: "kaffee", offers: [o("c", "EDEKA", 5.49), o("d", "REWE", 5.79)] },
+  { uid: "pils", offers: [o("e", "REWE", 10.99)] },
+  { uid: "pizza", offers: [o("f", "Lidl", 1.79)] },
+];
+const r = S.bestBasket(rows);
+const same = S.bestBasket([{ uid: "x", offers: [o("a", "REWE", 1)] }, { uid: "y", offers: [o("b", "REWE", 2)] }]);
+console.log(JSON.stringify({ one: [r.one.stores, r.one.count, r.one.total], two: [r.two.stores.sort(), r.two.count, r.two.total, r.two.saving],
+  picks: Object.fromEntries(Object.entries(r.two.picks).map(([k, v]) => [k, v.id])), same: [same.one.stores, same.one.total, same.two] }));
+""")
+    assert out["one"] == [["REWE"], 3, 18.07]                       # REWE deckt drei Artikel ab
+    assert out["two"] == [["Lidl", "REWE"], 4, 19.86, 0]            # mit Lidl dazu vier – mehr Artikel, keine Ersparnis
+    assert out["picks"] == {"butter": "a", "kaffee": "d", "pils": "e", "pizza": "f"}
+    assert out["same"] == [["REWE"], 3, None]                        # ein Markt reicht: kein Vorschlag für zwei
+
+
+@NODE
+def test_two_shops_save_money_for_the_same_items(tmp_path):
+    out = _node(tmp_path, """
+const o = (id, store, price) => ({ id, store, price });
+const r = S.bestBasket([
+  { uid: "a", offers: [o("1", "REWE", 2.00), o("2", "Lidl", 1.00)] },
+  { uid: "b", offers: [o("3", "REWE", 1.00), o("4", "Lidl", 3.00)] },
+]);
+console.log(JSON.stringify([r.one.total, r.two.total, r.two.saving]));
+""")
+    assert out == [3.0, 2.0, 1.0]
+
+
+@NODE
+def test_price_memory_tells_what_an_offer_cost_before(tmp_path):
+    out = _node(tmp_path, """
+const offer = (price, extra = {}) => ({ id: "x", store: "REWE", name: "Butter", price, ...extra });
+let r = S.rememberPrices({}, [offer(0.99)], "2026-11-10");
+const first = Object.keys(r.hints).length;
+r = S.rememberPrices(r.seen, [offer(0.99)], "2026-11-12");
+const still = Object.keys(r.hints).length;
+r = S.rememberPrices(r.seen, [offer(1.29)], "2026-11-17");
+const up = r.hints.x;
+r = S.rememberPrices(r.seen, [offer(1.29)], "2026-11-18");
+const stays = r.hints.x;
+r = S.rememberPrices(r.seen, [offer(1.09)], "2026-11-24");
+const down = r.hints.x;
+const twice = S.rememberPrices({}, [offer(1), { ...offer(2), id: "y" }], "2026-11-10");
+const soon = S.rememberPrices({}, [offer(1, { soon: true })], "2026-11-10");
+const old = S.rememberPrices({ "rewe|alt": { p: 1, d: "2026-01-01" } }, [], "2026-11-10");
+console.log(JSON.stringify({ first, still, up, stays, down, twice: Object.keys(twice.seen).length, soon: Object.keys(soon.seen).length, old: Object.keys(old.seen).length }));
+""")
+    assert out["first"] == 0 and out["still"] == 0
+    assert out["up"] == {"dir": "up", "price": 0.99, "date": "2026-11-12"}      # war billiger – zuletzt am 12.11. gesehen
+    assert out["stays"] == out["up"]                                            # der Hinweis bleibt, solange der Preis so ist
+    assert out["down"] == {"dir": "down", "price": 1.29, "date": "2026-11-18"}
+    assert out["twice"] == 0 and out["soon"] == 0 and out["old"] == 0

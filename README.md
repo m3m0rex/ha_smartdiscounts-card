@@ -72,6 +72,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `show_images` | `true` | Product images |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
+| `show_price_trend` | `true` | "▲ 0,99 €" / "▼ 1,79 €" when the same product in the same shop was cheaper or dearer before. The card remembers prices in this browser only. |
 | `hide_without_offer` | `false` | Hide list items without an offer |
 | `list_view` | `rows` | "My list": `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
 | `table_max_width` | – | "My list" as a table: widest the table gets, in px. Default: 760 plus 260 per store. `0` = no limit, always the full width. |
@@ -264,6 +265,7 @@ Field names are recognised automatically:
 | `unit` | Unit price text, e.g. "1 kg = 5,16 €" – used to compare stores | `price_per_unit`, `base_price`, `unit_price` |
 | `image` | Image URL | `picture_link`, `image_url`, `image`, `picture`, `img`, `thumbnail` |
 | `until` | Valid until (`YYYY-MM-DD`); expired offers are hidden | `valid_until`, `end_date`, `valid_to`, `until` |
+| `from` | Valid from (`YYYY-MM-DD`); offers that start later are shown apart as "From …" | `valid_from`, `start_date`, `valid_start`, `from` |
 | `category` | Category for the filter | `category`, `categories`, `group` |
 | `brand` | Brand (searchable) | `brand`, `manufacturer` |
 | `store` | Store of this single offer (for sensors that mix several stores) | `store`, `market`, `retailer`, `advertiser` |

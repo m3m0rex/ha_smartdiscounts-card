@@ -109,5 +109,17 @@
   "e_lview": "\"My list\" layout",
   "v_chips": "Prices side by side",
   "v_rows": "One offer per row",
-  "e_sources": "Sources are detected automatically. Own sensors and field mapping: in the code editor under \"sources\" (see README)."
+  "e_sources": "Sources are detected automatically. Own sensors and field mapping: in the code editor under \"sources\" (see README).",
+  "from": "from",
+  "w_now": "Now",
+  "w_next": "From {date}",
+  "tr_up": "▲ {price} on {date}",
+  "tr_down": "▼ was {price}",
+  "bk_title": "Cheapest shopping trip",
+  "bk_one": "One shop",
+  "bk_two": "Two shops",
+  "bk_items": "{n} of {m} items on offer",
+  "bk_saves": "saves {sum}",
+  "soon_title": "On offer soon:",
+  "e_trend": "Hint when an offer was cheaper or dearer before"
 }

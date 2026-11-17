@@ -109,5 +109,17 @@
   "e_lview": "Widok „Moja lista”",
   "v_chips": "Ceny obok siebie",
   "v_rows": "jedna promocja w wierszu",
-  "e_sources": "Źródła są wykrywane automatycznie. Własne sensory i mapowanie pól: w edytorze kodu w „sources” (zob. README)."
+  "e_sources": "Źródła są wykrywane automatycznie. Własne sensory i mapowanie pól: w edytorze kodu w „sources” (zob. README).",
+  "from": "od",
+  "w_now": "Teraz",
+  "w_next": "Od {date}",
+  "tr_up": "▲ {price} dnia {date}",
+  "tr_down": "▼ wcześniej {price}",
+  "bk_title": "Najtańsze zakupy",
+  "bk_one": "Jeden sklep",
+  "bk_two": "Dwa sklepy",
+  "bk_items": "{n} z {m} pozycji w ofercie",
+  "bk_saves": "oszczędzasz {sum}",
+  "soon_title": "Wkrótce w ofercie:",
+  "e_trend": "Wskazówka, gdy oferta była wcześniej tańsza lub droższa"
 }
