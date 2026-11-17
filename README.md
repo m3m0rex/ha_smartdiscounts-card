@@ -1,4 +1,6 @@
-# SmartDiscounts Card
+# SmartDiscounts
+
+*Dashboard card for Home Assistant*
 
 [![Version](https://img.shields.io/github/v/release/m3m0rex/ha_smartdiscounts-card?label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartdiscounts-card/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartdiscounts-card/blob/main/LICENSE)
 
@@ -28,7 +30,7 @@ Try the real card with sample data: **[ha-smartlists.com → Discounts Card](htt
 ## Installation
 
 **HACS:** add `https://github.com/m3m0rex/ha_smartdiscounts-card` as a custom repository (type *Dashboard*),
-install "SmartDiscounts Card" and reload the browser.
+install "SmartDiscounts" and reload the browser.
 
 Requires Home Assistant 2024.9 or newer.
 
@@ -376,6 +378,8 @@ One file per language in `lang/` (`de.json` is the reference, `en.json` the fall
 are welcome as pull requests. The card is built from the parts in `src/`: `python3 scripts/build.py` writes
 `dist/ha_smartdiscounts-card.js`; `python3 -m pytest tests` runs the tests. Changes are listed in
 [CHANGELOG.md](CHANGELOG.md).
+
+SmartDiscounts is not an official product of Home Assistant or the Open Home Foundation.
 
 ## License
 

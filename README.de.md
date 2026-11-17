@@ -1,4 +1,6 @@
-# SmartDiscounts Card
+# SmartDiscounts
+
+*Dashboard-Karte für Home Assistant*
 
 [![Version](https://img.shields.io/github/v/release/m3m0rex/ha_smartdiscounts-card?label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartdiscounts-card/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartdiscounts-card/blob/main/LICENSE)
 
@@ -28,7 +30,7 @@ Die echte Karte mit Beispieldaten zum Ausprobieren: **[ha-smartlists.com → Dis
 ## Installation
 
 **HACS:** `https://github.com/m3m0rex/ha_smartdiscounts-card` als benutzerdefiniertes Repository hinzufügen
-(Typ *Dashboard*), „SmartDiscounts Card“ installieren und den Browser neu laden.
+(Typ *Dashboard*), „SmartDiscounts“ installieren und den Browser neu laden.
 
 Voraussetzung: Home Assistant 2024.9 oder neuer.
 
@@ -378,6 +380,8 @@ Je Sprache eine Datei in `lang/` (`de.json` ist die Vorlage, `en.json` der Ersat
 und neue Sprachen gern als Pull Request. Die Karte entsteht aus den Teilen in `src/`: `python3 scripts/build.py` schreibt
 `dist/ha_smartdiscounts-card.js`; `python3 -m pytest tests` startet die Tests. Änderungen stehen im
 [CHANGELOG.md](CHANGELOG.md).
+
+SmartDiscounts ist kein offizielles Produkt von Home Assistant oder der Open Home Foundation.
 
 ## Lizenz
 
