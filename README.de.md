@@ -387,3 +387,7 @@ SmartDiscounts ist kein offizielles Produkt von Home Assistant oder der Open Hom
 ## Lizenz
 
 MIT
+
+## Impressum
+
+[Impressum](https://ha-smartlists.com/impressum/) · [Datenschutzerklärung](https://ha-smartlists.com/datenschutz/)

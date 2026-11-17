@@ -385,3 +385,7 @@ SmartDiscounts is not an official product of Home Assistant or the Open Home Fou
 ## License
 
 MIT
+
+## Legal notice
+
+[Legal notice (Impressum)](https://ha-smartlists.com/en/legal-notice/) · [Privacy policy](https://ha-smartlists.com/en/privacy/)
