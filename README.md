@@ -1,6 +1,6 @@
 # SmartDiscounts Card
 
-[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fm3m0rex%2Fha_smartlists%2Fmain%2Fcustom_components%2Fsmartlists%2Fmanifest.json&query=%24.version&label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartlists/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartlists/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/m3m0rex/ha_smartdiscounts-card?label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartdiscounts-card/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartdiscounts-card/blob/main/LICENSE)
 
 **English** · [Deutsch](README.de.md)
 
@@ -35,7 +35,12 @@ Requires Home Assistant 2024.9 or newer.
 **Manual:** copy `dist/ha_smartdiscounts-card.js` to `config/www/` and add `/local/ha_smartdiscounts-card.js`
 as a dashboard resource (JavaScript module).
 
-If SmartLists 4.0 or newer is installed, the card is already included – no separate installation needed.
+The card works with and without [SmartLists](https://github.com/m3m0rex/ha_smartlists). Since SmartLists 4.0.0-beta.7
+SmartLists no longer ships it – it is installed only from here and has its own version number.
+
+**Coming from an older SmartLists beta:** install the card through HACS as above and reload the browser. Your
+configuration stays valid. Removed: `show_list_tab` (now `tabs`), `notify_service` (now `notify_targets`) and `compact`
+(now `list_view: compact`).
 
 ## Configuration
 
@@ -58,10 +63,11 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `group_by` | `store` | Group "All offers" by `store` or by `category`; 🗂️ in the card switches |
 | `categories_open` | `true` | Categories expanded; `false` = start folded |
 | `category_source` | `auto` | `auto`: categories from SmartLists, otherwise from the store · `store`: always the store's own |
+| `category_map` | – | Link store categories to your own, e.g. `{ Dairy: Chilled, Store: "" }` (empty = no category) – clickable in the editor |
+| `locked` | – | Fix the view: whatever is listed cannot be switched inside the card – `[list_view, all_view, group_by, add_to]` or `true` for everything |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
 | `default_tab` | `list` | `list`, `all` or `watch` |
 | `show_images` | `true` | Product images |
-| `compact` | `false` | Compact rows |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
 | `hide_without_offer` | `false` | Hide list items without an offer |
@@ -89,7 +95,6 @@ default_tab: list             # list | all | watch
 list_view: chips              # chips | rows | compact | table
 all_view: tiles               # tiles | list
 show_images: true             # product images
-compact: false                # compact rows
 show_unit_price: true         # unit price (€/kg, €/l)
 show_valid_until: true        # "until 21.11."
 hide_without_offer: false     # hide list items without an offer
@@ -127,7 +132,6 @@ type: custom:smartdiscounts-card
 list: todo.shopping
 list_view: rows
 all_view: list
-compact: true
 ```
 
 **Text only, no images** (saves mobile data):
@@ -365,6 +369,13 @@ recommend the integrations by [FaserF](https://github.com/FaserF) – many thank
 | 🔴 | *[ha-penny](https://github.com/FaserF/ha-penny)* | *PENNY: digital receipts (eBons) and loyalty points – no flyer offers so far* |
 
 The card is an independent project and not affiliated with FaserF or the stores mentioned.
+
+## Translations and development
+
+One file per language in `lang/` (`de.json` is the reference, `en.json` the fallback) – corrections and new languages
+are welcome as pull requests. The card is built from the parts in `src/`: `python3 scripts/build.py` writes
+`dist/ha_smartdiscounts-card.js`; `python3 -m pytest tests` runs the tests. Changes are listed in
+[CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

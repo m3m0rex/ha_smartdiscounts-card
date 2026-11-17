@@ -1,6 +1,6 @@
 # SmartDiscounts Card
 
-[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fm3m0rex%2Fha_smartlists%2Fmain%2Fcustom_components%2Fsmartlists%2Fmanifest.json&query=%24.version&label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartlists/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartlists/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/m3m0rex/ha_smartdiscounts-card?label=version&color=41BDF5)](https://github.com/m3m0rex/ha_smartdiscounts-card/releases) [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/m3m0rex/ha_smartdiscounts-card/blob/main/LICENSE)
 
 [English](README.md) · **Deutsch**
 
@@ -35,7 +35,12 @@ Voraussetzung: Home Assistant 2024.9 oder neuer.
 **Manuell:** `dist/ha_smartdiscounts-card.js` nach `config/www/` kopieren und `/local/ha_smartdiscounts-card.js`
 als Dashboard-Ressource (JavaScript-Modul) eintragen.
 
-Ist SmartLists 4.0 oder neuer installiert, ist die Karte schon dabei – keine eigene Installation nötig.
+Die Karte läuft mit und ohne [SmartLists](https://github.com/m3m0rex/ha_smartlists). Seit SmartLists 4.0.0-beta.7 bringt
+SmartLists sie nicht mehr mit – sie wird nur noch hier installiert und hat ihre eigene Versionsnummer.
+
+**Von einer älteren SmartLists-Beta kommend:** Karte wie oben über HACS installieren und den Browser neu laden. Die
+Konfiguration bleibt gültig. Entfallen sind `show_list_tab` (jetzt `tabs`), `notify_service` (jetzt `notify_targets`) und
+`compact` (jetzt `list_view: compact`).
 
 ## Konfiguration
 
@@ -58,10 +63,11 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `group_by` | `store` | „Alle Angebote“ nach `store` (Markt) oder `category` (Kategorie) einsortieren; 🗂️ in der Karte schaltet um |
 | `categories_open` | `true` | Kategorien ausgeklappt; `false` = zugeklappt starten |
 | `category_source` | `auto` | `auto`: Kategorien von SmartLists, sonst vom Markt · `store`: immer die des Markts |
+| `category_map` | – | Markt-Kategorien mit eigenen verknüpfen, z. B. `{ Molkereiprodukte: Kühlung, Store: "" }` (leer = keine Kategorie) – im Editor zum Anklicken |
+| `locked` | – | Ansicht festlegen: was hier steht, lässt sich in der Karte nicht umschalten – `[list_view, all_view, group_by, add_to]` oder `true` für alles |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
 | `default_tab` | `list` | `list`, `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
-| `compact` | `false` | kompakte Zeilen |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
@@ -89,7 +95,6 @@ default_tab: list             # list | all | watch
 list_view: chips              # chips | rows | compact | table
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder
-compact: false                # kompakte Zeilen
 show_unit_price: true         # Grundpreis (€/kg, €/l)
 show_valid_until: true        # „bis 21.11.“
 hide_without_offer: false     # Artikel ohne Angebot ausblenden
@@ -127,7 +132,6 @@ type: custom:smartdiscounts-card
 list: todo.einkauf
 list_view: rows
 all_view: list
-compact: true
 ```
 
 **Nur Text, keine Bilder** (spart mobile Daten):
@@ -367,6 +371,13 @@ empfehlen wir die Integrationen von [FaserF](https://github.com/FaserF) – viel
 | 🔴 | *[ha-penny](https://github.com/FaserF/ha-penny)* | *PENNY: digitale Kassenbons (eBons) und Treuepunkte – bisher ohne Prospekt-Angebote* |
 
 Die Karte ist ein eigenständiges Projekt und nicht mit FaserF oder den genannten Märkten verbunden.
+
+## Übersetzungen und Entwicklung
+
+Je Sprache eine Datei in `lang/` (`de.json` ist die Vorlage, `en.json` der Ersatz für fehlende Einträge) – Korrekturen
+und neue Sprachen gern als Pull Request. Die Karte entsteht aus den Teilen in `src/`: `python3 scripts/build.py` schreibt
+`dist/ha_smartdiscounts-card.js`; `python3 -m pytest tests` startet die Tests. Änderungen stehen im
+[CHANGELOG.md](CHANGELOG.md).
 
 ## Lizenz
 
