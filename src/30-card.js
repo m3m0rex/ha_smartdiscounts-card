@@ -184,9 +184,15 @@ class SmartDiscountsCard extends HTMLElement {
         const r = await this._hass.callWS({ type: "smartlists/watch", ...this._wl() });
         this._watchItems = (r.names || []).map((name) => ({ name }));
         this._watchLists = Array.isArray(r.lists) ? r.lists : null; this._watchSel = r.list || null; this._watchDefault = r.default || null;
+        this._watchErr = "";
+        await this._adoptLocalWatch();
         return;
       }
-      catch (e) { this._watchSmart = false; }  // ältere SmartLists-Version: wie ohne
+      catch (e) {
+        if (e && e.code === "unknown_command") this._watchSmart = false;  // SmartLists-Version ohne Merkliste: wie ohne
+        // SmartLists ist da, antwortet aber gerade nicht: nichts still auf dem Gerät ablegen, sondern den Fehler zeigen
+        else { this._watchErr = (e && e.message) || this._t.error || "Error"; this._watchItems = this._watchItems || []; return; }
+      }
     }
     if (this._watchShared) {
       try {
@@ -200,6 +206,24 @@ class SmartDiscountsCard extends HTMLElement {
     }
   }
   _wl() { return this._watchSel ? { list: this._watchSel } : {}; }
+  // Was früher nur in diesem Browser lag, zieht einmal in die Merkliste in Home Assistant um – erst danach wird es hier entfernt
+  async _adoptLocalWatch() {
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem("smartdiscounts-watch") || "[]"); } catch (e) { return; }
+    local = (Array.isArray(local) ? local : []).filter((x) => typeof x === "string" && x.trim());
+    if (!local.length) return;
+    const have = new Set((this._watchItems || []).map((x) => norm(x.name)));
+    const fresh = local.filter((n) => !have.has(norm(n)) && have.add(norm(n)));
+    try {
+      if (fresh.length) {
+        const r = await this._hass.callWS({ type: "smartlists/watch_set", names: [...(this._watchItems || []).map((x) => x.name), ...fresh], ...this._wl() });
+        this._watchItems = (r.names || []).map((name) => ({ name }));
+        if (Array.isArray(r.lists)) this._watchLists = r.lists;
+        this._watchAdopted = fresh.length;
+      }
+      localStorage.removeItem("smartdiscounts-watch");
+    } catch (e) { /* bleibt auf dem Gerät, nächster Versuch beim nächsten Laden */ }
+  }
   // Eigene Merklisten verwalten (nur mit SmartLists): anlegen, umbenennen, Standard, löschen
   async _watchListCmd(patch) {
     this._wlErr = "";
@@ -231,6 +255,14 @@ class SmartDiscountsCard extends HTMLElement {
       this._watchSel === this._watchDefault ? null : b("★", t.wl_default, () => this._watchListCmd({ make_default: true })),
       lists.length < 2 ? null : b(this._wlSure ? t.wl_delete_sure : "🗑", t.wl_delete, () => { if (this._wlSure) this._watchListCmd({ delete_list: true }); else { this._wlSure = true; this._render(); } }, this._wlSure ? "btn pri" : "btn")), err);
   }
+  // Wo die Merkliste liegt – und, wenn Home Assistant sie gerade nicht liefert, der Fehler mit „Erneut versuchen“
+  _watchNote() {
+    const t = this._t;
+    if (this._watchSmart && this._watchErr) return h("div", { class: "msg", role: "alert", style: "text-align:left;color:var(--error-color,#db4437)" },
+      `${t.w_err} (${this._watchErr}) `, h("button", { type: "button", class: "btn", onclick: () => { this._sig = null; this._refresh(true); } }, t.w_retry));
+    if (this._watchSmart) return h("div", { class: "foot" }, this._watchAdopted ? `${t.w_adopted.replace("{n}", this._watchAdopted)} ` : "", t.w_ha);
+    return this._watchShared ? null : h("div", { class: "foot" }, t.w_local);
+  }
   _watchTerms() {
     const fixed = (Array.isArray(this._config.watch) ? this._config.watch : [this._config.watch]).filter((x) => typeof x === "string" && x.trim()).map((name) => ({ name: name.trim(), fixed: true }));
     const seen = new Set(fixed.map((x) => norm(x.name)));
@@ -239,13 +271,13 @@ class SmartDiscountsCard extends HTMLElement {
   async _watchAdd(name) {
     name = String(name || "").trim();
     if (!name || this._watchTerms().some((x) => norm(x.name) === norm(name))) return;
-    if (this._watchSmart) await this._hass.callWS({ type: "smartlists/watch_set", add: name, ...this._wl() });
+    if (this._watchSmart) { try { await this._hass.callWS({ type: "smartlists/watch_set", add: name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
     else if (this._watchShared) await this._hass.callService("todo", "add_item", { item: name }, { entity_id: this._config.watch_list });
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify([...(this._watchItems || []).map((x) => x.name), name])); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
   }
   async _watchRemove(term) {
-    if (this._watchSmart) await this._hass.callWS({ type: "smartlists/watch_set", remove: term.name, ...this._wl() });
+    if (this._watchSmart) { try { await this._hass.callWS({ type: "smartlists/watch_set", remove: term.name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
     else if (this._watchShared && term.uid) await this._hass.callService("todo", "remove_item", { item: term.uid }, { entity_id: this._config.watch_list });
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify((this._watchItems || []).map((x) => x.name).filter((n) => n !== term.name))); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
@@ -306,7 +338,7 @@ class SmartDiscountsCard extends HTMLElement {
         offers.length ? h("div", { class: "lrows" }, offers.map(row)) : null);
     });
     return h("div", {}, this._watchListBar(), h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: go }, t.w_add_btn)),
-      terms.length ? blocks : h("div", { class: "msg" }, t.w_empty), this._watchShared || this._watchSmart ? null : h("div", { class: "foot" }, t.w_local), this._foot());
+      terms.length ? blocks : h("div", { class: "msg" }, t.w_empty), this._watchNote(), this._foot());
   }
   _matchesFor(item) { return item.name ? dealsForCached(this._all, item.name, this._config.match) : []; }
   _attached(item) { return /[⚙⚙]️?\s*OFFER\s*:|🏷️/.test(item.note || ""); }

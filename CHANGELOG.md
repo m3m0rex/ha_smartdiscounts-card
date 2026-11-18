@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.1] – 2026-11-18
+
+### Fixed
+
+- **The watch list could silently end up "on this device"** although SmartLists was installed: when Home Assistant
+  did not answer the request, the card fell back to the browser without saying so. With SmartLists the watch list is
+  now always kept in Home Assistant. If it cannot be loaded, the card says so and offers "Try again" – nothing is
+  written to the device. Products that were stored in the browser before move into your watch list in Home Assistant
+  once, and the tab now says where the list is kept.
+
 ## [1.3.0] – 2026-11-18
 
 ### Added
