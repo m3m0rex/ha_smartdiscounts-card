@@ -15,13 +15,19 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
 - **Meine Liste** in drei Darstellungen: ein Angebot je Zeile, eine Zeile je Artikel oder eine Tabelle mit den Märkten als Spalten.
 - **Abgelaufene Angebote** auf der Liste werden angezeigt und lassen sich auf einmal entfernen.
-- **Merkliste:** Produkte, bei denen du auf ein Angebot wartest – auf Wunsch mit Benachrichtigung in Home Assistant.
+- **Günstigster Einkauf:** ein Markt für möglichst viel – und ob sich zwei, drei oder mehr Märkte lohnen. Verglichen
+  wird nach Preis je Kilo oder Liter: Eine größere Packung, die pro Liter günstiger ist, gewinnt, und die Ersparnis
+  wird angezeigt.
+- **Bonus-Angebote** (z. B. REWE Bonus) sind als „nur mit der Bonus-App“ gekennzeichnet; auf Wunsch werden die Preise
+  mit abgezogenem Bonus verglichen.
+- **Merkliste:** Produkte, bei denen du auf ein Angebot wartest – auf Wunsch mit Benachrichtigung. Mit SmartLists hat
+  jeder Benutzer eigene Merklisten, gespeichert in Home Assistant.
 - **Sechs Sprachen:** Deutsch, Englisch, Französisch, Spanisch, Italienisch, Polnisch – nach der Sprache von Home Assistant.
 - Läuft **eigenständig** – nötig sind nur Angebots-Sensoren und (optional) eine To-do-Liste. Mit
   [SmartLists](https://github.com/m3m0rex/ha_smartlists) erscheint das gewählte Angebot als Badge am Artikel.
 
-> Dieses Repository wird bei jedem Release automatisch aus [ha_smartlists](https://github.com/m3m0rex/ha_smartlists)
-> befüllt. Fehler und Wünsche bitte dort melden.
+> SmartDiscounts hat ein eigenes Repository und eigene Releases – unabhängig von SmartLists. Fehler und Wünsche
+> bitte hier melden.
 
 ## Live-Demo
 
@@ -74,6 +80,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `show_valid_until` | `true` | „bis 21.11.“ |
 | `show_price_trend` | `true` | „▲ 0,99 €“ / „▼ 1,79 €“, wenn dasselbe Produkt im selben Markt vorher billiger oder teurer war. Mit SmartLists (ab 4.0.0-beta.13) werden die Preise in Home Assistant gemerkt – in jedem Browser gleich; ohne SmartLists nur in diesem Browser. |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
+| `use_bonus` | `false` | „Ich nutze Bonusprogramme“: Bonus-Angebote zum Preis nach Abzug des Guthabens vergleichen – echter Preis vorn, Bonus-Preis in Klammern |
 | `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
 | `table_max_width` | – | „Meine Liste“ als Tabelle: größte Breite der Tabelle in px. Standard: 760 plus 260 je Markt. `0` = keine Grenze, immer die ganze Breite. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
@@ -81,8 +88,8 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `currency` | `EUR` | ISO-Code der Währung |
 | `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
 | `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Schokocreme]` |
-| `watch_list` | – | Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar |
-| `notify` | `false` | Benachrichtigung in Home Assistant, wenn etwas von der Merkliste neu im Angebot ist |
+| `watch_list` | – | Nur **ohne** SmartLists: Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar. Mit SmartLists wird sie nicht benutzt (siehe unten). |
+| `notify` | `false` | Nur **ohne** SmartLists: Benachrichtigung, wenn etwas von der Merkliste neu im Angebot ist (mit SmartLists meldet SmartLists) |
 | `notify_targets` | – | Zusätzlich an diese Ziele senden – im Editor auswählbar, z. B. `[notify.mobile_app_pixel]` (mehrere möglich) |
 
 ### Alle Optionen in einer Konfiguration
@@ -102,6 +109,7 @@ show_images: true             # Produktbilder
 show_unit_price: true         # Grundpreis (€/kg, €/l)
 show_valid_until: true        # „bis 21.11.“
 hide_without_offer: false     # Artikel ohne Angebot ausblenden
+use_bonus: false              # Bonus-Angebote zum Preis nach Abzug des Guthabens vergleichen
 max_per_store: 10             # Angebote je Markt, bevor „alle →“ erscheint
 currency: EUR                 # ISO-Code der Währung
 currency_symbol: "₺"          # eigenes Symbol statt currency (optional)
@@ -309,18 +317,22 @@ Der Markt kommt aus `store:`, aus einem Feld `store` des Angebots oder aus dem N
 Im Reiter **⭐ Merkliste** stehen Produkte, bei denen du auf ein Angebot wartest. Zu jedem siehst du die aktuellen
 Angebote; die Zahl am Reiter zeigt, wie viele gemerkte Produkte gerade im Angebot sind.
 
-Woher die Merkliste kommt:
+Wo die Merkliste gespeichert ist:
 
-- `watch:` – feste Produkte in der Konfiguration.
-- `watch_list:` – eine To-do-Liste von Home Assistant. Sie gilt auf allen Geräten und lässt sich in der Karte
-  ergänzen und kürzen.
-- **Mit SmartLists** (ab 4.0.0-beta.2) nutzt die Karte ohne `watch_list` die Merkliste des Haushalts: Sie gilt auf allen
-  Geräten, und Home Assistant meldet neue Angebote auch ohne geöffnetes Dashboard (Einstellungen → Preise & Währung).
-- Ohne SmartLists und ohne `watch_list` speichert die Karte, was du im Reiter einträgst, **nur auf diesem Gerät**.
+- **Mit SmartLists** (ab 4.0.0-beta.14) hat jeder Benutzer von Home Assistant **eigene** Merklisten – eine Datei je
+  Benutzer in Home Assistant (`.storage/smartlists/watch/<Benutzer>`), in jedem Browser und auf jedem Gerät gleich.
+  Weitere Merklisten legt jeder in der Karte an („Neue Merkliste“), ohne Admin-Rechte; „Alle Merklisten“ zeigt alles
+  des Benutzers zusammen. Andere Benutzer sehen sie nie, und sie tauchen in keiner Einkaufsliste und keiner
+  kombinierten Liste auf. `watch_list:` wird dann nicht benutzt – ist noch eine eingetragen, bietet die Karte an,
+  ihre offenen Einträge einmal zu übernehmen. SmartLists prüft auch ohne geöffnetes Dashboard auf neue Angebote;
+  seine Ziele wählt jeder Benutzer selbst in den SmartLists-Einstellungen (Global → Preise & Währung → Merkliste).
+  Das Ziel „In Home Assistant“ sieht der ganze Haushalt, deshalb können es nur Admins wählen.
+- **Ohne SmartLists:** `watch:` – feste Produkte in der Konfiguration; `watch_list:` – eine To-do-Liste von Home
+  Assistant, auf allen Geräten gleich; ohne beides speichert die Karte, was du einträgst, **nur in diesem Browser**.
 
-Mit `notify: true` legt die Karte eine Benachrichtigung in Home Assistant an, sobald ein gemerktes Produkt neu im
-Angebot ist; `notify_targets` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät nur einmal
-gemeldet.
+Mit `notify: true` (nur ohne SmartLists) legt die Karte eine Benachrichtigung in Home Assistant an, sobald ein gemerktes
+Produkt neu im Angebot ist; `notify_targets` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät
+nur einmal gemeldet.
 
 > **Wichtig:** Die Prüfung läuft in der Karte. Gemeldet wird also, wenn ein Dashboard mit der Karte geöffnet ist
 > (z. B. auf einem Wand-Tablet). Soll Home Assistant auch ohne offenes Dashboard melden, nimm eine Automation:
@@ -345,6 +357,18 @@ automation:
                | selectattr('product', 'search', 'kaffee', ignorecase=true)
                | map(attribute='product') | join(', ') }}
 ```
+
+## Was wo gespeichert wird
+
+| Was | Mit SmartLists | Ohne SmartLists |
+|---|---|---|
+| Merklisten | Eine Datei je Benutzer in Home Assistant (`.storage/smartlists/watch/`) | To-do-Liste aus `watch_list`, sonst dieser Browser |
+| Preisverlauf („▲ / ▼“) | In Home Assistant, für alle gleich; alte Einträge fallen nach Ende des Angebots weg | Nur dieser Browser |
+| Gewählte Ansicht (Reiter, Darstellung, offene Kategorien) | Je Karte, in diesem Browser | Je Karte, in diesem Browser |
+| In die Liste übernommene Angebote | Am Eintrag der To-do-Liste (Badge) | In der Beschreibung des Eintrags |
+
+Nichts verlässt dein Home Assistant: Die Karte liest nur deine Angebots-Sensoren. Produktbilder lädt dein Browser
+von den Adressen, die in den Sensoren stehen.
 
 ## Abgelaufene Angebote
 
