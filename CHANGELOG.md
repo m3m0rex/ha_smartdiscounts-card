@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.7] – 2026-11-18
+
+### Changed
+
+- **Cheapest shopping trip with more than two stores.** Besides "One store" and "Two stores" the card now also
+  suggests three or more stores, as long as each extra store covers more items or makes the trip cheaper.
+
 ## [1.3.6] – 2026-11-18
 
 ### Added

@@ -128,6 +128,7 @@
   "bk_title": "La compra más barata",
   "bk_one": "Una tienda",
   "bk_two": "Dos tiendas",
+  "bk_n": "{n} tiendas",
   "bk_items": "{n} de {m} artículos en oferta",
   "bk_saves": "ahorra {sum}",
   "soon_title": "Pronto en oferta:",

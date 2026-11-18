@@ -128,6 +128,7 @@
   "bk_title": "Najtańsze zakupy",
   "bk_one": "Jeden sklep",
   "bk_two": "Dwa sklepy",
+  "bk_n": "Sklepy: {n}",
   "bk_items": "{n} z {m} pozycji w ofercie",
   "bk_saves": "oszczędzasz {sum}",
   "soon_title": "Wkrótce w ofercie:",

@@ -159,3 +159,18 @@ console.log(JSON.stringify({ keys, hints: S.hintsFrom(seen, offers), stale }));
     assert out["keys"] == [["rewe|bio-bananen", 1.79], ["muller|weissbrot", 1.29]]      # doppelte Namen und „demnächst“ bleiben draußen
     assert out["hints"] == {"a": {"dir": "up", "price": 1.49, "date": "2026-11-10"}}
     assert out["stale"] == {}                                                           # Stand passt nicht zum gezeigten Preis: kein Hinweis
+
+
+@NODE
+def test_three_shops_when_they_beat_two(tmp_path):
+    out = _node(tmp_path, """
+const o = (id, store, price) => ({ id, store, price });
+const r = S.bestBasket([
+  { uid: "butter", offers: [o("a", "REWE", 1.29), o("b", "EDEKA", 1.49)] },
+  { uid: "kaffee", offers: [o("c", "EDEKA", 5.49), o("d", "REWE", 5.79)] },
+  { uid: "pils", offers: [o("e", "REWE", 10.99)] },
+  { uid: "pizza", offers: [o("f", "Lidl", 1.79)] },
+]);
+console.log(JSON.stringify(r.all.map((b) => [b.stores.sort(), b.count, b.total])));
+""")
+    assert out == [[["REWE"], 3, 18.07], [["Lidl", "REWE"], 4, 19.86], [["EDEKA", "Lidl", "REWE"], 4, 19.56]]

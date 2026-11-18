@@ -128,6 +128,7 @@
   "bk_title": "Günstigster Einkauf",
   "bk_one": "Ein Markt",
   "bk_two": "Zwei Märkte",
+  "bk_n": "{n} Märkte",
   "bk_items": "{n} von {m} Angebots-Artikeln",
   "bk_saves": "spart {sum}",
   "soon_title": "Demnächst im Angebot:",

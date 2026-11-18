@@ -128,6 +128,7 @@
   "bk_title": "La spesa più conveniente",
   "bk_one": "Un negozio",
   "bk_two": "Due negozi",
+  "bk_n": "{n} negozi",
   "bk_items": "{n} di {m} voci in offerta",
   "bk_saves": "risparmi {sum}",
   "soon_title": "Presto in offerta:",

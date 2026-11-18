@@ -498,8 +498,8 @@ class SmartDiscountsCard extends HTMLElement {
         cover.map(([s, n]) => { const col = (this._all.find((o) => o.store === s) || {}).color;
           const on = hit.some((r) => r.offers.some((o) => o.store === s)) && hit.every((r) => { const o = r.offers.find((x) => x.store === s); return o ? this._sel[r.it.uid] && this._sel[r.it.uid].id === o.id : !this._sel[r.it.uid]; });
           return h("button", { type: "button", class: `chip ${on ? "on" : ""}`, "aria-pressed": String(!!on), onclick: () => (on ? clear() : choose((r) => r.offers.find((o) => o.store === s))) }, h("span", { class: "dot", style: `background:${col}` }), `${t.only.replace("{store}", s)} · ${n}`); })) : null);
-    // Günstigster Einkauf: ein Markt für möglichst viel – und ob ein zweiter Markt etwas bringt
-    const bb = hit.length > 1 ? bestBasket(hit.map((r) => ({ uid: r.it.uid, offers: r.offers }))) : { one: null, two: null };
+    // Günstigster Einkauf: ein Markt für möglichst viel – und ob ein zweiter, dritter … Markt etwas bringt
+    const bb = hit.length > 1 ? bestBasket(hit.map((r) => ({ uid: r.it.uid, offers: r.offers }))) : { one: null, two: null, all: [] };
     const isBasket = (b) => b && hit.every((r) => (b.picks[r.it.uid] ? this._sel[r.it.uid] && this._sel[r.it.uid].id === b.picks[r.it.uid].id : !this._sel[r.it.uid]));
     const basketRow = (b, label) => h("button", { type: "button", class: `bk ${isBasket(b) ? "on" : ""}`, "aria-pressed": String(!!isBasket(b)),
       onclick: () => (isBasket(b) ? clear() : choose((r) => b.picks[r.it.uid])) },
@@ -507,8 +507,9 @@ class SmartDiscountsCard extends HTMLElement {
       h("span", { class: "bm" }, t.bk_items.replace("{n}", b.count).replace("{m}", hit.length), b.more ? h("span", {}, " · " + t.bk_more.replace("{n}", b.more).replace("{sum}", this._money(b.extra))) : null,
         b.saving ? h("span", { class: "sv" }, " · " + (b.more ? t.bk_rest : t.bk_saves).replace("{sum}", this._money(b.saving))) : null),
       h("b", { class: "bs" }, this._money(b.total)));
+    const bkLabel = (n) => (n === 1 ? t.bk_one : n === 2 ? t.bk_two : t.bk_n.replace("{n}", n));
     const basket = bb.one && (stores.length > 1 || bb.two) ? h("div", { class: "basket" }, h("div", { class: "bh" }, "🧮 " + t.bk_title),
-      basketRow(bb.one, t.bk_one), bb.two ? basketRow(bb.two, t.bk_two) : null) : null;
+      bb.all.map((b, i) => basketRow(b, bkLabel(i + 1)))) : null;
     // demnächst im Angebot (gilt erst ab einem späteren Tag)
     const soon = this._next.length ? items.map((it) => [it, it.name ? dealsForCached(this._next, it.name, c.match)[0] : null]).filter(([, o]) => o) : [];
     const soonBox = soon.length ? h("div", { class: "soonbox" }, h("b", {}, "📅 " + t.soon_title), " ",

@@ -128,6 +128,7 @@
   "bk_title": "Cheapest shopping trip",
   "bk_one": "One shop",
   "bk_two": "Two shops",
+  "bk_n": "{n} stores",
   "bk_items": "{n} of {m} items on offer",
   "bk_saves": "saves {sum}",
   "soon_title": "On offer soon:",

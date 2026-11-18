@@ -153,32 +153,47 @@ function dealsForCached(offers, name, mode = "word") {
   return m.get(k);
 }
 // Günstigster Einkauf: Welcher Markt deckt die meisten Artikel der Liste ab und kostet dafür am wenigsten – und lohnt
-// es sich, zwei Märkte anzufahren? rows = [{ uid, offers: [{ id, store, price }] }] (Angebote günstigstes zuerst).
-// Ergebnis: { one, two } mit { stores, count, total, picks: { uid: Angebot } }; two nur, wenn es mehr Artikel abdeckt
-// oder bei gleich vielen billiger ist. „saving“ ist die Ersparnis von two gegenüber one bei den Artikeln, die one hat;
-// „more“ / „extra“: wie viele Artikel two zusätzlich abdeckt und was die kosten (deshalb kann die Summe von two höher sein).
+// es sich, zwei, drei oder mehr Märkte anzufahren? rows = [{ uid, offers: [{ id, store, price }] }] (Angebote günstigstes zuerst).
+// Ergebnis: { one, two, all } – all = [ein Markt, zwei Märkte, …], je Anzahl der beste Einkauf, aber nur solange jeder
+// mehr Artikel abdeckt oder bei gleich vielen billiger ist als der davor. Jeder Eintrag: { stores, count, total, picks }.
+// „saving“: Ersparnis gegenüber einem Markt bei den Artikeln, die der eine Markt hat; „more“ / „extra“: wie viele Artikel
+// zusätzlich abgedeckt sind und was die kosten (deshalb kann die Summe höher sein). Bis 8 Märkte werden alle
+// Kombinationen geprüft, darüber nur die 8 Märkte mit den meisten Angeboten.
 function bestBasket(rows) {
-  const stores = [...new Set(rows.flatMap((r) => r.offers.map((o) => o.store)))];
+  const count = new Map();
+  for (const r of rows) for (const o of r.offers) count.set(o.store, (count.get(o.store) || 0) + 1);
+  const stores = [...count.keys()].sort((a, b) => count.get(b) - count.get(a)).slice(0, 8);
   const basket = (set) => {
     const picks = {};
-    let total = 0, count = 0;
+    let total = 0, n = 0;
     for (const r of rows) {
       const o = r.offers.filter((x) => set.includes(x.store)).sort((a, b) => a.price - b.price)[0];
-      if (o) { picks[r.uid] = o; total += o.price; count += 1; }
+      if (o) { picks[r.uid] = o; total += o.price; n += 1; }
     }
-    return { stores: [...new Set(Object.values(picks).map((o) => o.store))], count, total: Math.round(total * 100) / 100, picks };
+    return { stores: [...new Set(Object.values(picks).map((o) => o.store))], count: n, total: Math.round(total * 100) / 100, picks };
   };
   const better = (a, b) => !b || a.count > b.count || (a.count === b.count && a.total < b.total - 0.004);
-  let one = null, two = null;
-  for (const s of stores) { const b = basket([s]); if (b.count && better(b, one)) one = b; }
-  for (let i = 0; i < stores.length; i++) for (let j = i + 1; j < stores.length; j++) {
-    const b = basket([stores[i], stores[j]]);
-    if (b.stores.length === 2 && better(b, two)) two = b;
+  const best = [];  // best[k-1] = bester Einkauf mit genau k Märkten
+  for (let mask = 1; mask < 1 << stores.length; mask++) {
+    const set = stores.filter((_, i) => mask & (1 << i));
+    const b = basket(set);
+    if (!b.count || b.stores.length !== set.length) continue;  // ein Markt ohne Beitrag zählt nicht
+    if (better(b, best[set.length - 1])) best[set.length - 1] = b;
   }
-  if (!one || !two || !better(two, one)) return { one, two: null };
-  const same = Object.keys(one.picks).reduce((a, uid) => a + (two.picks[uid] ? two.picks[uid].price : one.picks[uid].price), 0);
-  return { one, two: { ...two, saving: Math.max(0, Math.round((one.total - same) * 100) / 100), more: two.count - one.count,
-    extra: Math.max(0, Math.round((two.total - same) * 100) / 100) } };
+  const all = [];
+  for (const b of best) {
+    if (!b) break;
+    if (all.length && !better(b, all[all.length - 1])) break;
+    all.push(b);
+  }
+  const one = all[0] || null;
+  const out = all.map((b, i) => {
+    if (!i) return b;
+    const same = Object.keys(one.picks).reduce((a, uid) => a + (b.picks[uid] ? b.picks[uid].price : one.picks[uid].price), 0);
+    return { ...b, saving: Math.max(0, Math.round((one.total - same) * 100) / 100), more: b.count - one.count,
+      extra: Math.max(0, Math.round((b.total - same) * 100) / 100) };
+  });
+  return { one, two: out[1] || null, all: out };
 }
 // Preis-Gedächtnis: merkt je Angebot (Markt + Name) den Preis und, wenn er sich ändert, den vorherigen mit Datum.
 // So lässt sich sagen „war am 10.11. billiger“. seen = { key: { p, d, pp?, pd? } }; liefert das neue seen und je
