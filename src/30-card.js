@@ -663,7 +663,8 @@ class SmartDiscountsCard extends HTMLElement {
   // Ohne SmartLists: lesbarer Text in der Beschreibung des Eintrags.
   _offerNote(o) {
     const smart = (this._hass.config.components || []).includes("smartlists");
-    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), a: Math.floor(Date.now() / 1000) })}`;
+    // c = Warengruppe laut Markt: SmartLists (ab 4.0.0-beta.15) ordnet den Artikel danach ein, wenn der Name in die Irre führt
+    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), a: Math.floor(Date.now() / 1000) })}`;
     // Datum mit Jahr, damit sich ein abgelaufenes Angebot später erkennen lässt
     return `🏷️ ${o.store} · ${this._money(o.price)}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
   }

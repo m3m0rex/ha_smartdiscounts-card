@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3] – 2026-11-18
+
+### Changed
+
+- **Offers put on a SmartLists list carry the product group of the shop.** SmartLists 4.0.0-beta.15 or newer uses it
+  to sort the item into the right category when the name alone is misleading ("Cocktailtomaten" are no drink).
+
 ## [1.3.2] – 2026-11-18
 
 ### Added
