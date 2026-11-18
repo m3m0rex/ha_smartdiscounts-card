@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 const TAG = "smartdiscounts-card";
 if (customElements.get(TAG)) return;  // schon geladen (z. B. doppelt als Ressource eingetragen)
 
@@ -207,6 +207,22 @@ function rememberPrices(seen, offers, today) {
   const keys = Object.keys(next);
   if (keys.length > 3000) keys.sort((a, b) => (next[a].d < next[b].d ? -1 : 1)).slice(0, keys.length - 3000).forEach((k) => delete next[k]);
   return { seen: next, hints };
+}
+// Zentraler Preisverlauf (SmartLists merkt die Preise in Home Assistant, für alle Browser gleich): die Angebote als
+// Paare [Schlüssel, Preis] – dieselben Schlüssel und Regeln wie oben („demnächst“ und doppelte Namen je Markt bleiben draußen).
+function priceKeys(offers) {
+  const twice = new Set(), once = new Set(), key = (o) => `${norm(o.store)}|${norm(o.name)}`.slice(0, 200);
+  for (const o of offers) { const k = key(o); (once.has(k) ? twice : once).add(k); }
+  return offers.filter((o) => !o.soon && !twice.has(key(o)) && Number.isFinite(o.price)).map((o) => [key(o), o.price]).slice(0, 8000);
+}
+// Hinweise je Angebot aus dem Stand, den SmartLists zurückgibt: { key: { p, d, pp?, pd? } }
+function hintsFrom(seen, offers) {
+  const hints = {};
+  for (const o of offers) {
+    const x = (seen || {})[`${norm(o.store)}|${norm(o.name)}`.slice(0, 200)];
+    if (x && x.pp != null && Math.abs(x.pp - o.price) > 0.004 && Math.abs(x.p - o.price) <= 0.004) hints[o.id] = { dir: x.pp < o.price ? "up" : "down", price: x.pp, date: x.pd };
+  }
+  return hints;
 }
 const cheaper = (a, b) => (a.unit && b.unit && a.unit.unit === b.unit.unit ? a.unit.value - b.unit.value || a.price - b.price : a.price - b.price);
 // passende Angebote für einen Artikelnamen: je Markt das günstigste, günstigstes zuerst
@@ -445,7 +461,8 @@ class SmartDiscountsCard extends HTMLElement {
     if (o.soon) return `${t.from} ${this._day(o.from)}`;
     return o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : "";
   }
-  // Preis-Gedächtnis dieses Browsers: Angebote mit ihrem Preis merken; ändert er sich, den alten mit Datum behalten
+  // Preis-Gedächtnis: mit SmartLists zentral in Home Assistant (in jedem Browser und in der App gleich), sonst in
+  // diesem Browser. Angebote mit ihrem Preis merken; ändert er sich, den alten mit Datum behalten.
   _remember() {
     this._hints = {};
     if (this._config.show_price_trend === false) return;
@@ -455,6 +472,24 @@ class SmartDiscountsCard extends HTMLElement {
     const r = rememberPrices(seen, this._all, today);
     this._hints = r.hints;
     try { localStorage.setItem("smartdiscounts-prices", JSON.stringify(r.seen)); } catch (e) { /* Speicher voll oder gesperrt: ohne Gedächtnis */ }
+    this._rememberCentral(seen);
+  }
+  // Mit SmartLists (ab 4.0.0-beta.13): der Verlauf liegt in Home Assistant. Das Gedächtnis dieses Browsers wird einmal
+  // dorthin übernommen und bleibt als Ersatz bestehen, falls SmartLists fehlt oder älter ist.
+  async _rememberCentral(local) {
+    if (this._noCentral || !((this._hass.config && this._hass.config.components) || []).includes("smartlists")) return;
+    const all = this._all;
+    let moved = false;
+    try { moved = localStorage.getItem("smartdiscounts-prices-moved") === "1"; } catch (e) { /* */ }
+    try {
+      const r = await this._hass.callWS({ type: "smartlists/offer_prices", offers: priceKeys(all), ...(moved || !Object.keys(local).length ? {} : { local }) });
+      if (!moved) { try { localStorage.setItem("smartdiscounts-prices-moved", "1"); } catch (e) { /* */ } }
+      if (all !== this._all) return; // inzwischen neu geladen: der nächste Durchlauf zeigt den Stand
+      this._hints = hintsFrom(r.seen, all);
+      this._render();
+    } catch (e) {
+      if (e && e.code === "unknown_command") this._noCentral = true; // ältere SmartLists-Version: beim Browser bleiben
+    }
   }
   // „▲ am 10.11. 0,99 €“ (war billiger) bzw. „▼ zuletzt 1,49 €“ (jetzt billiger)
   _trendText(o) {
@@ -1198,5 +1233,5 @@ window.customCards.push({ type: TAG, name: "SmartDiscounts", description: "Super
 console.info(`%c SMARTDISCOUNTS-CARD %c ${VERSION} `, "background:#e39a1c;color:#111;font-weight:700", "background:#222;color:#fff");
 // Test-Hilfen (reine Funktionen)
 // … und für andere Karten (SmartLists zeigt damit den 🏷️-Hinweis in der Einkaufsliste)
-window.SmartDiscounts = { itemName, matches, num, unitPrice, bestBasket, rememberPrices, offers: (hass, sources = "auto") => offersCached(hass, sources), dealsFor: dealsForCached };
+window.SmartDiscounts = { itemName, matches, num, unitPrice, bestBasket, rememberPrices, priceKeys, hintsFrom, offers: (hass, sources = "auto") => offersCached(hass, sources), dealsFor: dealsForCached };
 })();

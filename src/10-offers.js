@@ -182,6 +182,22 @@ function rememberPrices(seen, offers, today) {
   if (keys.length > 3000) keys.sort((a, b) => (next[a].d < next[b].d ? -1 : 1)).slice(0, keys.length - 3000).forEach((k) => delete next[k]);
   return { seen: next, hints };
 }
+// Zentraler Preisverlauf (SmartLists merkt die Preise in Home Assistant, für alle Browser gleich): die Angebote als
+// Paare [Schlüssel, Preis] – dieselben Schlüssel und Regeln wie oben („demnächst“ und doppelte Namen je Markt bleiben draußen).
+function priceKeys(offers) {
+  const twice = new Set(), once = new Set(), key = (o) => `${norm(o.store)}|${norm(o.name)}`.slice(0, 200);
+  for (const o of offers) { const k = key(o); (once.has(k) ? twice : once).add(k); }
+  return offers.filter((o) => !o.soon && !twice.has(key(o)) && Number.isFinite(o.price)).map((o) => [key(o), o.price]).slice(0, 8000);
+}
+// Hinweise je Angebot aus dem Stand, den SmartLists zurückgibt: { key: { p, d, pp?, pd? } }
+function hintsFrom(seen, offers) {
+  const hints = {};
+  for (const o of offers) {
+    const x = (seen || {})[`${norm(o.store)}|${norm(o.name)}`.slice(0, 200)];
+    if (x && x.pp != null && Math.abs(x.pp - o.price) > 0.004 && Math.abs(x.p - o.price) <= 0.004) hints[o.id] = { dir: x.pp < o.price ? "up" : "down", price: x.pp, date: x.pd };
+  }
+  return hints;
+}
 const cheaper = (a, b) => (a.unit && b.unit && a.unit.unit === b.unit.unit ? a.unit.value - b.unit.value || a.price - b.price : a.price - b.price);
 // passende Angebote für einen Artikelnamen: je Markt das günstigste, günstigstes zuerst
 function dealsFor(offers, name, mode = "word") {

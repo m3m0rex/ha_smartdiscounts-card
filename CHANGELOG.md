@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0] – 2026-11-18
+
+### Changed
+
+- **"Was it cheaper before?" is the same in every browser.** With SmartLists 4.0.0-beta.13 or newer the price history
+  is kept in Home Assistant instead of in the browser: Chrome, Firefox and every phone show the same hint, and the
+  history also grows while no card is open. What a browser has remembered so far is taken over once. The history
+  holds the prices of all offers, not what somebody looked at, so it says nothing about people; prices not seen for
+  90 days are dropped. Without SmartLists (or with an older version) the card keeps remembering in the browser as
+  before.
+
 ## [1.1.0] – 2026-11-17
 
 ### Added

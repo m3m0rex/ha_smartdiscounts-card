@@ -143,3 +143,19 @@ console.log(JSON.stringify({ first, still, up, stays, down, twice: Object.keys(t
     assert out["stays"] == out["up"]                                            # der Hinweis bleibt, solange der Preis so ist
     assert out["down"] == {"dir": "down", "price": 1.29, "date": "2026-11-18"}
     assert out["twice"] == 0 and out["soon"] == 0 and out["old"] == 0
+
+
+@NODE
+def test_central_price_history_uses_the_same_keys_and_hints(tmp_path):
+    out = _node(tmp_path, """
+const o = (id, store, name, price, extra = {}) => ({ id, store, name, price, ...extra });
+const offers = [o("a", "REWE", "Bio-Bananen", 1.79), o("b", "Müller", "Weißbrot", 1.29), o("c", "REWE", "Cola", 0.99), o("d", "REWE", "Cola", 1.49),
+  o("e", "ALDI", "Butter", 1.99, { soon: true })];
+const keys = S.priceKeys(offers);
+const seen = { "rewe|bio-bananen": { p: 1.79, d: "2026-11-18", pp: 1.49, pd: "2026-11-10" }, "muller|weissbrot": { p: 1.29, d: "2026-11-18" } };
+const stale = S.hintsFrom({ "rewe|bio-bananen": { p: 1.99, d: "2026-11-18", pp: 1.49, pd: "2026-11-10" } }, offers);
+console.log(JSON.stringify({ keys, hints: S.hintsFrom(seen, offers), stale }));
+""")
+    assert out["keys"] == [["rewe|bio-bananen", 1.79], ["muller|weissbrot", 1.29]]      # doppelte Namen und „demnächst“ bleiben draußen
+    assert out["hints"] == {"a": {"dir": "up", "price": 1.49, "date": "2026-11-10"}}
+    assert out["stale"] == {}                                                           # Stand passt nicht zum gezeigten Preis: kein Hinweis

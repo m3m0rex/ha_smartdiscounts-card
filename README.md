@@ -72,7 +72,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `show_images` | `true` | Product images |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
-| `show_price_trend` | `true` | "▲ 0,99 €" / "▼ 1,79 €" when the same product in the same shop was cheaper or dearer before. The card remembers prices in this browser only. |
+| `show_price_trend` | `true` | "▲ 0,99 €" / "▼ 1,79 €" when the same product in the same shop was cheaper or dearer before. With SmartLists (4.0.0-beta.13 or newer) the prices are remembered in Home Assistant – the same in every browser; without it, in this browser only. |
 | `hide_without_offer` | `false` | Hide list items without an offer |
 | `list_view` | `rows` | "My list": `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
 | `table_max_width` | – | "My list" as a table: widest the table gets, in px. Default: 760 plus 260 per store. `0` = no limit, always the full width. |

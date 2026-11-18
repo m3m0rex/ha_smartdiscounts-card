@@ -71,7 +71,8 @@ class SmartDiscountsCard extends HTMLElement {
     if (o.soon) return `${t.from} ${this._day(o.from)}`;
     return o.until ? (o.today ? t.today : `${t.until} ${this._day(o.until)}`) : "";
   }
-  // Preis-Gedächtnis dieses Browsers: Angebote mit ihrem Preis merken; ändert er sich, den alten mit Datum behalten
+  // Preis-Gedächtnis: mit SmartLists zentral in Home Assistant (in jedem Browser und in der App gleich), sonst in
+  // diesem Browser. Angebote mit ihrem Preis merken; ändert er sich, den alten mit Datum behalten.
   _remember() {
     this._hints = {};
     if (this._config.show_price_trend === false) return;
@@ -81,6 +82,24 @@ class SmartDiscountsCard extends HTMLElement {
     const r = rememberPrices(seen, this._all, today);
     this._hints = r.hints;
     try { localStorage.setItem("smartdiscounts-prices", JSON.stringify(r.seen)); } catch (e) { /* Speicher voll oder gesperrt: ohne Gedächtnis */ }
+    this._rememberCentral(seen);
+  }
+  // Mit SmartLists (ab 4.0.0-beta.13): der Verlauf liegt in Home Assistant. Das Gedächtnis dieses Browsers wird einmal
+  // dorthin übernommen und bleibt als Ersatz bestehen, falls SmartLists fehlt oder älter ist.
+  async _rememberCentral(local) {
+    if (this._noCentral || !((this._hass.config && this._hass.config.components) || []).includes("smartlists")) return;
+    const all = this._all;
+    let moved = false;
+    try { moved = localStorage.getItem("smartdiscounts-prices-moved") === "1"; } catch (e) { /* */ }
+    try {
+      const r = await this._hass.callWS({ type: "smartlists/offer_prices", offers: priceKeys(all), ...(moved || !Object.keys(local).length ? {} : { local }) });
+      if (!moved) { try { localStorage.setItem("smartdiscounts-prices-moved", "1"); } catch (e) { /* */ } }
+      if (all !== this._all) return; // inzwischen neu geladen: der nächste Durchlauf zeigt den Stand
+      this._hints = hintsFrom(r.seen, all);
+      this._render();
+    } catch (e) {
+      if (e && e.code === "unknown_command") this._noCentral = true; // ältere SmartLists-Version: beim Browser bleiben
+    }
   }
   // „▲ am 10.11. 0,99 €“ (war billiger) bzw. „▼ zuletzt 1,49 €“ (jetzt billiger)
   _trendText(o) {

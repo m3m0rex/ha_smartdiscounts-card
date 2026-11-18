@@ -72,7 +72,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `show_images` | `true` | Produktbilder |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
-| `show_price_trend` | `true` | „▲ 0,99 €“ / „▼ 1,79 €“, wenn dasselbe Produkt im selben Markt vorher billiger oder teurer war. Die Karte merkt sich die Preise nur in diesem Browser. |
+| `show_price_trend` | `true` | „▲ 0,99 €“ / „▼ 1,79 €“, wenn dasselbe Produkt im selben Markt vorher billiger oder teurer war. Mit SmartLists (ab 4.0.0-beta.13) werden die Preise in Home Assistant gemerkt – in jedem Browser gleich; ohne SmartLists nur in diesem Browser. |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
 | `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
 | `table_max_width` | – | „Meine Liste“ als Tabelle: größte Breite der Tabelle in px. Standard: 760 plus 260 je Markt. `0` = keine Grenze, immer die ganze Breite. |

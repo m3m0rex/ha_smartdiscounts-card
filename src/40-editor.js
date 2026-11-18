@@ -151,5 +151,5 @@ window.customCards.push({ type: TAG, name: "SmartDiscounts", description: "Super
 console.info(`%c SMARTDISCOUNTS-CARD %c ${VERSION} `, "background:#e39a1c;color:#111;font-weight:700", "background:#222;color:#fff");
 // Test-Hilfen (reine Funktionen)
 // … und für andere Karten (SmartLists zeigt damit den 🏷️-Hinweis in der Einkaufsliste)
-window.SmartDiscounts = { itemName, matches, num, unitPrice, bestBasket, rememberPrices, offers: (hass, sources = "auto") => offersCached(hass, sources), dealsFor: dealsForCached };
+window.SmartDiscounts = { itemName, matches, num, unitPrice, bestBasket, rememberPrices, priceKeys, hintsFrom, offers: (hass, sources = "auto") => offersCached(hass, sources), dealsFor: dealsForCached };
 })();
