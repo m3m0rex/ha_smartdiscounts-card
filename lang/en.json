@@ -154,5 +154,6 @@
   "bk_more_pay": "+{sum} at the till",
   "bk_amount": "{a} instead of {b}",
   "bk_per": "{a} instead of {b}",
-  "bk_same": "for {a} that is {sum} less"
+  "bk_same": "for {a} that is {sum} less",
+  "loading": "Loading …"
 }

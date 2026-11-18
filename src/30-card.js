@@ -175,12 +175,18 @@ class SmartDiscountsCard extends HTMLElement {
     // „Ich nutze Bonus-Programme“: verglichen wird mit dem Preis nach Abzug des Guthabens (erst nach dem Preisverlauf,
     // der mit echten Preisen rechnet)
     if (this._config.use_bonus) this._all = this._all.map(withBonus);
-    await this._loadList();
     this._tellSources();
-    await this._loadCats();
-    await this._loadWatch();
+    // Schnell sichtbar: die Angebote sofort zeichnen, Liste und Merkliste gleichzeitig laden (nicht nacheinander) und
+    // die Kategorien von SmartLists zuletzt – das ist bei vielen Angeboten die längste Abfrage.
+    const first = this._loading === undefined;
+    if (first) { this._loading = true; this._render(); }
+    await Promise.all([this._loadList(), this._loadWatch()]);
+    this._loading = false;
     this._render();
     this._notify();
+    const cats = this._catMap;
+    await this._loadCats();
+    if (this._catMap !== cats) this._render();
   }
   // ----- Merkliste: Produkte, bei denen man auf ein Angebot wartet.
   // Quelle: "watch" in der Konfiguration + eine To-do-Liste ("watch_list", gilt auf allen Geräten) oder – ohne sie – dieses Gerät.
@@ -359,6 +365,7 @@ class SmartDiscountsCard extends HTMLElement {
     this._notifying = false;
   }
   _renderWatch() {
+    if (this._loading && this._watchItems === undefined && this._watchSmart === undefined) return h("div", { class: "msg" }, this._t.loading);
     const t = this._t, c = this._config, terms = this._watchTerms();
     const input = h("input", { class: "search", type: "text", placeholder: t.w_add, "aria-label": t.w_add });
     const go = async () => { const v = input.value; input.value = ""; try { await this._watchAdd(v); } catch (e) { input.value = v; } };
@@ -478,6 +485,7 @@ class SmartDiscountsCard extends HTMLElement {
   _renderList(stores) {
     const t = this._t, c = this._config;
     if (!c.list || !this._hass.states[c.list]) return h("div", { class: "msg" }, t.no_list);
+    if (this._loading && this._items === undefined) return h("div", { class: "msg" }, t.loading);
     const items = this._items || [];
     if (!items.length) return h("div", { class: "msg" }, this._error || t.list_empty);
     const rows = items.map((it) => ({ it, offers: this._matchesFor(it) }));

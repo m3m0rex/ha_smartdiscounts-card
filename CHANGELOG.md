@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.10] – 2026-11-18
+
+### Changed
+
+- **Faster first load.** The offers show up at once; the to-do list and the watch list load at the same time instead
+  of one after the other, and the categories from SmartLists (the slowest request with many offers) come last.
+
 ## [1.3.9] – 2026-11-18
 
 ### Added

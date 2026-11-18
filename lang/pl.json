@@ -154,5 +154,6 @@
   "bk_more_pay": "+{sum} przy kasie",
   "bk_amount": "{a} zamiast {b}",
   "bk_per": "{a} zamiast {b}",
-  "bk_same": "za {a} to o {sum} mniej"
+  "bk_same": "za {a} to o {sum} mniej",
+  "loading": "Wczytywanie …"
 }
