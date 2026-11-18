@@ -174,3 +174,18 @@ const r = S.bestBasket([
 console.log(JSON.stringify(r.all.map((b) => [b.stores.sort(), b.count, b.total])));
 """)
     assert out == [[["REWE"], 3, 18.07], [["Lidl", "REWE"], 4, 19.86], [["EDEKA", "Lidl", "REWE"], 4, 19.56]]
+
+
+@NODE
+def test_saving_uses_the_price_per_litre(tmp_path):
+    out = _node(tmp_path, """
+const o = (id, store, price, value) => ({ id, store, price, unit: value ? { value, unit: "l" } : null });
+const r = S.bestBasket([
+  { uid: "cola", offers: [o("a", "REWE", 7.99, 1.33), o("b", "EDEKA", 11.99, 1.00)] },
+  { uid: "butter", offers: [o("c", "REWE", 1.59)] },
+  { uid: "saft", offers: [o("d", "EDEKA", 0.99)] },
+]);
+console.log(JSON.stringify([r.one.stores, r.two.picks.cola.id, r.two.saving, r.two.extra]));
+""")
+    # REWE allein: Cola + Butter. Mit EDEKA: Cola dort (1,00 €/l), 6 l kosten 6,01 € statt 7,99 € – spart 1,98 €
+    assert out == [["REWE"], "b", 1.98, 0.99]

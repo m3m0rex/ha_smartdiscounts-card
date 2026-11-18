@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.8] – 2026-11-18
+
+### Fixed
+
+- **Cheapest shopping trip counts by the price per unit.** A bigger pack that is cheaper per litre or kilo now
+  wins, and the saving is worked out for the same amount (6 l of cola at 1,00 €/l instead of 1,33 €/l saves 1,98 €),
+  not from the pack prices.
+
 ## [1.3.7] – 2026-11-18
 
 ### Changed

@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.7";
+const VERSION = "1.3.8";
 const TAG = "smartdiscounts-card";
 if (customElements.get(TAG)) return;  // schon geladen (z. B. doppelt als Ressource eingetragen)
 
@@ -182,7 +182,7 @@ function dealsForCached(offers, name, mode = "word") {
 // es sich, zwei, drei oder mehr Märkte anzufahren? rows = [{ uid, offers: [{ id, store, price }] }] (Angebote günstigstes zuerst).
 // Ergebnis: { one, two, all } – all = [ein Markt, zwei Märkte, …], je Anzahl der beste Einkauf, aber nur solange jeder
 // mehr Artikel abdeckt oder bei gleich vielen billiger ist als der davor. Jeder Eintrag: { stores, count, total, picks }.
-// „saving“: Ersparnis gegenüber einem Markt bei den Artikeln, die der eine Markt hat; „more“ / „extra“: wie viele Artikel
+// „saving“: Ersparnis gegenüber einem Markt bei den Artikeln, die der eine Markt hat (für dieselbe Menge, über den Grundpreis); „more“ / „extra“: wie viele Artikel
 // zusätzlich abgedeckt sind und was die kosten (deshalb kann die Summe höher sein). Bis 8 Märkte werden alle
 // Kombinationen geprüft, darüber nur die 8 Märkte mit den meisten Angeboten.
 function bestBasket(rows) {
@@ -193,7 +193,8 @@ function bestBasket(rows) {
     const picks = {};
     let total = 0, n = 0;
     for (const r of rows) {
-      const o = r.offers.filter((x) => set.includes(x.store)).sort((a, b) => a.price - b.price)[0];
+      // je Artikel das günstigste Angebot dieser Märkte – nach Grundpreis, wenn beide einen in derselben Einheit haben
+      const o = r.offers.filter((x) => set.includes(x.store)).sort((a, b) => cheaper(a, b))[0];
       if (o) { picks[r.uid] = o; total += o.price; n += 1; }
     }
     return { stores: [...new Set(Object.values(picks).map((o) => o.store))], count: n, total: Math.round(total * 100) / 100, picks };
@@ -213,11 +214,17 @@ function bestBasket(rows) {
     all.push(b);
   }
   const one = all[0] || null;
+  // Was ein anderes Angebot für dieselbe Menge kostet: bei gleicher Einheit über den Grundpreis (6 l Cola zu 1,00 €/l
+  // statt zu 1,33 €/l spart 1,98 €, auch wenn die größere Packung mehr kostet), sonst der Packungspreis.
+  const forSameAmount = (mine, other) => (mine.unit && other.unit && mine.unit.unit === other.unit.unit && mine.unit.value > 0
+    ? other.unit.value * (mine.price / mine.unit.value) : other.price);
   const out = all.map((b, i) => {
     if (!i) return b;
-    const same = Object.keys(one.picks).reduce((a, uid) => a + (b.picks[uid] ? b.picks[uid].price : one.picks[uid].price), 0);
+    let same = 0, extra = 0;
+    for (const uid of Object.keys(one.picks)) same += b.picks[uid] ? forSameAmount(one.picks[uid], b.picks[uid]) : one.picks[uid].price;
+    for (const [uid, o] of Object.entries(b.picks)) if (!one.picks[uid]) extra += o.price;
     return { ...b, saving: Math.max(0, Math.round((one.total - same) * 100) / 100), more: b.count - one.count,
-      extra: Math.max(0, Math.round((b.total - same) * 100) / 100) };
+      extra: Math.round(extra * 100) / 100 };
   });
   return { one, two: out[1] || null, all: out };
 }
