@@ -54,6 +54,8 @@
   "w_list_take": "Skopiuj na moją listę",
   "bonus_label": "{amount} bonusu · tylko z aplikacją {store}",
   "bonus_help": "Oferta bonusowa: płacisz normalną cenę, a kredyt trafia do aplikacji {store} – tylko jeśli użyjesz jej przy kasie.",
+  "e_bonus": "Korzystam z programów bonusowych (porównuj z bonusem)",
+  "with_bonus": "po odjęciu bonusu",
   "w_fixed": "z konfiguracji",
   "n_title": "Promocja dla obserwowanych",
   "e_watch": "Obserwowane: produkty",

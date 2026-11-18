@@ -54,6 +54,8 @@
   "w_list_take": "Copy to my watch list",
   "bonus_label": "{amount} bonus · {store} app only",
   "bonus_help": "Bonus offer: you pay the normal price and get the credit in the {store} app – only if you use it at checkout.",
+  "e_bonus": "I use bonus programmes (compare prices with the bonus)",
+  "with_bonus": "with the bonus credit taken off",
   "w_fixed": "from the configuration",
   "n_title": "Offer for your watch list",
   "e_watch": "Watch list: products",

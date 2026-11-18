@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.6] – 2026-11-18
+
+### Added
+
+- **Compare with the bonus.** New option "I use bonus programmes": offers with a bonus are compared at the price
+  after the credit is taken off. The real price stays in front, the bonus price follows in brackets – "1,00 €
+  (0,50 €)", and the price per unit the same way, "1,33 €/l (0,67 €/l)". Cheapest shopping trip and the ★ for the
+  cheapest offer use the bonus price; price history and what goes onto the list keep the real price.
+
 ## [1.3.5] – 2026-11-18
 
 ### Added

@@ -31,7 +31,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "tile_flow", selector: { select: { mode: "dropdown", options: [["grid", t.tf_grid], ["scroll", t.tf_scroll]].map(([value, label]) => ({ value, label })) } } },
       { name: "group_by", selector: { select: { mode: "dropdown", options: [["store", t.g_store], ["category", t.g_cat]].map(([value, label]) => ({ value, label })) } } },
       { name: "all_view", selector: { select: { mode: "dropdown", options: [["tiles", t.v_tiles], ["list", t.v_list]].map(([value, label]) => ({ value, label })) } } },
-      { type: "grid", name: "", schema: [b("show_images"), b("show_unit_price"), b("show_valid_until"), b("show_price_trend"), b("hide_without_offer")] },
+      { type: "grid", name: "", schema: [b("show_images"), b("show_unit_price"), b("show_valid_until"), b("show_price_trend"), b("hide_without_offer"), b("use_bonus")] },
       { name: "max_per_store", selector: { number: { min: 1, max: 20, mode: "box" } } },
       { name: "watch", selector: { text: { multiple: true } } },
       { name: "watch_list", selector: { entity: { domain: "todo" } } },
@@ -39,7 +39,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "currency_symbol", selector: { text: {} } },
     ];
     const labels = { title: t.e_title, list: t.e_list, match: t.e_match, default_tab: t.e_tab, list_view: t.e_lview, all_view: t.e_view, group_by: t.e_group, entities: t.e_entities, stores: t.e_stores, tabs: t.e_tabs, tile_flow: t.e_flow, sec_look: t.s_look, sec_all: t.tab_all, sec_watch: t.s_watch, sec_more: t.s_more, mine_only: t.e_mine, add_to: t.e_add_to, category_source: t.e_cat_src, category_map: t.e_cat_map, locked: t.e_locked, categories_open: t.e_cat_open, show_images: t.e_images, show_unit_price: t.e_unit,
-      show_valid_until: t.e_until, show_price_trend: t.e_trend, hide_without_offer: t.e_hide_none, max_per_store: t.e_max,
+      show_valid_until: t.e_until, show_price_trend: t.e_trend, hide_without_offer: t.e_hide_none, use_bonus: t.e_bonus, max_per_store: t.e_max,
       watch: t.e_watch, watch_list: t.e_watch_list, notify: t.e_notify,  currency_symbol: t.e_symbol };
     if (!this._form) {
       this._form = document.createElement("ha-form");

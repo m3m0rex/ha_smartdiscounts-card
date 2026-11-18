@@ -38,6 +38,7 @@ const STYLE = `
   .u b, .orow .pr .u b, .lrow .pr .u b { display:inline; color:var(--primary-text-color); font-weight:500; font-size:inherit; } .u.low, .u.low b, .orow .pr .u.low b { color:var(--sd-ok); }
   .mx .cell { flex-direction:column; align-items:flex-end; justify-content:center; gap:0; } .mx .cp { white-space:nowrap; }
   .pc .pct { color:var(--error-color,#db4437); font-weight:800; }
+  .withbonus { color:var(--warning-color,#e65100); font-weight:600; }
   .bonus { display:inline-block; font-size:.7rem; font-weight:700; padding:0 6px; border-radius:6px; border:1px dashed var(--warning-color,#ff9800); color:var(--warning-color,#e65100); white-space:nowrap; }
   .tl .pctb { position:absolute; left:6px; top:6px; background:var(--error-color,#db4437); color:#fff; font-size:.66rem; font-weight:800; padding:0 5px; border-radius:7px; z-index:1; }
   .sum { margin-top:10px; padding:10px 12px; background:var(--secondary-background-color,#f6f6f6); border-radius:12px; display:flex; align-items:center; gap:10px; font-size:.86rem; flex-wrap:wrap; }

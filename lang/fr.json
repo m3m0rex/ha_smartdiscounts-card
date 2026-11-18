@@ -54,6 +54,8 @@
   "w_list_take": "Copier dans ma liste de suivi",
   "bonus_label": "{amount} de bonus · uniquement avec l'app {store}",
   "bonus_help": "Offre bonus : tu paies le prix normal et reçois le crédit dans l'app {store} – seulement si tu l'utilises en caisse.",
+  "e_bonus": "J'utilise les programmes bonus (comparer avec le bonus)",
+  "with_bonus": "bonus déduit",
   "w_fixed": "depuis la configuration",
   "n_title": "Promo pour ta liste à surveiller",
   "e_watch": "À surveiller : produits",

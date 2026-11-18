@@ -1,4 +1,4 @@
-const DEFAULTS = { list: "", match: "word", default_tab: "list", show_images: true, show_unit_price: true, show_valid_until: true, show_price_trend: true, hide_without_offer: false, max_per_store: 10, all_view: "tiles", list_view: "chips", sources: "auto", group_by: "store", tile_flow: "grid", mine_only: false, add_to: "", category_source: "auto", categories_open: true, watch: [], watch_list: "", notify: false, notify_service: "" };
+const DEFAULTS = { use_bonus: false, list: "", match: "word", default_tab: "list", show_images: true, show_unit_price: true, show_valid_until: true, show_price_trend: true, hide_without_offer: false, max_per_store: 10, all_view: "tiles", list_view: "chips", sources: "auto", group_by: "store", tile_flow: "grid", mine_only: false, add_to: "", category_source: "auto", categories_open: true, watch: [], watch_list: "", notify: false, notify_service: "" };
 // bekannte Märkte: Erkennung über entity_id / Namen der Quelle, Farbe des Badges
 const STORES = [["rewe", "REWE", "#cc071e"], ["edeka", "EDEKA", "#f5c400"], ["lidl", "Lidl", "#0050aa"], ["aldi_sued", "ALDI Süd", "#00a0e0"], ["aldi_nord", "ALDI Nord", "#1a4d9f"], ["aldi", "ALDI", "#00549f"],
   ["norma", "Norma", "#d40f14"], ["penny", "Penny", "#cd1414"], ["kaufland", "Kaufland", "#e10915"], ["netto", "Netto", "#ffd400"], ["rossmann", "Rossmann", "#c3002d"], ["dm", "dm", "#002878"], ["globus", "Globus", "#f39200"]];
@@ -35,6 +35,14 @@ const bonusOf = (value, type) => {
   if (/cent|ct/.test(t)) return { value: v / 100, kind: "eur" };
   if (/pro|perc|%/.test(t)) return { value: v, kind: "pct" };
   return { value: v, kind: "eur" };
+};
+// Mit Bonus gerechnet: Preis abzüglich Guthaben bzw. Prozent. full/unit.full behalten den echten Preis (für die
+// Anzeige „4,44 € (3,94 €)“ und alles, was den Preisverlauf betrifft)
+const withBonus = (o) => {
+  if (!o.bonus || o.full != null) return o;
+  const eff = Math.max(0, o.bonus.kind === "pct" ? o.price * (1 - o.bonus.value / 100) : o.price - o.bonus.value);
+  const r = (v) => Math.round(v * 100) / 100;
+  return { ...o, full: o.price, price: r(eff), unit: o.unit && o.price > 0 ? { ...o.unit, full: o.unit.value, value: r(o.unit.value * eff / o.price) } : o.unit };
 };
 const unitPrice = (text) => {
   const m = String(text || "").replace(/ /g, " ").match(/1\s*(kg|l|ltr|liter|stk|st|stück|m)\s*=\s*(?:ab\s*)?(?:€\s*)?(\d+(?:[.,]\d+)?)/i);

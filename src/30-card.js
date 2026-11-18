@@ -114,7 +114,14 @@ class SmartDiscountsCard extends HTMLElement {
   }
   _unitLabel(o) { return o.unit ? `${this._money(o.unit.value)}/${o.unit.unit}` : ""; }
   // Grundpreis als eigene Zeile; grün, wenn er unter mehreren Angeboten mit derselben Einheit der niedrigste ist
-  _unitEl(o, low) { return this._config.show_unit_price && o.unit ? h("span", { class: `u ${low ? "low" : ""}`, title: low ? this._t.unit_low : null }, h("b", {}, this._money(o.unit.value)), `/${o.unit.unit}`) : null; }
+  _unitEl(o, low) {
+    if (!this._config.show_unit_price || !o.unit) return null;
+    const u = o.unit;
+    return h("span", { class: `u ${low ? "low" : ""}`, title: low ? this._t.unit_low : null }, h("b", {}, this._money(u.full ?? u.value)), `/${u.unit}`,
+      u.full != null ? h("span", { class: "withbonus", title: this._t.with_bonus }, ` (${this._money(u.value)}/${u.unit})`) : null);
+  }
+  // Preis: der echte; mit Bonus gerechnet dahinter in Klammern der Preis nach Abzug des Guthabens
+  _pr(o) { return o.full != null ? [this._money(o.full), h("span", { class: "withbonus", title: this._t.with_bonus }, ` (${this._money(o.price)})`)] : this._money(o.price); }
   _unitLow(offers) {
     const by = {}, low = new Set();
     offers.forEach((o) => { if (o.unit) (by[o.unit.unit] = by[o.unit.unit] || []).push(o); });
@@ -164,6 +171,9 @@ class SmartDiscountsCard extends HTMLElement {
     this._next = this._every.filter((o) => o.soon);
     this._all = this._every.filter((o) => !o.soon);
     this._remember();
+    // „Ich nutze Bonus-Programme“: verglichen wird mit dem Preis nach Abzug des Guthabens (erst nach dem Preisverlauf,
+    // der mit echten Preisen rechnet)
+    if (this._config.use_bonus) this._all = this._all.map(withBonus);
     await this._loadList();
     this._tellSources();
     await this._loadCats();
@@ -329,7 +339,7 @@ class SmartDiscountsCard extends HTMLElement {
     this._notifying = true; this._notified = seen.slice(-400);
     try { localStorage.setItem("smartdiscounts-notified", JSON.stringify(seen.slice(-400))); } catch (e) { /* */ }
     const t = this._t;
-    const message = fresh.slice(0, 12).map(({ term, o }) => `${term.name}: ${o.name} – ${this._money(o.price)} (${o.store}${o.until ? `, ${t.until} ${this._day(o.until)}` : ""})`).join("\n")
+    const message = fresh.slice(0, 12).map(({ term, o }) => `${term.name}: ${o.name} – ${this._money(o.full ?? o.price)} (${o.store}${o.until ? `, ${t.until} ${this._day(o.until)}` : ""})`).join("\n")
       + (fresh.length > 12 ? `\n+${fresh.length - 12}` : "");
     try {
       await this._hass.callService("persistent_notification", "create", { title: `🏷️ ${t.n_title}`, message, notification_id: "smartdiscounts_watch" });
@@ -357,7 +367,7 @@ class SmartDiscountsCard extends HTMLElement {
       return h("div", { class: "lrow", title: o.name },
         c.show_images ? h("div", { class: "thumb", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image ? null : "🏷️") : null,
         h("div", { class: "n" }, o.name, h("small", {}, this._storeBadge(o), sub ? ` ${sub}` : "")),
-        h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
+        h("div", { class: "pr" }, h("b", {}, this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
         this._slot(o));
     };
     const blocks = terms.map((term) => {
@@ -450,7 +460,7 @@ class SmartDiscountsCard extends HTMLElement {
       onclick: () => { if (sel) delete this._sel[item.uid]; else this._sel[item.uid] = o; this._render(); } },
       h("span", { class: "s" }, h("span", { class: "dot", style: `background:${o.color}` }), o.store, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, best ? h("span", { class: "star", title: t.best }, "★") : null,
         o.bonus ? h("span", { class: "bonus", title: t.bonus_help.replace("{store}", o.store) }, "🎁") : null),
-      h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, this._unitEl(o, low),
+      h("b", {}, this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, this._unitEl(o, low),
       h("span", { class: "x" }, o.name), extra ? h("span", { class: "x" }, extra) : null);
   }
   // „Meine Liste“ als Zeilen: ein Angebot je Zeile mit kleinem Bild, antippen wählt es
@@ -462,7 +472,7 @@ class SmartDiscountsCard extends HTMLElement {
       h("span", { class: `radio ${sel ? "on" : ""}` }, sel ? "✓" : ""),
       c.show_images ? h("span", { class: "thumb sm", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image ? null : "🏷️") : null,
       h("span", { class: "n" }, o.name, h("small", {}, this._storeBadge(o), sub ? ` ${sub}` : "")),
-      h("span", { class: "pr" }, h("b", {}, best ? "★ " : "", this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._unitEl(o, low)));
+      h("span", { class: "pr" }, h("b", {}, best ? "★ " : "", this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._unitEl(o, low)));
   }
   _renderList(stores) {
     const t = this._t, c = this._config;
@@ -515,14 +525,14 @@ class SmartDiscountsCard extends HTMLElement {
           onclick: (e) => { if (e.target.closest(".more")) { if (open) this._cexp.delete(it.uid); else this._cexp.add(it.uid); } else if (sel) delete this._sel[it.uid]; else this._sel[it.uid] = offers[0]; this._render(); } },
           h("span", { class: `radio ${sel ? "on" : ""}` }, sel ? "✓" : ""), h("span", { class: "n" }, it.name || it.text), this._storeBadge(cur),
           offers.length > 1 ? h("button", { type: "button", class: "more", "aria-expanded": String(open) }, `+${offers.length - 1} ${open ? "▴" : "▾"}`) : null,
-          h("b", { class: cur.id === offers[0].id ? "best" : "" }, cur.id === offers[0].id && offers.length > 1 ? "★ " : "", this._money(cur.price))),
+          h("b", { class: cur.id === offers[0].id ? "best" : "" }, cur.id === offers[0].id && offers.length > 1 ? "★ " : "", this._pr(cur))),
           open ? h("div", { class: "prices", style: "margin:0 0 8px 28px" }, offers.map((o, i) => this._priceChip(it, o, i === 0 && offers.length > 1, low.has(o.id)))) : null];
       }
       const img = sel ? sel.image : offers[0] && offers[0].image;
       return h("div", { class: "it" },
         h("div", { class: "top" }, c.show_images && !asRows ? h("div", { class: "thumb", style: img ? `background-image:url("${String(img).replace(/"/g, "%22")}");background-color:#fff` : null }, img ? null : "🛒") : null,
           h("div", { class: "n" }, it.name || it.text, sel ? [" ", this._storeBadge(sel)] : null, sel ? h("small", {}, sel.name) : it.text !== it.name ? h("small", {}, it.text) : null),
-          sel ? h("span", { class: "st ok" }, this._money(sel.price)) : this._attached(it) ? h("span", { class: "st ok" }, "🏷️ " + t.attached)
+          sel ? h("span", { class: "st ok" }, this._pr(sel)) : this._attached(it) ? h("span", { class: "st ok" }, "🏷️ " + t.attached)
             : h("span", { class: "st" }, offers.length ? `${offers.length} ${offers.length > 1 ? t.offers : t.offer1}` : t.none)),
         !offers.length ? null : asRows ? h("div", { class: "orows" }, offers.map((o, i) => this._offerRow(it, o, i === 0 && offers.length > 1, low.has(o.id))))
           : h("div", { class: "prices" }, offers.map((o, i) => this._priceChip(it, o, i === 0 && offers.length > 1, low.has(o.id)))));
@@ -539,7 +549,7 @@ class SmartDiscountsCard extends HTMLElement {
           const sel = this._sel[r.it.uid] && this._sel[r.it.uid].id === o.id;
           return h("div", { class: `cell ${r.offers[0].id === o.id && r.offers.length > 1 ? "best" : ""} ${sel ? "sel" : ""}`, title: o.name, role: "button", tabindex: "0",
             onclick: () => { if (sel) delete this._sel[r.it.uid]; else this._sel[r.it.uid] = o; this._render(); } },
-            h("span", { class: "cp" }, r.offers[0].id === o.id && r.offers.length > 1 ? "★ " : "", this._money(o.price)), this._unitEl(o, low.has(o.id))); })]));
+            h("span", { class: "cp" }, r.offers[0].id === o.id && r.offers.length > 1 ? "★ " : "", this._pr(o)), this._unitEl(o, low.has(o.id))); })]));
     const chosen = Object.entries(this._sel).filter(([uid]) => items.some((i) => i.uid === uid));
     const total = chosen.reduce((a, [, o]) => a + o.price, 0);
     const sum = h("div", { class: "sum" }, h("div", {}, chosen.length ? t.chosen.replace("{n}", chosen.length) : t.pick_hint,
@@ -601,7 +611,7 @@ class SmartDiscountsCard extends HTMLElement {
       return h("div", { class: `tl ${got ? "got" : ""}`, title: got ? `${o.name} – ${t.on_n.replace("{n}", got)}` : o.name }, o.pct ? h("span", { class: "pctb" }, `−${o.pct}%`) : null, mine ? h("span", { class: "on", title: t.on_list }, "📝") : null,
         c.show_images ? h("div", { class: "img", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}")` : "background:none" },
           got ? [h("span", { class: "gotck", "aria-hidden": "true" }, "✓"), h("span", { class: "gotn" }, `${got}×`)] : null) : null,
-        h("div", { class: "t" }, !c.show_images && got ? h("span", { class: "gott" }, "✓ ") : null, o.name), byCat ? h("div", { class: "x" }, this._storeBadge(o)) : null, h("div", {}, h("b", {}, this._money(o.price)), o.old ? h("s", { style: "margin-left:4px;font-size:.7rem;opacity:.7" }, this._money(o.old)) : null),
+        h("div", { class: "t" }, !c.show_images && got ? h("span", { class: "gott" }, "✓ ") : null, o.name), byCat ? h("div", { class: "x" }, this._storeBadge(o)) : null, h("div", {}, h("b", {}, this._pr(o)), o.old ? h("s", { style: "margin-left:4px;font-size:.7rem;opacity:.7" }, this._money(o.old)) : null),
         h("div", { class: "x" }, [c.show_unit_price ? this._unitLabel(o) : "", this._valid(o), this._trendText(o)].filter(Boolean).join(" · ") || " "),
         this._addCtl(o, true));
     };
@@ -614,7 +624,7 @@ class SmartDiscountsCard extends HTMLElement {
           got ? h("span", { class: "gotck", "aria-hidden": "true" }, "✓") : null) : null,
         h("div", { class: "n" }, mine ? h("span", { title: t.on_list }, "📝 ") : null, o.name,
           sub || byCat || got ? h("small", {}, got ? h("b", { class: "gott" }, `✓ ${t.on_n.replace("{n}", got)}${sub || byCat ? " · " : ""}`) : null, byCat ? [this._storeBadge(o), " "] : null, sub) : null),
-        h("div", { class: "pr" }, h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
+        h("div", { class: "pr" }, h("b", {}, this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
         this._slot(o));
     };
     const asList = this._view === "list";
@@ -693,9 +703,9 @@ class SmartDiscountsCard extends HTMLElement {
   _offerNote(o) {
     const smart = (this._hass.config.components || []).includes("smartlists");
     // c = Warengruppe laut Markt: SmartLists (ab 4.0.0-beta.15) ordnet den Artikel danach ein, wenn der Name in die Irre führt
-    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), a: Math.floor(Date.now() / 1000) })}`;
+    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.full ?? o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), a: Math.floor(Date.now() / 1000) })}`;
     // Datum mit Jahr, damit sich ein abgelaufenes Angebot später erkennen lässt
-    return `🏷️ ${o.store} · ${this._money(o.price)}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
+    return `🏷️ ${o.store} · ${this._money(o.full ?? o.price)}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
   }
   // Ist das an den Eintrag geschriebene Angebot abgelaufen? (⚙OFFER-Zeile von SmartLists oder die lesbare 🏷️-Zeile)
   _expiredNote(note) {
