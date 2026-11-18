@@ -433,13 +433,23 @@ class SmartDiscountsCard extends HTMLElement {
     this._hass.callWS({ type: "smartlists/watch_sources", sources: own.map((s) => ({ entity: s.entity, attribute: s.attribute, store: s.store, map: s.map })) }).catch(() => {});
   }
   _watchHits() { return this._watchTerms().filter((x) => dealsForCached(this._all, x.name, this._config.match).length).length; }
-  _storeBadge(o) { return h("span", { class: "store", style: `background:${o.color};${/^#(f|e)[0-9a-f]{5}$/i.test(o.color) ? "color:#1a1a1a" : ""}` }, o.store); }
+  _storeBadge(o) {
+    const store = h("span", { class: "store", style: `background:${o.color};${/^#(f|e)[0-9a-f]{5}$/i.test(o.color) ? "color:#1a1a1a" : ""}` }, o.store);
+    return o.bonus ? [store, " ", this._bonusEl(o)] : store;
+  }
+  // Bonus-Aktion deutlich kennzeichnen: es gibt Guthaben (nicht weniger zu zahlen), und nur mit der App des Markts
+  _bonusEl(o) {
+    const t = this._t, b = o.bonus;
+    const amount = b.kind === "pct" ? `${String(b.value).replace(".", ",")} %` : this._money(b.value);
+    return h("span", { class: "bonus", title: t.bonus_help.replace("{store}", o.store) }, `🎁 ${t.bonus_label.replace("{amount}", amount).replace("{store}", o.store)}`);
+  }
   _priceChip(item, o, best, low) {
     const t = this._t, c = this._config, sel = this._sel[item.uid] && this._sel[item.uid].id === o.id;
     const extra = [this._valid(o), this._trendText(o)].filter(Boolean).join(" · ");
     return h("button", { type: "button", class: `pc ${best ? "best" : ""} ${sel ? "sel" : ""}`, title: o.name, "aria-pressed": String(!!sel),
       onclick: () => { if (sel) delete this._sel[item.uid]; else this._sel[item.uid] = o; this._render(); } },
-      h("span", { class: "s" }, h("span", { class: "dot", style: `background:${o.color}` }), o.store, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, best ? h("span", { class: "star", title: t.best }, "★") : null),
+      h("span", { class: "s" }, h("span", { class: "dot", style: `background:${o.color}` }), o.store, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, best ? h("span", { class: "star", title: t.best }, "★") : null,
+        o.bonus ? h("span", { class: "bonus", title: t.bonus_help.replace("{store}", o.store) }, "🎁") : null),
       h("b", {}, this._money(o.price)), o.old ? h("s", {}, this._money(o.old)) : null, this._unitEl(o, low),
       h("span", { class: "x" }, o.name), extra ? h("span", { class: "x" }, extra) : null);
   }

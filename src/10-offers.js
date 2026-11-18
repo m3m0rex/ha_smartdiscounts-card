@@ -5,7 +5,7 @@ const STORES = [["rewe", "REWE", "#cc071e"], ["edeka", "EDEKA", "#f5c400"], ["li
 // Feldnamen der Angebote: der erste vorhandene zählt (je Quelle mit `map:` überschreibbar)
 const FIELDS = { name: ["product", "title", "name", "product_name", "description"], price: ["price", "new_price", "discount_price", "offer_price", "sale_price", "price_euro", "current_price"],
   old_price: ["old_price", "regular_price", "original_price", "was_price", "oldPrice", "base_price_old"], image: ["picture_link", "image_url", "image", "picture", "img", "thumbnail"],
-  until: ["valid_until", "end_date", "valid_to", "until", "valid_through", "validTo"], from: ["valid_from", "start_date", "valid_start", "from", "validFrom", "starts"], unit: ["price_per_unit", "base_price", "unit_price", "grundpreis"], category: ["category", "categories", "group"], discount: ["discount", "discount_percent", "savings"], brand: ["brand", "manufacturer"], store: ["store", "market", "retailer", "advertiser"] };
+  until: ["valid_until", "end_date", "valid_to", "until", "valid_through", "validTo"], from: ["valid_from", "start_date", "valid_start", "from", "validFrom", "starts"], unit: ["price_per_unit", "base_price", "unit_price", "grundpreis"], bonus: ["loyalty_bonus_value", "bonus_value", "bonus"], bonus_type: ["loyalty_bonus_type", "bonus_type"], category: ["category", "categories", "group"], discount: ["discount", "discount_percent", "savings"], brand: ["brand", "manufacturer"], store: ["store", "market", "retailer", "advertiser"] };
 const LIST_ATTRS = ["discounts", "offers", "deals", "items", "results", "products"];
 
 const h = (tag, attrs, ...kids) => {
@@ -26,6 +26,16 @@ const num = (v) => {
   return m ? parseFloat(m[0].replace(",", ".")) : null;
 };
 // Grundpreis aus „je 250-g-Pckg. (1 kg = 5,16 €)“ bzw. „1 kg = ab € 3.85“ → { value, unit }
+// Bonus-Aktion (z. B. REWE Bonus): Guthaben statt niedrigerem Preis – nur mit der App des Markts.
+// { value: 0.5, kind: "eur" } für 50 Cent, { value: 10, kind: "pct" } für 10 %
+const bonusOf = (value, type) => {
+  const v = num(value);
+  if (v == null || v <= 0) return null;
+  const t = String(type || "").toLowerCase();
+  if (/cent|ct/.test(t)) return { value: v / 100, kind: "eur" };
+  if (/pro|perc|%/.test(t)) return { value: v, kind: "pct" };
+  return { value: v, kind: "eur" };
+};
 const unitPrice = (text) => {
   const m = String(text || "").replace(/ /g, " ").match(/1\s*(kg|l|ltr|liter|stk|st|stück|m)\s*=\s*(?:ab\s*)?(?:€\s*)?(\d+(?:[.,]\d+)?)/i);
   if (!m) return null;
@@ -94,10 +104,12 @@ function collectOffers(hass, cfg) {
       const dm = String(pick(o, "discount") || "").match(/-?\s*(\d{1,2})\s*%/);
       const pct = dm ? +dm[1] : old && old > price ? Math.round((1 - price / old) * 100) : null;
       const label = st ? String(st) : store.label, dk = `${norm(label)}|${norm(name)}|${price}|${until || ""}`, twin = seen.get(dk);
-      if (twin) { if (!twin.image) twin.image = pick(o, "image"); if (!twin.unit && unitText) { twin.unitText = String(unitText).replace(/ /g, " "); twin.unit = unitPrice(unitText); } if (!twin.category) twin.category = Array.isArray(cat) ? cat[0] : cat || ""; return; }
+      const bonus = bonusOf(pick(o, "bonus"), pick(o, "bonus_type"));
+      // dasselbe Angebot steht auch im Bonus-Sensor: der Bonus kommt an das schon gezählte Angebot
+      if (twin) { if (bonus && !twin.bonus) twin.bonus = bonus; if (!twin.image) twin.image = pick(o, "image"); if (!twin.unit && unitText) { twin.unitText = String(unitText).replace(/ /g, " "); twin.unit = unitPrice(unitText); } if (!twin.category) twin.category = Array.isArray(cat) ? cat[0] : cat || ""; return; }
       out.push({ id: `${src.entity}#${i}`, name: String(name), price, old: old && old > price ? old : null, pct, brand: pick(o, "brand") || "", image: pick(o, "image"), until, today: until === today,
         unitText: unitText ? String(unitText).replace(/ /g, " ") : "", unit: unitPrice(unitText), category: Array.isArray(cat) ? cat[0] : cat || "",
-        store: label, color: store.color, entity: src.entity, from, soon: !!from && from > today });
+        store: label, color: store.color, entity: src.entity, from, soon: !!from && from > today, bonus });
       seen.set(dk, out[out.length - 1]);
     });
   }

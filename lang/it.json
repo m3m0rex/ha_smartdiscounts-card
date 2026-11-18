@@ -52,6 +52,8 @@
   "w_adopted": "{n} prodotti ripresi da questo dispositivo.",
   "w_list_unused": "La tua lista dei preferiti ora è salvata per te in Home Assistant. La lista «{list}» delle impostazioni della scheda non viene più usata; ciò che contiene resta lì.",
   "w_list_take": "Copia nella mia lista",
+  "bonus_label": "{amount} di bonus · solo con l'app {store}",
+  "bonus_help": "Offerta bonus: paghi il prezzo normale e ricevi il credito nell'app {store}, solo se la usi alla cassa.",
   "w_fixed": "dalla configurazione",
   "n_title": "Offerta per i prodotti che segui",
   "e_watch": "Da tenere d'occhio: prodotti",

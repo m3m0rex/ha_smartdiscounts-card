@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.5] – 2026-11-18
+
+### Added
+
+- **Bonus offers are marked clearly.** Offers with a loyalty bonus (for example REWE Bonus, `loyalty_bonus_value` /
+  `loyalty_bonus_type`) show "🎁 0,50 € bonus · REWE app only" next to the shop; the tooltip explains that you pay
+  the normal price and get the credit in the shop's app. When the same offer also comes from the normal sensor, it is
+  shown once – with the bonus.
+
 ## [1.3.4] – 2026-11-18
 
 ### Fixed
