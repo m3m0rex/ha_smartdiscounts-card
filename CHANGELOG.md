@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.11] – 2026-11-18
+
+### Fixed
+
+- **Only one tab chosen** (e.g. only "All offers"): the card showed "null" above the search.
+- **Bonus offers added to the list** keep the bonus: with SmartLists the item shows "🎁 Bonus" instead of "Offer"
+  (SmartLists 4.0.1 or newer); without SmartLists the note says "🎁 0,20 € bonus · only with the REWE app".
+
 ## [1.3.10] – 2026-11-18
 
 ### Changed

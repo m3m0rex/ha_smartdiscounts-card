@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.10";
+const VERSION = "1.3.11";
 const TAG = "smartdiscounts-card";
 if (customElements.get(TAG)) return;  // schon geladen (z. B. doppelt als Ressource eingetragen)
 
@@ -853,7 +853,7 @@ class SmartDiscountsCard extends HTMLElement {
       h("button", { type: "button", class: this._tab === v ? "on" : "", onclick: () => { this._tab = v; this._render(); } }, names[v]))) : null;
     const body = !this._all.length ? h("div", { class: "msg" }, t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
     this._card.className = `wrap ${c.show_images ? "" : "noimg"}`;
-    this._card.replaceChildren(head, tabs, body);
+    this._card.replaceChildren(...[head, tabs, body].filter(Boolean));  // ohne Reiter-Leiste sonst „null“ als Text
   }
   // Kategorie eines Angebots: mit SmartLists dessen Einkaufs-Kategorien (einheitlich über alle Märkte), sonst die des Sensors
   async _loadCats() {
@@ -1179,9 +1179,12 @@ class SmartDiscountsCard extends HTMLElement {
   _offerNote(o) {
     const smart = (this._hass.config.components || []).includes("smartlists");
     // c = Warengruppe laut Markt: SmartLists (ab 4.0.0-beta.15) ordnet den Artikel danach ein, wenn der Name in die Irre führt
-    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.full ?? o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), a: Math.floor(Date.now() / 1000) })}`;
+    // b/bk = Bonus-Aktion (Guthaben in der App des Markts, kein niedrigerer Preis): SmartLists zeigt dann „🎁 Bonus“ statt „Angebot“
+    const bonus = o.bonus ? { b: o.bonus.value, ...(o.bonus.kind === "pct" ? { bk: "pct" } : {}) } : {};
+    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.full ?? o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), ...bonus, a: Math.floor(Date.now() / 1000) })}`;
     // Datum mit Jahr, damit sich ein abgelaufenes Angebot später erkennen lässt
-    return `🏷️ ${o.store} · ${this._money(o.full ?? o.price)}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
+    const extra = o.bonus ? ` · 🎁 ${this._t.bonus_label.replace("{amount}", o.bonus.kind === "pct" ? `${o.bonus.value} %` : this._money(o.bonus.value)).replace("{store}", o.store)}` : "";
+    return `🏷️ ${o.store} · ${this._money(o.full ?? o.price)}${extra}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
   }
   // Ist das an den Eintrag geschriebene Angebot abgelaufen? (⚙OFFER-Zeile von SmartLists oder die lesbare 🏷️-Zeile)
   _expiredNote(note) {
