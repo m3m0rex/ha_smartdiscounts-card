@@ -50,6 +50,8 @@
   "w_err": "Impossibile caricare la lista dei preferiti da Home Assistant. Non è stato salvato nulla.",
   "w_retry": "Riprova",
   "w_adopted": "{n} prodotti ripresi da questo dispositivo.",
+  "w_list_unused": "La tua lista dei preferiti ora è salvata per te in Home Assistant. La lista «{list}» delle impostazioni della scheda non viene più usata; ciò che contiene resta lì.",
+  "w_list_take": "Copia nella mia lista",
   "w_fixed": "dalla configurazione",
   "n_title": "Offerta per i prodotti che segui",
   "e_watch": "Da tenere d'occhio: prodotti",

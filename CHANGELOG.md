@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.4] – 2026-11-18
+
+### Fixed
+
+- **With SmartLists the watch list never goes into a to-do list any more.** If the card still had `watch_list` (a
+  to-do list) set, every user of the dashboard wrote their watch list into that one list – it then showed up in
+  every combined list containing it and triggered "added to list" notifications. With SmartLists everyone's watch
+  list is kept per user in Home Assistant; `watch_list` is only used without SmartLists. The tab says so and offers
+  to copy what is on the to-do list into your own watch list.
+
 ## [1.3.3] – 2026-11-18
 
 ### Changed

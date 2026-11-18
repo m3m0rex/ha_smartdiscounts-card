@@ -50,6 +50,8 @@
   "w_err": "Die Merkliste konnte nicht aus Home Assistant geladen werden. Es wurde nichts gespeichert.",
   "w_retry": "Erneut versuchen",
   "w_adopted": "{n} Produkte von diesem Gerät übernommen.",
+  "w_list_unused": "Die Merkliste liegt jetzt bei dir in Home Assistant. Die To-do-Liste „{list}“ aus der Karten-Einstellung wird dafür nicht mehr benutzt; was dort steht, bleibt stehen.",
+  "w_list_take": "In meine Merkliste kopieren",
   "w_fixed": "aus der Konfiguration",
   "n_title": "Angebot für deine Merkliste",
   "e_watch": "Merkliste: Produkte",

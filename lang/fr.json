@@ -50,6 +50,8 @@
   "w_err": "La liste de suivi n’a pas pu être chargée depuis Home Assistant. Rien n’a été enregistré.",
   "w_retry": "Réessayer",
   "w_adopted": "{n} produits repris de cet appareil.",
+  "w_list_unused": "Votre liste de suivi est maintenant enregistrée pour vous dans Home Assistant. La liste de tâches « {list} » des réglages de la carte n’est plus utilisée ; son contenu reste en place.",
+  "w_list_take": "Copier dans ma liste de suivi",
   "w_fixed": "depuis la configuration",
   "n_title": "Promo pour ta liste à surveiller",
   "e_watch": "À surveiller : produits",

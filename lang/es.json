@@ -50,6 +50,8 @@
   "w_err": "No se pudo cargar la lista de seguimiento desde Home Assistant. No se guardó nada.",
   "w_retry": "Reintentar",
   "w_adopted": "{n} productos traídos de este dispositivo.",
+  "w_list_unused": "Tu lista de seguimiento se guarda ahora para ti en Home Assistant. La lista de tareas «{list}» de los ajustes de la tarjeta ya no se usa; lo que hay en ella se queda.",
+  "w_list_take": "Copiar a mi lista de seguimiento",
   "w_fixed": "de la configuración",
   "n_title": "Oferta para tu seguimiento",
   "e_watch": "Seguimiento: productos",

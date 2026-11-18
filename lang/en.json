@@ -50,6 +50,8 @@
   "w_err": "The watch list could not be loaded from Home Assistant. Nothing was saved.",
   "w_retry": "Try again",
   "w_adopted": "{n} products taken over from this device.",
+  "w_list_unused": "Your watch list is now kept for you in Home Assistant. The to-do list “{list}” from the card settings is no longer used for it; what is on it stays there.",
+  "w_list_take": "Copy to my watch list",
   "w_fixed": "from the configuration",
   "n_title": "Offer for your watch list",
   "e_watch": "Watch list: products",

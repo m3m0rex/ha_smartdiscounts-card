@@ -50,6 +50,8 @@
   "w_err": "Nie udało się wczytać listy obserwowanych z Home Assistant. Nic nie zostało zapisane.",
   "w_retry": "Spróbuj ponownie",
   "w_adopted": "Przeniesiono {n} produktów z tego urządzenia.",
+  "w_list_unused": "Twoja lista obserwowanych jest teraz zapisana dla Ciebie w Home Assistant. Lista zadań „{list}” z ustawień karty nie jest już do tego używana; jej zawartość pozostaje.",
+  "w_list_take": "Skopiuj na moją listę",
   "w_fixed": "z konfiguracji",
   "n_title": "Promocja dla obserwowanych",
   "e_watch": "Obserwowane: produkty",
