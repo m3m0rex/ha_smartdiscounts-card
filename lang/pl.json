@@ -147,5 +147,12 @@
   "wl_all_hint": "Wszystkie Twoje listy razem. Nowe produkty trafiają na listę domyślną, usunięcie dotyczy każdej listy.",
   "wl_private": "Tylko ty widzisz swoje listy obserwowanych.",
   "bk_more": "{n} produktów więcej za {sum}",
-  "bk_rest": "pozostałe taniej o {sum}"
+  "bk_rest": "pozostałe taniej o {sum}",
+  "bk_big1": "1 większe opakowanie",
+  "bk_big": "Większe opakowania: {n}",
+  "bk_bigger": "większe opakowanie",
+  "bk_more_pay": "+{sum} przy kasie",
+  "bk_amount": "{a} zamiast {b}",
+  "bk_per": "{a} zamiast {b}",
+  "bk_same": "za {a} to o {sum} mniej"
 }

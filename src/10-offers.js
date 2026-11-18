@@ -197,8 +197,19 @@ function bestBasket(rows) {
     let same = 0, extra = 0;
     for (const uid of Object.keys(one.picks)) same += b.picks[uid] ? forSameAmount(one.picks[uid], b.picks[uid]) : one.picks[uid].price;
     for (const [uid, o] of Object.entries(b.picks)) if (!one.picks[uid]) extra += o.price;
+    // größere Packungen: an der Kasse teurer, pro Liter/Kilo aber günstiger – für die aufklappbare Erklärung
+    const bigger = [];
+    for (const uid of Object.keys(one.picks)) {
+      const mine = one.picks[uid], other = b.picks[uid];
+      if (!other || other.id === mine.id || !mine.unit || !other.unit || mine.unit.unit !== other.unit.unit) continue;
+      if (!(other.price > mine.price + 0.004 && other.unit.value < mine.unit.value - 0.004 && mine.unit.value > 0 && other.unit.value > 0)) continue;
+      const amount = mine.price / mine.unit.value;
+      bigger.push({ uid, unit: mine.unit.unit, more: Math.round((other.price - mine.price) * 100) / 100,
+        amountMine: Math.round(amount * 10) / 10, amountOther: Math.round((other.price / other.unit.value) * 10) / 10,
+        unitMine: mine.unit.value, unitOther: other.unit.value, saves: Math.round((mine.price - other.unit.value * amount) * 100) / 100 });
+    }
     return { ...b, saving: Math.max(0, Math.round((one.total - same) * 100) / 100), more: b.count - one.count,
-      extra: Math.round(extra * 100) / 100 };
+      extra: Math.round(extra * 100) / 100, bigger };
   });
   return { one, two: out[1] || null, all: out };
 }

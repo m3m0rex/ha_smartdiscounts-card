@@ -147,5 +147,12 @@
   "wl_all_hint": "Todas tus listas de seguimiento juntas. Lo nuevo va a tu lista predeterminada; quitar se aplica a todas las listas.",
   "wl_private": "Solo tú ves tus listas de seguimiento.",
   "bk_more": "{n} artículos más por {sum}",
-  "bk_rest": "el resto {sum} más barato"
+  "bk_rest": "el resto {sum} más barato",
+  "bk_big1": "1 envase más grande",
+  "bk_big": "{n} envases más grandes",
+  "bk_bigger": "envase más grande",
+  "bk_more_pay": "+{sum} en caja",
+  "bk_amount": "{a} en vez de {b}",
+  "bk_per": "{a} en vez de {b}",
+  "bk_same": "para {a} son {sum} menos"
 }

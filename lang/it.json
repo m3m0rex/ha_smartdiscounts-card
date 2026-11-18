@@ -147,5 +147,12 @@
   "wl_all_hint": "Tutte le tue liste insieme. I nuovi prodotti vanno nella lista predefinita, la rimozione vale per ogni lista.",
   "wl_private": "Solo tu vedi le tue liste dei preferiti.",
   "bk_more": "{n} articoli in più per {sum}",
-  "bk_rest": "gli altri {sum} in meno"
+  "bk_rest": "gli altri {sum} in meno",
+  "bk_big1": "1 confezione più grande",
+  "bk_big": "{n} confezioni più grandi",
+  "bk_bigger": "confezione più grande",
+  "bk_more_pay": "+{sum} alla cassa",
+  "bk_amount": "{a} invece di {b}",
+  "bk_per": "{a} invece di {b}",
+  "bk_same": "per {a} sono {sum} in meno"
 }

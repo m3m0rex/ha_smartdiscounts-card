@@ -30,6 +30,7 @@ class SmartDiscountsCard extends HTMLElement {
     this._lview = LV.includes(this._config.list_view) ? this._config.list_view : "rows";
     try { const v = localStorage.getItem(this._memKey("list-view")); if (free("list_view") && LV.includes(v)) this._lview = v; } catch (e) { /* */ }
     this._cexp = new Set();
+    this._bkOpen = new Set();  // aufgeklappte Erklärungen „größere Packung“ im Günstigsten Einkauf
     if (!this.shadowRoot) { this._card = h("div", { class: "wrap" }); this.attachShadow({ mode: "open" }).append(h("style", {}, STYLE), h("ha-card", {}, this._card)); }
     this._sig = null;
     if (this._hass) this._refresh(true);
@@ -508,8 +509,24 @@ class SmartDiscountsCard extends HTMLElement {
         b.saving ? h("span", { class: "sv" }, " · " + (b.more ? t.bk_rest : t.bk_saves).replace("{sum}", this._money(b.saving))) : null),
       h("b", { class: "bs" }, this._money(b.total)));
     const bkLabel = (n) => (n === 1 ? t.bk_one : n === 2 ? t.bk_two : t.bk_n.replace("{n}", n));
+    // Aufklappbar unter einem Einkauf: Artikel, bei denen eine größere Packung gewählt ist – mehr an der Kasse,
+    // pro Liter/Kilo günstiger
+    const nameOf = (uid) => { const r = hit.find((x) => x.it.uid === uid); return r ? r.it.name || r.it.text : ""; };
+    const amt = (v, u) => `${String(v).replace(".", ",")} ${u}`;
+    const per = (v, u) => `${this._money(v)}/${u}`;
+    const bigBox = (b, key) => {
+      if (!b.bigger || !b.bigger.length) return null;
+      const open = this._bkOpen.has(key);
+      return [h("button", { type: "button", class: "bkx", "aria-expanded": String(open), onclick: () => { if (open) this._bkOpen.delete(key); else this._bkOpen.add(key); this._render(); } },
+        (open ? "▾ " : "▸ ") + (b.bigger.length === 1 ? t.bk_big1 : t.bk_big.replace("{n}", b.bigger.length))),
+        open ? b.bigger.map((x) => h("div", { class: "bkd" },
+          h("div", {}, h("span", {}, `${nameOf(x.uid)} · ${t.bk_bigger}`), h("span", {}, t.bk_more_pay.replace("{sum}", this._money(x.more)))),
+          h("div", { class: "mut" }, h("span", {}, t.bk_amount.replace("{a}", amt(x.amountOther, x.unit)).replace("{b}", amt(x.amountMine, x.unit))),
+            h("span", { class: "ok" }, t.bk_per.replace("{a}", per(x.unitOther, x.unit)).replace("{b}", per(x.unitMine, x.unit)))),
+          h("div", { class: "ok" }, t.bk_same.replace("{a}", amt(x.amountMine, x.unit)).replace("{sum}", this._money(x.saves))))) : null];
+    };
     const basket = bb.one && (stores.length > 1 || bb.two) ? h("div", { class: "basket" }, h("div", { class: "bh" }, "🧮 " + t.bk_title),
-      bb.all.map((b, i) => basketRow(b, bkLabel(i + 1)))) : null;
+      bb.all.map((b, i) => [basketRow(b, bkLabel(i + 1)), bigBox(b, b.stores.slice().sort().join("|"))])) : null;
     // demnächst im Angebot (gilt erst ab einem späteren Tag)
     const soon = this._next.length ? items.map((it) => [it, it.name ? dealsForCached(this._next, it.name, c.match)[0] : null]).filter(([, o]) => o) : [];
     const soonBox = soon.length ? h("div", { class: "soonbox" }, h("b", {}, "📅 " + t.soon_title), " ",

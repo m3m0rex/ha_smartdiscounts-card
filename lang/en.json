@@ -147,5 +147,12 @@
   "wl_all_hint": "All your watch lists together. New products go to your default list, removing applies to every list.",
   "wl_private": "Only you see your watch lists.",
   "bk_more": "{n} more items for {sum}",
-  "bk_rest": "the others {sum} cheaper"
+  "bk_rest": "the others {sum} cheaper",
+  "bk_big1": "1 bigger pack",
+  "bk_big": "{n} bigger packs",
+  "bk_bigger": "bigger pack",
+  "bk_more_pay": "+{sum} at the till",
+  "bk_amount": "{a} instead of {b}",
+  "bk_per": "{a} instead of {b}",
+  "bk_same": "for {a} that is {sum} less"
 }

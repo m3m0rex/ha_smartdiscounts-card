@@ -141,6 +141,9 @@ const STYLE = `
   .bk .bl { flex:1; min-width:0; display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.86rem; }
   .bk .bm { color:var(--secondary-text-color); font-size:.76rem; white-space:nowrap; } .bk .sv { color:var(--sd-ok); font-weight:700; }
   .bk .bs { font-variant-numeric:tabular-nums; min-width:62px; text-align:right; }
+  .bkx { font:inherit; font-size:.76rem; color:var(--secondary-text-color); background:none; border:0; padding:0 8px 4px; cursor:pointer; }
+  .bkd { margin:0 8px 6px; border:1px solid var(--divider-color,#e0e0e0); border-radius:8px; padding:6px 8px; font-size:.78rem; }
+  .bkd > div { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; } .bkd .mut { color:var(--secondary-text-color); } .bkd .ok { color:var(--sd-ok); }
   .soonbox { margin-top:10px; font-size:.8rem; color:var(--secondary-text-color); padding:8px 10px; border-radius:10px; background:var(--secondary-background-color,#f6f6f6); }
   .soonbox b { color:var(--primary-text-color); }
   .lrow .pr .trend { display:block; font-size:.68rem; font-weight:600; } .trend.up { color:var(--error-color,#db4437); } .trend.down { color:var(--sd-ok); }

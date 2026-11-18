@@ -147,5 +147,12 @@
   "wl_all_hint": "Alle deine Merklisten zusammen. Neues kommt in deine Standard-Liste, Entfernen gilt für jede Liste.",
   "wl_private": "Nur du siehst deine Merklisten.",
   "bk_more": "{n} Artikel mehr für {sum}",
-  "bk_rest": "die übrigen {sum} günstiger"
+  "bk_rest": "die übrigen {sum} günstiger",
+  "bk_big1": "1 größere Packung",
+  "bk_big": "{n} größere Packungen",
+  "bk_bigger": "größere Packung",
+  "bk_more_pay": "+{sum} an der Kasse",
+  "bk_amount": "{a} statt {b}",
+  "bk_per": "{a} statt {b}",
+  "bk_same": "für {a} wären das {sum} weniger"
 }

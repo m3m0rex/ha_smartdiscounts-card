@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.9] – 2026-11-18
+
+### Added
+
+- **Why a bigger pack is cheaper.** Under a cheapest shopping trip a line like "▸ 1 bigger pack" opens what it
+  means: "+4,00 € at the till", "12 l instead of 6 l", "1,00 €/l instead of 1,33 €/l" and "for 6 l that is 1,98 € less".
+
 ## [1.3.8] – 2026-11-18
 
 ### Fixed

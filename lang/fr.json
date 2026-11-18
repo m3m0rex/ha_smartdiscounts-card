@@ -147,5 +147,12 @@
   "wl_all_hint": "Toutes vos listes de suivi réunies. Les nouveaux produits vont dans votre liste par défaut, la suppression vaut pour chaque liste.",
   "wl_private": "Vous seul voyez vos listes de suivi.",
   "bk_more": "{n} articles de plus pour {sum}",
-  "bk_rest": "les autres {sum} moins chers"
+  "bk_rest": "les autres {sum} moins chers",
+  "bk_big1": "1 plus grand format",
+  "bk_big": "{n} plus grands formats",
+  "bk_bigger": "plus grand format",
+  "bk_more_pay": "+{sum} à la caisse",
+  "bk_amount": "{a} au lieu de {b}",
+  "bk_per": "{a} au lieu de {b}",
+  "bk_same": "pour {a}, c'est {sum} de moins"
 }

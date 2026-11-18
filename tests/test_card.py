@@ -185,7 +185,8 @@ const r = S.bestBasket([
   { uid: "butter", offers: [o("c", "REWE", 1.59)] },
   { uid: "saft", offers: [o("d", "EDEKA", 0.99)] },
 ]);
-console.log(JSON.stringify([r.one.stores, r.two.picks.cola.id, r.two.saving, r.two.extra]));
+console.log(JSON.stringify([r.one.stores, r.two.picks.cola.id, r.two.saving, r.two.extra, r.two.bigger]));
 """)
     # REWE allein: Cola + Butter. Mit EDEKA: Cola dort (1,00 €/l), 6 l kosten 6,01 € statt 7,99 € – spart 1,98 €
-    assert out == [["REWE"], "b", 1.98, 0.99]
+    assert out[:4] == [["REWE"], "b", 1.98, 0.99]
+    assert out[4] == [{"uid": "cola", "unit": "l", "more": 4.0, "amountMine": 6.0, "amountOther": 12.0, "unitMine": 1.33, "unitOther": 1.0, "saves": 1.98}]
