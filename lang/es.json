@@ -121,5 +121,18 @@
   "bk_items": "{n} de {m} artículos en oferta",
   "bk_saves": "ahorra {sum}",
   "soon_title": "Pronto en oferta:",
-  "e_trend": "Aviso si una oferta era antes más barata o más cara"
+  "e_trend": "Aviso si una oferta era antes más barata o más cara",
+  "wl_yours": "Tus listas de seguimiento",
+  "wl_new": "Nueva lista de seguimiento",
+  "wl_rename": "Cambiar nombre",
+  "wl_default": "Usar como predeterminada",
+  "wl_is_default": "predeterminada",
+  "wl_delete": "Eliminar lista de seguimiento",
+  "wl_delete_sure": "¿Eliminar de verdad?",
+  "wl_name": "Nombre de la lista de seguimiento",
+  "wl_ok": "OK",
+  "wl_cancel": "Cancelar",
+  "wl_private": "Solo tú ves tus listas de seguimiento.",
+  "bk_more": "{n} artículos más por {sum}",
+  "bk_rest": "el resto {sum} más barato"
 }

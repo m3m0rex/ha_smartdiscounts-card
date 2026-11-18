@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0] – 2026-11-18
+
+### Added
+
+- **Your own watch lists.** With SmartLists 4.0.0-beta.13 or newer the watch list is no longer shared by the whole
+  household: every user has their own, and can keep several (for example "Party" next to the everyday one). The tab
+  "Watch list" gets a picker with buttons to add, rename, set the default and delete. Nobody sees the watch lists of
+  others, and Home Assistant notifies each user about their own lists. On the first visit you get a copy of the
+  former shared list, so nothing is lost.
+
+### Fixed
+
+- **"Cheapest shopping trip" was hard to read** when two shops cover more items: the line showed a higher total next
+  to "saves 0,10 €". It now says what the difference is – "2 more items for 3,78 € · the others 0,10 € cheaper".
+
 ## [1.2.0] – 2026-11-18
 
 ### Changed

@@ -179,7 +179,13 @@ class SmartDiscountsCard extends HTMLElement {
     // Mit SmartLists (und ohne eigene watch_list): die Merkliste des Haushalts – dort meldet Home Assistant auch im Hintergrund
     this._watchSmart = !this._watchShared && (this._hass.config.components || []).includes("smartlists");
     if (this._watchSmart) {
-      try { this._watchItems = ((await this._hass.callWS({ type: "smartlists/watch" })).names || []).map((name) => ({ name })); return; }
+      try {
+        // Merklisten je Benutzer (SmartLists ab 4.0.0-beta.13): r.lists nennt die eigenen, r.list die gezeigte
+        const r = await this._hass.callWS({ type: "smartlists/watch", ...this._wl() });
+        this._watchItems = (r.names || []).map((name) => ({ name }));
+        this._watchLists = Array.isArray(r.lists) ? r.lists : null; this._watchSel = r.list || null; this._watchDefault = r.default || null;
+        return;
+      }
       catch (e) { this._watchSmart = false; }  // ältere SmartLists-Version: wie ohne
     }
     if (this._watchShared) {
@@ -193,6 +199,38 @@ class SmartDiscountsCard extends HTMLElement {
       this._watchItems = (Array.isArray(local) ? local : []).filter((x) => typeof x === "string" && x.trim()).map((name) => ({ name }));
     }
   }
+  _wl() { return this._watchSel ? { list: this._watchSel } : {}; }
+  // Eigene Merklisten verwalten (nur mit SmartLists): anlegen, umbenennen, Standard, löschen
+  async _watchListCmd(patch) {
+    this._wlErr = "";
+    try {
+      const r = await this._hass.callWS({ type: "smartlists/watch_set", ...this._wl(), ...patch });
+      this._watchSel = r.list || null; this._wlEdit = null; this._wlSure = false;
+    } catch (e) { this._wlErr = (e && e.message) || this._t.error || "Error"; }
+    this._sig = null; await this._refresh(true);
+  }
+  _watchListBar() {
+    const t = this._t, lists = this._watchLists;
+    if (!this._watchSmart || !lists) return null;
+    const err = this._wlErr ? h("div", { class: "msg", role: "alert", style: "padding:4px 0;text-align:left;color:var(--error-color,#db4437)" }, this._wlErr) : null;
+    if (this._wlEdit) {
+      const cur = lists.find((x) => x.id === this._watchSel);
+      const input = h("input", { type: "text", class: "search", maxlength: "40", placeholder: t.wl_name, "aria-label": t.wl_name, value: this._wlEdit === "rename" && cur ? cur.name : "" });
+      const ok = () => { const v = input.value.trim(); if (v) this._watchListCmd(this._wlEdit === "rename" ? { rename: v } : { new_list: v }); };
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") ok(); if (e.key === "Escape") { this._wlEdit = null; this._wlErr = ""; this._render(); } });
+      setTimeout(() => input.focus(), 30);
+      return h("div", {}, h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: ok }, t.wl_ok),
+        h("button", { type: "button", class: "btn", onclick: () => { this._wlEdit = null; this._wlErr = ""; this._render(); } }, t.wl_cancel)), err);
+    }
+    const sel = h("select", { class: "search", "aria-label": t.wl_yours, onchange: (e) => { this._watchSel = e.target.value; this._wlSure = false; this._sig = null; this._refresh(true); } },
+      lists.map((x) => h("option", { value: x.id, selected: x.id === this._watchSel }, `${x.name} (${x.count})${x.id === this._watchDefault ? ` · ${t.wl_is_default}` : ""}`)));
+    const b = (label, title, onclick, cls = "btn") => h("button", { type: "button", class: cls, title, "aria-label": title, onclick }, label);
+    return h("div", {}, h("div", { class: "filters one", title: t.wl_private }, sel,
+      b("＋", t.wl_new, () => { this._wlEdit = "new"; this._wlErr = ""; this._render(); }),
+      b("✎", t.wl_rename, () => { this._wlEdit = "rename"; this._wlErr = ""; this._render(); }),
+      this._watchSel === this._watchDefault ? null : b("★", t.wl_default, () => this._watchListCmd({ make_default: true })),
+      lists.length < 2 ? null : b(this._wlSure ? t.wl_delete_sure : "🗑", t.wl_delete, () => { if (this._wlSure) this._watchListCmd({ delete_list: true }); else { this._wlSure = true; this._render(); } }, this._wlSure ? "btn pri" : "btn")), err);
+  }
   _watchTerms() {
     const fixed = (Array.isArray(this._config.watch) ? this._config.watch : [this._config.watch]).filter((x) => typeof x === "string" && x.trim()).map((name) => ({ name: name.trim(), fixed: true }));
     const seen = new Set(fixed.map((x) => norm(x.name)));
@@ -201,13 +239,13 @@ class SmartDiscountsCard extends HTMLElement {
   async _watchAdd(name) {
     name = String(name || "").trim();
     if (!name || this._watchTerms().some((x) => norm(x.name) === norm(name))) return;
-    if (this._watchSmart) await this._hass.callWS({ type: "smartlists/watch_set", add: name });
+    if (this._watchSmart) await this._hass.callWS({ type: "smartlists/watch_set", add: name, ...this._wl() });
     else if (this._watchShared) await this._hass.callService("todo", "add_item", { item: name }, { entity_id: this._config.watch_list });
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify([...(this._watchItems || []).map((x) => x.name), name])); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
   }
   async _watchRemove(term) {
-    if (this._watchSmart) await this._hass.callWS({ type: "smartlists/watch_set", remove: term.name });
+    if (this._watchSmart) await this._hass.callWS({ type: "smartlists/watch_set", remove: term.name, ...this._wl() });
     else if (this._watchShared && term.uid) await this._hass.callService("todo", "remove_item", { item: term.uid }, { entity_id: this._config.watch_list });
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify((this._watchItems || []).map((x) => x.name).filter((n) => n !== term.name))); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
@@ -267,7 +305,7 @@ class SmartDiscountsCard extends HTMLElement {
         term.fixed ? h("small", {}, t.w_fixed) : h("button", { type: "button", "aria-label": `${t.exp_remove}: ${term.name}`, onclick: () => this._watchRemove(term) }, t.exp_remove)),
         offers.length ? h("div", { class: "lrows" }, offers.map(row)) : null);
     });
-    return h("div", {}, h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: go }, t.w_add_btn)),
+    return h("div", {}, this._watchListBar(), h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: go }, t.w_add_btn)),
       terms.length ? blocks : h("div", { class: "msg" }, t.w_empty), this._watchShared || this._watchSmart ? null : h("div", { class: "foot" }, t.w_local), this._foot());
   }
   _matchesFor(item) { return item.name ? dealsForCached(this._all, item.name, this._config.match) : []; }
@@ -384,7 +422,8 @@ class SmartDiscountsCard extends HTMLElement {
     const basketRow = (b, label) => h("button", { type: "button", class: `bk ${isBasket(b) ? "on" : ""}`, "aria-pressed": String(!!isBasket(b)),
       onclick: () => (isBasket(b) ? clear() : choose((r) => b.picks[r.it.uid])) },
       h("span", { class: "bl" }, h("b", {}, label), " ", b.stores.map((s) => this._storeBadge(this._all.find((o) => o.store === s)))),
-      h("span", { class: "bm" }, t.bk_items.replace("{n}", b.count).replace("{m}", hit.length), b.saving ? h("span", { class: "sv" }, " · " + t.bk_saves.replace("{sum}", this._money(b.saving))) : null),
+      h("span", { class: "bm" }, t.bk_items.replace("{n}", b.count).replace("{m}", hit.length), b.more ? h("span", {}, " · " + t.bk_more.replace("{n}", b.more).replace("{sum}", this._money(b.extra))) : null,
+        b.saving ? h("span", { class: "sv" }, " · " + (b.more ? t.bk_rest : t.bk_saves).replace("{sum}", this._money(b.saving))) : null),
       h("b", { class: "bs" }, this._money(b.total)));
     const basket = bb.one && (stores.length > 1 || bb.two) ? h("div", { class: "basket" }, h("div", { class: "bh" }, "🧮 " + t.bk_title),
       basketRow(bb.one, t.bk_one), bb.two ? basketRow(bb.two, t.bk_two) : null) : null;

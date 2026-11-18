@@ -121,5 +121,18 @@
   "bk_items": "{n} von {m} Angebots-Artikeln",
   "bk_saves": "spart {sum}",
   "soon_title": "Demnächst im Angebot:",
-  "e_trend": "Hinweis, wenn ein Angebot vorher billiger oder teurer war"
+  "e_trend": "Hinweis, wenn ein Angebot vorher billiger oder teurer war",
+  "wl_yours": "Deine Merklisten",
+  "wl_new": "Neue Merkliste",
+  "wl_rename": "Umbenennen",
+  "wl_default": "Als Standard festlegen",
+  "wl_is_default": "Standard",
+  "wl_delete": "Merkliste löschen",
+  "wl_delete_sure": "Wirklich löschen?",
+  "wl_name": "Name der Merkliste",
+  "wl_ok": "OK",
+  "wl_cancel": "Abbrechen",
+  "wl_private": "Nur du siehst deine Merklisten.",
+  "bk_more": "{n} Artikel mehr für {sum}",
+  "bk_rest": "die übrigen {sum} günstiger"
 }

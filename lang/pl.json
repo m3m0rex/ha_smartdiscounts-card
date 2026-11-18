@@ -121,5 +121,18 @@
   "bk_items": "{n} z {m} pozycji w ofercie",
   "bk_saves": "oszczędzasz {sum}",
   "soon_title": "Wkrótce w ofercie:",
-  "e_trend": "Wskazówka, gdy oferta była wcześniej tańsza lub droższa"
+  "e_trend": "Wskazówka, gdy oferta była wcześniej tańsza lub droższa",
+  "wl_yours": "Twoje listy obserwowanych",
+  "wl_new": "Nowa lista obserwowanych",
+  "wl_rename": "Zmień nazwę",
+  "wl_default": "Ustaw jako domyślną",
+  "wl_is_default": "domyślna",
+  "wl_delete": "Usuń listę obserwowanych",
+  "wl_delete_sure": "Na pewno usunąć?",
+  "wl_name": "Nazwa listy obserwowanych",
+  "wl_ok": "OK",
+  "wl_cancel": "Anuluj",
+  "wl_private": "Tylko ty widzisz swoje listy obserwowanych.",
+  "bk_more": "{n} produktów więcej za {sum}",
+  "bk_rest": "pozostałe taniej o {sum}"
 }

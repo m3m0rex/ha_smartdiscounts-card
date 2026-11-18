@@ -121,5 +121,18 @@
   "bk_items": "{n} of {m} items on offer",
   "bk_saves": "saves {sum}",
   "soon_title": "On offer soon:",
-  "e_trend": "Hint when an offer was cheaper or dearer before"
+  "e_trend": "Hint when an offer was cheaper or dearer before",
+  "wl_yours": "Your watch lists",
+  "wl_new": "New watch list",
+  "wl_rename": "Rename",
+  "wl_default": "Make default",
+  "wl_is_default": "default",
+  "wl_delete": "Delete watch list",
+  "wl_delete_sure": "Really delete?",
+  "wl_name": "Name of the watch list",
+  "wl_ok": "OK",
+  "wl_cancel": "Cancel",
+  "wl_private": "Only you see your watch lists.",
+  "bk_more": "{n} more items for {sum}",
+  "bk_rest": "the others {sum} cheaper"
 }

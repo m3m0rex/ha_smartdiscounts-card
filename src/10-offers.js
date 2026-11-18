@@ -135,7 +135,8 @@ function dealsForCached(offers, name, mode = "word") {
 // Günstigster Einkauf: Welcher Markt deckt die meisten Artikel der Liste ab und kostet dafür am wenigsten – und lohnt
 // es sich, zwei Märkte anzufahren? rows = [{ uid, offers: [{ id, store, price }] }] (Angebote günstigstes zuerst).
 // Ergebnis: { one, two } mit { stores, count, total, picks: { uid: Angebot } }; two nur, wenn es mehr Artikel abdeckt
-// oder bei gleich vielen billiger ist. „saving“ ist die Ersparnis von two gegenüber one bei den Artikeln, die one hat.
+// oder bei gleich vielen billiger ist. „saving“ ist die Ersparnis von two gegenüber one bei den Artikeln, die one hat;
+// „more“ / „extra“: wie viele Artikel two zusätzlich abdeckt und was die kosten (deshalb kann die Summe von two höher sein).
 function bestBasket(rows) {
   const stores = [...new Set(rows.flatMap((r) => r.offers.map((o) => o.store)))];
   const basket = (set) => {
@@ -156,7 +157,8 @@ function bestBasket(rows) {
   }
   if (!one || !two || !better(two, one)) return { one, two: null };
   const same = Object.keys(one.picks).reduce((a, uid) => a + (two.picks[uid] ? two.picks[uid].price : one.picks[uid].price), 0);
-  return { one, two: { ...two, saving: Math.max(0, Math.round((one.total - same) * 100) / 100) } };
+  return { one, two: { ...two, saving: Math.max(0, Math.round((one.total - same) * 100) / 100), more: two.count - one.count,
+    extra: Math.max(0, Math.round((two.total - same) * 100) / 100) } };
 }
 // Preis-Gedächtnis: merkt je Angebot (Markt + Name) den Preis und, wenn er sich ändert, den vorherigen mit Datum.
 // So lässt sich sagen „war am 10.11. billiger“. seen = { key: { p, d, pp?, pd? } }; liefert das neue seen und je

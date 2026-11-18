@@ -121,5 +121,18 @@
   "bk_items": "{n} articles en promo sur {m}",
   "bk_saves": "économise {sum}",
   "soon_title": "Bientôt en promo :",
-  "e_trend": "Indication si une offre était moins chère ou plus chère avant"
+  "e_trend": "Indication si une offre était moins chère ou plus chère avant",
+  "wl_yours": "Vos listes de suivi",
+  "wl_new": "Nouvelle liste de suivi",
+  "wl_rename": "Renommer",
+  "wl_default": "Définir par défaut",
+  "wl_is_default": "par défaut",
+  "wl_delete": "Supprimer la liste de suivi",
+  "wl_delete_sure": "Vraiment supprimer ?",
+  "wl_name": "Nom de la liste de suivi",
+  "wl_ok": "OK",
+  "wl_cancel": "Annuler",
+  "wl_private": "Vous seul voyez vos listes de suivi.",
+  "bk_more": "{n} articles de plus pour {sum}",
+  "bk_rest": "les autres {sum} moins chers"
 }

@@ -121,5 +121,18 @@
   "bk_items": "{n} di {m} voci in offerta",
   "bk_saves": "risparmi {sum}",
   "soon_title": "Presto in offerta:",
-  "e_trend": "Avviso se un’offerta prima costava meno o di più"
+  "e_trend": "Avviso se un’offerta prima costava meno o di più",
+  "wl_yours": "Le tue liste dei preferiti",
+  "wl_new": "Nuova lista dei preferiti",
+  "wl_rename": "Rinomina",
+  "wl_default": "Imposta come predefinita",
+  "wl_is_default": "predefinita",
+  "wl_delete": "Elimina lista dei preferiti",
+  "wl_delete_sure": "Eliminare davvero?",
+  "wl_name": "Nome della lista dei preferiti",
+  "wl_ok": "OK",
+  "wl_cancel": "Annulla",
+  "wl_private": "Solo tu vedi le tue liste dei preferiti.",
+  "bk_more": "{n} articoli in più per {sum}",
+  "bk_rest": "gli altri {sum} in meno"
 }
