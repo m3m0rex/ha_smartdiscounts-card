@@ -182,8 +182,10 @@ class SmartDiscountsCard extends HTMLElement {
       try {
         // Merklisten je Benutzer (SmartLists ab 4.0.0-beta.13): r.lists nennt die eigenen, r.list die gezeigte
         const r = await this._hass.callWS({ type: "smartlists/watch", ...this._wl() });
-        this._watchItems = (r.names || []).map((name) => ({ name }));
+        // r.items nennt je Produkt seine Liste (SmartLists ab 4.0.0-beta.14) – gebraucht für „Alle Merklisten“
+        this._watchItems = Array.isArray(r.items) ? r.items.map((x) => ({ name: x.name, list: x.list })) : (r.names || []).map((name) => ({ name }));
         this._watchLists = Array.isArray(r.lists) ? r.lists : null; this._watchSel = r.list || null; this._watchDefault = r.default || null;
+        this._watchCanAll = typeof r.show_all === "boolean";
         this._watchErr = "";
         await this._adoptLocalWatch();
         return;
@@ -246,9 +248,17 @@ class SmartDiscountsCard extends HTMLElement {
       return h("div", {}, h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: ok }, t.wl_ok),
         h("button", { type: "button", class: "btn", onclick: () => { this._wlEdit = null; this._wlErr = ""; this._render(); } }, t.wl_cancel)), err);
     }
-    const sel = h("select", { class: "search", "aria-label": t.wl_yours, onchange: (e) => { this._watchSel = e.target.value; this._wlSure = false; this._sig = null; this._refresh(true); } },
+    // „Alle Merklisten“: alle eigenen Listen zusammen. Die Wahl merkt sich Home Assistant je Benutzer (nicht der Browser).
+    const all = this._watchSel === "all", canAll = this._watchCanAll && lists.length > 1;
+    const sel = h("select", { class: "search", "aria-label": t.wl_yours, onchange: (e) => {
+      this._watchSel = e.target.value; this._wlSure = false;
+      if (this._watchCanAll) this._watchListCmd({ show_all: this._watchSel === "all" }); else { this._sig = null; this._refresh(true); }
+    } },
+      canAll || all ? h("option", { value: "all", selected: all }, t.wl_all) : null,
       lists.map((x) => h("option", { value: x.id, selected: x.id === this._watchSel }, `${x.name} (${x.count})${x.id === this._watchDefault ? ` · ${t.wl_is_default}` : ""}`)));
     const b = (label, title, onclick, cls = "btn") => h("button", { type: "button", class: cls, title, "aria-label": title, onclick }, label);
+    if (all) return h("div", {}, h("div", { class: "filters one", title: t.wl_private }, sel,
+      b("＋", t.wl_new, () => { this._wlEdit = "new"; this._wlErr = ""; this._render(); })), h("div", { class: "foot", style: "text-align:left" }, t.wl_all_hint), err);
     return h("div", {}, h("div", { class: "filters one", title: t.wl_private }, sel,
       b("＋", t.wl_new, () => { this._wlEdit = "new"; this._wlErr = ""; this._render(); }),
       b("✎", t.wl_rename, () => { this._wlEdit = "rename"; this._wlErr = ""; this._render(); }),
@@ -333,7 +343,8 @@ class SmartDiscountsCard extends HTMLElement {
     };
     const blocks = terms.map((term) => {
       const offers = dealsForCached(this._all, term.name, c.match);
-      return h("div", { class: "shelf" }, h("h4", {}, "⭐ ", term.name, h("small", {}, offers.length ? `${offers.length} ${offers.length > 1 ? t.offers : t.offer1}` : t.none), h("span", { class: "sp" }),
+      const from = this._watchSel === "all" && term.list ? (this._watchLists || []).find((x) => x.id === term.list) : null;
+      return h("div", { class: "shelf" }, h("h4", {}, "⭐ ", term.name, h("small", {}, offers.length ? `${offers.length} ${offers.length > 1 ? t.offers : t.offer1}` : t.none, from ? ` · ${from.name}` : ""), h("span", { class: "sp" }),
         term.fixed ? h("small", {}, t.w_fixed) : h("button", { type: "button", "aria-label": `${t.exp_remove}: ${term.name}`, onclick: () => this._watchRemove(term) }, t.exp_remove)),
         offers.length ? h("div", { class: "lrows" }, offers.map(row)) : null);
     });

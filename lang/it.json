@@ -136,6 +136,8 @@
   "wl_name": "Nome della lista dei preferiti",
   "wl_ok": "OK",
   "wl_cancel": "Annulla",
+  "wl_all": "Tutte le liste dei preferiti",
+  "wl_all_hint": "Tutte le tue liste insieme. I nuovi prodotti vanno nella lista predefinita, la rimozione vale per ogni lista.",
   "wl_private": "Solo tu vedi le tue liste dei preferiti.",
   "bk_more": "{n} articoli in più per {sum}",
   "bk_rest": "gli altri {sum} in meno"

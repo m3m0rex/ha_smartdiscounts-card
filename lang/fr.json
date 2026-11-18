@@ -136,6 +136,8 @@
   "wl_name": "Nom de la liste de suivi",
   "wl_ok": "OK",
   "wl_cancel": "Annuler",
+  "wl_all": "Toutes les listes de suivi",
+  "wl_all_hint": "Toutes vos listes de suivi réunies. Les nouveaux produits vont dans votre liste par défaut, la suppression vaut pour chaque liste.",
   "wl_private": "Vous seul voyez vos listes de suivi.",
   "bk_more": "{n} articles de plus pour {sum}",
   "bk_rest": "les autres {sum} moins chers"

@@ -136,6 +136,8 @@
   "wl_name": "Nazwa listy obserwowanych",
   "wl_ok": "OK",
   "wl_cancel": "Anuluj",
+  "wl_all": "Wszystkie listy obserwowanych",
+  "wl_all_hint": "Wszystkie Twoje listy razem. Nowe produkty trafiają na listę domyślną, usunięcie dotyczy każdej listy.",
   "wl_private": "Tylko ty widzisz swoje listy obserwowanych.",
   "bk_more": "{n} produktów więcej za {sum}",
   "bk_rest": "pozostałe taniej o {sum}"

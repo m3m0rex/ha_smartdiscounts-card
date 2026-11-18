@@ -136,6 +136,8 @@
   "wl_name": "Name der Merkliste",
   "wl_ok": "OK",
   "wl_cancel": "Abbrechen",
+  "wl_all": "Alle Merklisten",
+  "wl_all_hint": "Alle deine Merklisten zusammen. Neues kommt in deine Standard-Liste, Entfernen gilt für jede Liste.",
   "wl_private": "Nur du siehst deine Merklisten.",
   "bk_more": "{n} Artikel mehr für {sum}",
   "bk_rest": "die übrigen {sum} günstiger"

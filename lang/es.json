@@ -136,6 +136,8 @@
   "wl_name": "Nombre de la lista de seguimiento",
   "wl_ok": "OK",
   "wl_cancel": "Cancelar",
+  "wl_all": "Todas las listas de seguimiento",
+  "wl_all_hint": "Todas tus listas de seguimiento juntas. Lo nuevo va a tu lista predeterminada; quitar se aplica a todas las listas.",
   "wl_private": "Solo tú ves tus listas de seguimiento.",
   "bk_more": "{n} artículos más por {sum}",
   "bk_rest": "el resto {sum} más barato"

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.2] – 2026-11-18
+
+### Added
+
+- **All watch lists.** With SmartLists 4.0.0-beta.14 or newer and more than one watch list, the picker offers "All
+  watch lists": every product of all your lists together, each with the name of its list. New products go to your
+  default list, removing applies to every list. Home Assistant remembers the choice per user – not the browser.
+
 ## [1.3.1] – 2026-11-18
 
 ### Fixed
