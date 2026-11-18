@@ -41,7 +41,7 @@ const bonusOf = (value, type) => {
 const withBonus = (o) => {
   if (!o.bonus || o.full != null) return o;
   const eff = Math.max(0, o.bonus.kind === "pct" ? o.price * (1 - o.bonus.value / 100) : o.price - o.bonus.value);
-  const r = (v) => Math.round(v * 100) / 100;
+  const r = (v) => Math.round(v * 100 + 1e-9) / 100;
   return { ...o, full: o.price, price: r(eff), unit: o.unit && o.price > 0 ? { ...o.unit, full: o.unit.value, value: r(o.unit.value * eff / o.price) } : o.unit };
 };
 const unitPrice = (text) => {
