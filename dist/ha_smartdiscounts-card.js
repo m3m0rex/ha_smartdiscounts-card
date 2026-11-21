@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.20";
+const VERSION = "1.3.21";
 const TAG = "smartdiscounts-card";
 // Reiter „Meine Liste“ (Abgleich mit der Liste, Sammeln, günstigster Einkauf) – vorerst ausgeschaltet
 const LIST_TAB = false;
@@ -1250,7 +1250,9 @@ class SmartDiscountsCard extends HTMLElement {
     const t = this._t, c = this._config;
     const byCat = this._group === "category";
     const names = (this._items || []).map((i) => i.name).filter(Boolean);
-    const onList = (o) => names.some((n) => matches(n, o.name, c.match));
+    // je Angebots-Name nur einmal je Stand der Liste prüfen (wird je Zeile und beim Sortieren der Regale gefragt)
+    this._counts(); const memo = this._onl;
+    const onList = (o) => { let v = memo.get(o.name); if (v === undefined) { v = names.some((n) => matches(n, o.name, c.match)); memo.set(o.name, v); } return v; };
     const q = norm(this._query);
     // gibt es Angebote, die erst später gelten (Prospekt der nächsten Woche)? Dann oben umschaltbar
     const soonFrom = this._next.length ? this._next.map((o) => o.from).sort()[0] : null;
@@ -1338,8 +1340,7 @@ class SmartDiscountsCard extends HTMLElement {
         asList ? h("div", { class: "lrows" }, list.map(row)) : h("div", { class: `rail ${open || c.tile_flow !== "scroll" ? "open" : ""}` }, list.map(tile)));  // Standard: Raster von oben nach unten; "scroll" = eine Zeile zum Wischen
     });
     // Oben: was von diesen Angeboten schon auf der Liste steht (zum Einklappen) – im Regal bleibt es zusätzlich stehen
-    const cnt = new Map();
-    (this._items || []).forEach((i) => { const k = this._key(i.text); if (k) cnt.set(k, (cnt.get(k) || 0) + this._countOf(i.text)); });
+    const cnt = this._counts();
     const seen = new Set();
     const mineNow = cnt.size && !q && !this._cat ? pool.filter((o) => cnt.get(this._key(o.name)) && !seen.has(`${o.store}|${o.name}`) && seen.add(`${o.store}|${o.name}`)) : [];
     const mineSum = mineNow.reduce((a, o) => a + (o.full ?? o.price) * cnt.get(this._key(o.name)), 0);
@@ -1444,9 +1445,24 @@ class SmartDiscountsCard extends HTMLElement {
   // Einträge der Liste, die dasselbe meinen wie dieses Angebot (gleicher Name ohne Menge und Zeichen)
   // Vergleichs-Schlüssel eines Eintrags: Text ohne Anzahl und ohne @Markt/#Schlagwort/*Person – die Größe zählt mit
   // („Coca-Cola 1,5 l“ ist nicht „Coca-Cola 2 l“, und „Butter“ ist nicht „Landliebe Butter“).
-  _key(text) { return norm(this._withCount(String(text || "").split(/\s+/).filter((w) => w && !/^[@#*!+~]/.test(w)).join(" "), 1)).replace(/\s+/g, " ").trim(); }
+  // Schlüssel je Text merken und die Anzahl je Schlüssel einmal je Stand der Liste zählen – sonst rechnet jedes Zeichnen
+  // für jedes Angebot alle Einträge durch (268 Angebote × 200 Einträge)
+  _key(text) {
+    const m = this._keys || (this._keys = new Map());
+    let k = m.get(text);
+    if (k === undefined) { if (m.size > 5000) m.clear(); k = this._keyRaw(text); m.set(text, k); }
+    return k;
+  }
+  _counts() {
+    if (this._cntFor !== this._items || !this._cnt) {
+      this._cntFor = this._items; this._cnt = new Map(); this._onl = new Map();
+      (this._items || []).forEach((i) => { const k = this._key(i.text); if (k) this._cnt.set(k, (this._cnt.get(k) || 0) + this._countOf(i.text)); });
+    }
+    return this._cnt;
+  }
+  _keyRaw(text) { return norm(this._withCount(String(text || "").split(/\s+/).filter((w) => w && !/^[@#*!+~]/.test(w)).join(" "), 1)).replace(/\s+/g, " ").trim(); }
   _same(o) { const key = this._key(o.name); return key ? (this._items || []).filter((i) => this._key(i.text) === key) : []; }
-  _onListCount(o) { return this._same(o).reduce((a, i) => a + this._countOf(i.text), 0); }
+  _onListCount(o) { const k = this._key(o.name); return (k && this._counts().get(k)) || 0; }
   // ＋/− zählen sofort (in der Karte), geschrieben wird danach im Hintergrund; danach nur die Einträge neu holen
   async _step(o, delta, btn) {
     const it = this._same(o)[0];
@@ -1457,6 +1473,7 @@ class SmartDiscountsCard extends HTMLElement {
     if (String(it.uid).startsWith("tmp-")) return;  // gerade erst hinzugefügt – kurz warten, bis Home Assistant es kennt
     const n = this._countOf(it.text) + delta, before = it.text;
     if (n <= 0) this._items = this._items.filter((x) => x !== it); else { it.text = this._withCount(it.text, n); it.name = itemName(it.text); }
+    this._cntFor = null;
     this._render();
     try {
       if (n <= 0) await this._hass.callService("todo", "remove_item", { item: it.uid }, { entity_id: this._config.list });
@@ -1547,10 +1564,9 @@ class SmartDiscountsCard extends HTMLElement {
   async _add(o, btn) {
     // sofort als „1“ zählen (vorläufiger Eintrag), dann im Hintergrund schreiben
     const note = this._offerNote(o);
-    if (this._addTarget() === this._config.list) {
-      this._items = [...(this._items || []), { uid: `tmp-${Date.now()}`, text: o.name, note, name: itemName(o.name) }];
-      this._render();
-    } else if (btn) btn.disabled = true;
+    // auch wenn in eine Quell-Liste der kombinierten Liste geschrieben wird: der Eintrag erscheint ja in dieser Liste
+    this._items = [...(this._items || []), { uid: `tmp-${Date.now()}`, text: o.name, note, name: itemName(o.name) }];
+    this._render();
     try {
       // "add_to": in diese Liste hinzufügen (z. B. die eigene Quell-Liste einer kombinierten Liste) – sonst in "list"
       await this._hass.callService("todo", "add_item", { item: o.name, description: note }, { entity_id: this._addTarget() });

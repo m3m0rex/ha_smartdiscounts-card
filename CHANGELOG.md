@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.21] – 2026-11-21
+
+### Fixed
+
+- **＋ in "All offers" was still slow with a long list.** For every offer the card went through all items of the
+  list on every redraw; the counts are now worked out once per change. ＋ also counts at once when new offers go to
+  another list (`add_to`, a source list of a combined list).
+
 ## [1.3.20] – 2026-11-21
 
 ### Changed
