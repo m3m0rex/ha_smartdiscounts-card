@@ -161,5 +161,6 @@
   "st_add": "Odłóż",
   "st_on": "Odłożone",
   "st_apply": "Dodaj do listy",
-  "st_clear": "Wyczyść"
+  "st_clear": "Wyczyść",
+  "cs_store_only": "tylko ze sklepu"
 }

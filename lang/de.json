@@ -161,5 +161,6 @@
   "st_add": "Vormerken",
   "st_on": "Vorgemerkt",
   "st_apply": "Auf die Liste",
-  "st_clear": "Leeren"
+  "st_clear": "Leeren",
+  "cs_store_only": "nur vom Markt"
 }

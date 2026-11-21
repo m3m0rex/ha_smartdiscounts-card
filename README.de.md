@@ -66,7 +66,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `tabs` | `[list, all, watch]` | Welche Reiter in welcher Reihenfolge – z. B. `[all, watch]`; bei nur einem Reiter entfällt die Leiste |
 | `group_by` | `store` | „Alle Angebote“ nach `store` (Markt) oder `category` (Kategorie) einsortieren; 🗂️ in der Karte schaltet um |
 | `categories_open` | `true` | Kategorien ausgeklappt; `false` = zugeklappt starten |
-| `category_source` | `auto` | `auto`: Kategorien von SmartLists, sonst vom Markt · `store`: immer die des Markts |
+| `category_source` | `auto` | `auto`: Kategorien von SmartLists, sonst vom Markt · `store`: die des Markts, sonst von SmartLists · `store_only`: nur die des Markts (ohne → „Sonstiges“) |
 | `category_map` | – | Markt-Kategorien mit eigenen verknüpfen, z. B. `{ Molkereiprodukte: Kühlung, Store: "" }` (leer = keine Kategorie) – im Editor zum Anklicken |
 | `locked` | – | Ansicht festlegen: was hier steht, lässt sich in der Karte nicht umschalten – `[list_view, all_view, group_by, add_to]` oder `true` für alles |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |

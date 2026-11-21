@@ -161,5 +161,6 @@
   "st_add": "Set aside",
   "st_on": "Set aside",
   "st_apply": "Add to list",
-  "st_clear": "Clear"
+  "st_clear": "Clear",
+  "cs_store_only": "from the store only"
 }

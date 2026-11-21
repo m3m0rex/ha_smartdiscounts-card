@@ -161,5 +161,6 @@
   "st_add": "Apartar",
   "st_on": "Apartado",
   "st_apply": "Añadir a la lista",
-  "st_clear": "Vaciar"
+  "st_clear": "Vaciar",
+  "cs_store_only": "solo de la tienda"
 }

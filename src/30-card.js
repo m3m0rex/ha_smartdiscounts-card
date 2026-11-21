@@ -412,7 +412,9 @@ class SmartDiscountsCard extends HTMLElement {
   // Kategorie eines Angebots: mit SmartLists dessen Einkaufs-Kategorien (einheitlich über alle Märkte), sonst die des Sensors
   async _loadCats() {
     // "store": Kategorien des Markts – SmartLists wird nur noch für Angebote gefragt, deren Markt keine brauchbare liefert
-    const need = this._config.category_source === "store" ? this._every.filter((o) => !this._ownCat(o)) : this._every;
+    // "store_only": nur die des Markts – SmartLists wird gar nicht gefragt
+    const src = this._config.category_source;
+    const need = src === "store_only" ? [] : src === "store" ? this._every.filter((o) => !this._ownCat(o)) : this._every;
     if (!need.length || !(this._hass.config.components || []).includes("smartlists")) { this._catMap = null; return; }
     if (this._catFor === this._every && this._catLang === this._hass.language) return;  // gleiche Angebote: nicht erneut fragen
     this._catMap = null; this._catFor = this._every; this._catLang = this._hass.language;
@@ -436,7 +438,8 @@ class SmartDiscountsCard extends HTMLElement {
   }
   _catOf(o) {
     const smart = this._catMap && this._catMap[o.name], own = this._ownCat(o);
-    return (this._config.category_source === "store" ? own || smart : smart || own) || this._t.other;
+    const src = this._config.category_source;
+    return (src === "store_only" ? own : src === "store" ? own || smart : smart || own) || this._t.other;
   }
   // "tabs": welche Reiter in welcher Reihenfolge, z. B. [all, watch]. Ohne Angabe alle drei.
   _tabs() {

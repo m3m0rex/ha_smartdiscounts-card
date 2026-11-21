@@ -66,7 +66,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `tabs` | `[list, all, watch]` | Which tabs in which order – e.g. `[all, watch]`; with only one tab the bar disappears |
 | `group_by` | `store` | Group "All offers" by `store` or by `category`; 🗂️ in the card switches |
 | `categories_open` | `true` | Categories expanded; `false` = start folded |
-| `category_source` | `auto` | `auto`: categories from SmartLists, otherwise from the store · `store`: always the store's own |
+| `category_source` | `auto` | `auto`: categories from SmartLists, otherwise from the store · `store`: the store's own, otherwise SmartLists · `store_only`: only the store's own (none → "Other") |
 | `category_map` | – | Link store categories to your own, e.g. `{ Dairy: Chilled, Store: "" }` (empty = no category) – clickable in the editor |
 | `locked` | – | Fix the view: whatever is listed cannot be switched inside the card – `[list_view, all_view, group_by, add_to]` or `true` for everything |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |

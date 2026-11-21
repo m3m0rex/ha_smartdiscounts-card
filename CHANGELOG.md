@@ -8,6 +8,11 @@
   are ignored, and the editor no longer offers the tab, its layouts and "Collect under My list first". The code stays.
   With it the note about expired offers and the "merge duplicates" hint are gone too, as they lived in that tab.
 
+### Added
+
+- **Categories "from the store only"** (`category_source: store_only`): SmartLists is not asked at all; offers without
+  a usable store category go to "Other".
+
 ### Fixed
 
 - **List of offers:** a price with bonus ("1,59 € (1,49 €)") no longer runs into the − 0 + counter; the bonus price

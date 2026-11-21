@@ -161,5 +161,6 @@
   "st_add": "Mettre de côté",
   "st_on": "Mis de côté",
   "st_apply": "Ajouter à la liste",
-  "st_clear": "Vider"
+  "st_clear": "Vider",
+  "cs_store_only": "seulement du magasin"
 }
