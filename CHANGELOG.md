@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.25] – 2026-11-21
+
+### Added
+
+- **Choose the preview sensors yourself** (`preview_entities`, editor → *More*): the sensors picked there count as
+  next week's offers, whatever they are called. Their list of offers is found even under an unusual attribute name.
+
 ## [1.3.24] – 2026-11-21
 
 ### Added

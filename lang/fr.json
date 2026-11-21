@@ -188,5 +188,6 @@
   "on_yours": "Sur ta liste",
   "e_shop_view": "Afficher « Ma liste de courses »",
   "sv_own": "Vue propre (promos en haut)",
-  "sv_smart": "Dans le style SmartLists"
+  "sv_smart": "Dans le style SmartLists",
+  "e_preview": "Capteurs avec les promos de la semaine prochaine (aperçu)"
 }

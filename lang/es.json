@@ -188,5 +188,6 @@
   "on_yours": "En tu lista",
   "e_shop_view": "Mostrar «Mi lista de la compra»",
   "sv_own": "Vista propia (ofertas arriba)",
-  "sv_smart": "Al estilo de SmartLists"
+  "sv_smart": "Al estilo de SmartLists",
+  "e_preview": "Sensores con las ofertas de la próxima semana (avance)"
 }

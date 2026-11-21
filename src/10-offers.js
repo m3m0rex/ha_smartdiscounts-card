@@ -92,7 +92,9 @@ function collectOffers(hass, cfg) {
   const today = new Date().toISOString().slice(0, 10);
   for (const src of sourcesOf(hass, cfg)) {
     const state = hass.states[src.entity];
-    const attr = src.attribute || LIST_ATTRS.find((a) => Array.isArray(state.attributes[a]));
+    // bekannte Namen zuerst; sonst das erste Attribut, das eine Liste von Einträgen ist (z. B. bei einem Vorschau-Sensor)
+    const attr = src.attribute || LIST_ATTRS.find((a) => Array.isArray(state.attributes[a]))
+      || Object.keys(state.attributes).find((a) => Array.isArray(state.attributes[a]) && state.attributes[a].length && typeof state.attributes[a][0] === "object");
     const rows = get(state.attributes, attr);
     if (!Array.isArray(rows)) continue;
     const store = storeOf(src, state);

@@ -54,6 +54,19 @@ class SmartDiscountsCard extends HTMLElement {
   // "entities": nur diese Sensoren (z. B. eine Karte nur für REWE) – einfache Form von "sources", im Editor auswählbar.
   // Eigene Angaben unter "sources" (store, color, map) bleiben für diese Sensoren erhalten.
   _src() {
+    const base = this._srcBase(), c = this._config;
+    // "preview_entities": diese Sensoren liefern die Angebote der nächsten Woche – sie zählen als Vorschau und kommen dazu
+    const pv = (Array.isArray(c.preview_entities) ? c.preview_entities : c.preview_entities ? [c.preview_entities] : []).filter((e) => typeof e === "string" && e);
+    if (!pv.length) return base;
+    const arr = Array.isArray(base) ? base.slice() : ["auto"];
+    pv.forEach((e) => {
+      const i = arr.findIndex((s) => (typeof s === "string" ? s : s && s.entity) === e);
+      const obj = i >= 0 && typeof arr[i] === "object" ? { ...arr[i], preview: true } : { entity: e, preview: true };
+      if (i >= 0) arr[i] = obj; else arr.push(obj);
+    });
+    return arr;
+  }
+  _srcBase() {
     const c = this._config, only = (Array.isArray(c.entities) ? c.entities : c.entities ? [c.entities] : []).filter((e) => typeof e === "string" && e);
     if (!only.length) return c.sources;
     const own = Array.isArray(c.sources) ? c.sources.filter((s) => s && typeof s === "object") : [];

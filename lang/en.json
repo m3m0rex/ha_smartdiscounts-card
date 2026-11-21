@@ -188,5 +188,6 @@
   "on_yours": "On your list",
   "e_shop_view": "Show \"My shopping list\"",
   "sv_own": "Own view (offers on top)",
-  "sv_smart": "In the SmartLists style"
+  "sv_smart": "In the SmartLists style",
+  "e_preview": "Sensors with next week's offers (preview)"
 }
