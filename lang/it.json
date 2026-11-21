@@ -173,5 +173,6 @@
   "w_todo_fail": "Impossibile creare la lista di cose da fare.",
   "w_todo_none": "Nessuna lista di cose da fare da scegliere. Solo gli amministratori possono crearne una.",
   "w_linked": "La tua lista dei preferiti è nella lista di cose da fare «{list}».",
-  "w_unlink": "Tienila di nuovo privata"
+  "w_unlink": "Tienila di nuovo privata",
+  "e_show_title": "Mostra titolo e numero di offerte"
 }

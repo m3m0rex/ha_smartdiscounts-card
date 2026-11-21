@@ -69,6 +69,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `category_source` | `auto` | `auto`: Kategorien von SmartLists, sonst vom Markt · `store`: die des Markts, sonst von SmartLists · `store_only`: nur die des Markts (ohne → „Sonstiges“) |
 | `locked` | – | Ansicht festlegen: was hier steht, lässt sich in der Karte nicht umschalten – `[list_view, all_view, group_by, add_to]` oder `true` für alles |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
+| `show_title` | `true` | `false` blendet den Kopf der Karte aus (Titel, Zahl der Angebote, Märkte). |
 | `default_tab` | `all` | `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |

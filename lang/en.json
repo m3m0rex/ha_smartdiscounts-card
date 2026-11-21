@@ -173,5 +173,6 @@
   "w_todo_fail": "The to-do list could not be created.",
   "w_todo_none": "There is no to-do list to choose. Only admins can create a new one.",
   "w_linked": "Your watch list is kept in the to-do list \"{list}\".",
-  "w_unlink": "Keep it private again"
+  "w_unlink": "Keep it private again",
+  "e_show_title": "Show title and number of offers"
 }

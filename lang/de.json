@@ -173,5 +173,6 @@
   "w_todo_fail": "Die To-do-Liste konnte nicht angelegt werden.",
   "w_todo_none": "Es gibt keine To-do-Liste zur Auswahl. Eine neue anlegen können nur Admins.",
   "w_linked": "Deine Merkliste liegt in der To-do-Liste „{list}“.",
-  "w_unlink": "Wieder privat führen"
+  "w_unlink": "Wieder privat führen",
+  "e_show_title": "Titel und Zahl der Angebote anzeigen"
 }

@@ -173,5 +173,6 @@
   "w_todo_fail": "Nie udało się utworzyć listy zadań.",
   "w_todo_none": "Brak listy zadań do wyboru. Nową mogą utworzyć tylko administratorzy.",
   "w_linked": "Twoja lista obserwowanych jest na liście zadań „{list}”.",
-  "w_unlink": "Prowadź znów prywatnie"
+  "w_unlink": "Prowadź znów prywatnie",
+  "e_show_title": "Pokaż tytuł i liczbę promocji"
 }

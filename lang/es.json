@@ -173,5 +173,6 @@
   "w_todo_fail": "No se pudo crear la lista de tareas.",
   "w_todo_none": "No hay ninguna lista de tareas para elegir. Solo los administradores pueden crear una.",
   "w_linked": "Tu lista de seguimiento está en la lista de tareas «{list}».",
-  "w_unlink": "Volver a llevarla en privado"
+  "w_unlink": "Volver a llevarla en privado",
+  "e_show_title": "Mostrar título y número de ofertas"
 }

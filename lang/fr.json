@@ -173,5 +173,6 @@
   "w_todo_fail": "La liste de tâches n’a pas pu être créée.",
   "w_todo_none": "Aucune liste de tâches à choisir. Seuls les admins peuvent en créer une.",
   "w_linked": "Ta liste de suivi est dans la liste de tâches « {list} ».",
-  "w_unlink": "La garder privée à nouveau"
+  "w_unlink": "La garder privée à nouveau",
+  "e_show_title": "Afficher le titre et le nombre de promos"
 }

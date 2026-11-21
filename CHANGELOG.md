@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.16] – 2026-11-21
+
+### Added
+
+- **`show_title: false`** hides the card header (title, number of offers, stores).
+
 ## [1.3.15] – 2026-11-21
 
 ### Added
