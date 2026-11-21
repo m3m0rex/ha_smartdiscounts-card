@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.22] – 2026-11-21
+
+### Fixed
+
+- **My shopping list showed the price twice** ("1,79 € · 1,79 €") for offers written as a readable note line.
+
 ## [1.3.21] – 2026-11-21
 
 ### Fixed

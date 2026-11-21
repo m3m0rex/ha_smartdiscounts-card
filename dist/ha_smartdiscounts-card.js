@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.21";
+const VERSION = "1.3.22";
 const TAG = "smartdiscounts-card";
 // Reiter „Meine Liste“ (Abgleich mit der Liste, Sammeln, günstigster Einkauf) – vorerst ausgeschaltet
 const LIST_TAB = false;
@@ -959,7 +959,9 @@ class SmartDiscountsCard extends HTMLElement {
     const l = s.split("\n").find((x) => /^\s*🏷️/.test(x));
     if (!l) return null;
     const p = l.replace(/^\s*🏷️\s*/, "").split(" · ");
-    return { store: p[0] || "", price: num(p[1]), text: p.slice(1, Math.max(2, p.length - 1)).join(" · ") };
+    // nach Markt und Preis nur, was zum Angebot gehört (Bonus, Nachlass, „bis …“) – nicht noch einmal den Preis oder den Namen
+    const keep = new RegExp(`^(🎁|${this._t.until} |bis |until |statt |\\(statt )|%`, "i");
+    return { store: p[0] || "", price: num(p[1]), text: p.slice(2).filter((x) => keep.test(x)).join(" · ") };
   }
   _shopConnect() {
     const t = this._t;
