@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.14] – 2026-11-21
+
+### Changed
+
+- **"My list" is switched off for now.** The card starts with "All offers"; `tabs` and `default_tab` that name `list`
+  are ignored, and the editor no longer offers the tab, its layouts and "Collect under My list first". The code stays.
+  With it the note about expired offers and the "merge duplicates" hint are gone too, as they lived in that tab.
+
+### Fixed
+
+- **List of offers:** a price with bonus ("1,59 € (1,49 €)") no longer runs into the − 0 + counter; the bonus price
+  sits below.
+- **Bonus offers:** no tooltip on "🎁 … Bonus · only with the … app" any more – the label says it already.
+
 ## [1.3.13] – 2026-11-21
 
 ### Added

@@ -20,12 +20,12 @@ class SmartDiscountsCardEditor extends HTMLElement {
       ...(storeNames.length ? [{ name: "stores", selector: { select: { multiple: true, mode: "dropdown", options: storeNames.map((x) => ({ value: x, label: x })) } } }] : []),
       { name: "entities", selector: { entity: { multiple: true, ...(found.length ? { include_entities: [...new Set([...found, ...(this._config.entities || [])])] } : { domain: "sensor" }) } } },
       { name: "match", selector: { select: { mode: "dropdown", options: [["word", t.m_word], ["exact", t.m_exact], ["part", t.m_part]].map(([value, label]) => ({ value, label })) } } },
-      { name: "default_tab", selector: { select: { mode: "dropdown", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
+      { name: "default_tab", selector: { select: { mode: "dropdown", options: [...(LIST_TAB ? [["list", t.tab_list]] : []), ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
       { name: "list_view", selector: { select: { mode: "dropdown", options: [["rows", t.v_rows], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
       b("mine_only"),
       { name: "add_to", selector: { entity: { domain: "todo" } } },
       { name: "collect_first", selector: { boolean: {} } },
-      { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
+      { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [...(LIST_TAB ? [["list", t.tab_list]] : []), ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
       b("categories_open"),
       { name: "locked", selector: { select: { multiple: true, mode: "list", options: [["list_view", t.lk_list], ["all_view", t.lk_all], ["group_by", t.lk_group], ...((this._hass.config.components || []).includes("smartlists") ? [["add_to", t.lk_add]] : [])].map(([value, label]) => ({ value, label })) } } },
       { name: "category_source", selector: { select: { mode: "dropdown", options: [["auto", t.cs_auto], ["store", t.cs_store]].map(([value, label]) => ({ value, label })) } } },
@@ -58,10 +58,10 @@ class SmartDiscountsCardEditor extends HTMLElement {
     const pick = (...names) => names.map((n) => by[n]).filter(Boolean);
     const sec = (name, icon, items) => ({ type: "expandable", name, flatten: true, title: labels[name], icon, schema: items.filter(Boolean) });
     const grouped = [...pick("title", "list", "stores"),
-      sec("sec_look", "mdi:palette-outline", [...pick("tabs", "default_tab", "list_view", "match"), grid, ...pick("locked")]),
+      sec("sec_look", "mdi:palette-outline", [...pick("tabs", "default_tab", ...(LIST_TAB ? ["list_view"] : []), "match"), grid, ...pick("locked")]),
       sec("sec_all", "mdi:tag-multiple-outline", pick("all_view", "tile_flow", "group_by", "categories_open", ...(smart ? ["category_source"] : []), "max_per_store")),
       sec("sec_watch", "mdi:star-outline", pick("watch", "watch_list", "notify")),
-      sec("sec_more", "mdi:tune", pick("entities", "add_to", "collect_first", ...(smart ? ["mine_only"] : []), "currency_symbol"))];
+      sec("sec_more", "mdi:tune", pick("entities", "add_to", ...(LIST_TAB ? ["collect_first"] : []), ...(smart ? ["mine_only"] : []), "currency_symbol"))];
     this._form.hass = this._hass; this._form.schema = grouped; this._form.data = { ...DEFAULTS, ...this._config };
     this._form.computeLabel = (s) => labels[s.name] || s.name;
     this._drawTargets(t);

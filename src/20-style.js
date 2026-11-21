@@ -57,7 +57,8 @@ const STYLE = `
   .lrow .n { flex:1; min-width:0; font-size:.9rem; overflow-wrap:anywhere; }
   .lrow .n small { display:block; color:var(--secondary-text-color); font-size:.74rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   /* Listenansicht: Preis in fester Spalte, daneben in jeder Zeile derselbe Zähler (bei 0 blass) – nichts springt */
-  .lrow .pr { width:74px; flex:none; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .lrow .pr { min-width:74px; flex:none; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .lrow .pr .withbonus { display:block; font-size:.74rem; }  /* Preis mit Bonus unter den echten Preis, sonst schiebt er sich über den Zähler */
   .lrow .stepper.slot { flex:none; }
   .lrow .stepper.zero { border-color:var(--divider-color,#ccc); background:none; }
   .lrow .stepper.zero b { color:var(--secondary-text-color); font-weight:500; opacity:.7; }

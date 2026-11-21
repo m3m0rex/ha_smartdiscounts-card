@@ -8,12 +8,11 @@
 
 A Home Assistant dashboard card that shows **supermarket offers matched with your shopping list**.
 
-- **My list:** for every open item of a to-do list the matching offers per store, the cheapest marked ★.
-  "Pick cheapest" or "only REWE" selects for the whole list; "Apply to list" writes store, price and validity
-  to the items.
+> **Note:** the "My list" tab is switched off for now (from 1.3.14). The card shows "All offers" and the watch list;
+> the sections below about "My list" apply again once it is back.
+
 - **All offers:** one shelf per store with search and category filter – as tiles or as a compact list with
   small images; "＋ Add to list" adds an offer.
-- **My list** in two layouts: one offer per row or a table with the stores as columns.
 - **Expired offers** on the list are pointed out and can be removed in one go.
 - **Bonus offers** (e.g. REWE Bonus) are marked as "only with the bonus app"; on request prices are compared with
   the bonus taken off.
@@ -71,16 +70,13 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `category_map` | – | Link store categories to your own, e.g. `{ Dairy: Chilled, Store: "" }` (empty = no category) – clickable in the editor |
 | `locked` | – | Fix the view: whatever is listed cannot be switched inside the card – `[list_view, all_view, group_by, add_to]` or `true` for everything |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
-| `default_tab` | `list` | `list`, `all` or `watch` |
+| `default_tab` | `all` | `all` or `watch` |
 | `show_images` | `true` | Product images |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
 | `show_price_trend` | `true` | "▲ 0,99 €" / "▼ 1,79 €" when the same product in the same shop was cheaper or dearer before. With SmartLists (4.0.0-beta.13 or newer) the prices are remembered in Home Assistant – the same in every browser; without it, in this browser only. |
 | `hide_without_offer` | `false` | Hide list items without an offer |
 | `use_bonus` | `false` | "I use bonus programmes": compare bonus offers at the price after the credit – real price first, bonus price in brackets |
-| `collect_first` | `false` | ＋ in "All offers" sets an offer aside; "My list" shows them with the total and "Add to list" adds them. Kept in this browser. |
-| `list_view` | `rows` | "My list": `rows` (one offer per row) or `table` (stores as columns). The buttons in the card switch. |
-| `table_max_width` | – | "My list" as a table: widest the table gets, in px. Default: 760 plus 260 per store. `0` = no limit, always the full width. |
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
 | `max_per_store` | `10` | Offers per store before "all →" (1–20) |
 | `currency` | `EUR` | ISO currency code for prices |
@@ -100,7 +96,7 @@ title: Offers                 # heading (default: "Offers" in your language)
 list: todo.shopping           # to-do list to match against (optional)
 sources: auto                 # "auto" or a list, see "Sources"
 match: word                   # word | exact | part
-default_tab: list             # list | all | watch
+default_tab: all              # all | watch
 list_view: rows               # rows | table
 all_view: tiles               # tiles | list
 show_images: true             # product images

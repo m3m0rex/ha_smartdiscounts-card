@@ -8,12 +8,11 @@
 
 Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner Einkaufsliste abgleicht**.
 
-- **Meine Liste:** zu jedem offenen Artikel einer To-do-Liste die passenden Angebote je Markt, das günstigste mit ★.
-  „Günstigste wählen“ oder „nur REWE“ wählt für die ganze Liste; „In Liste übernehmen“ schreibt Markt, Preis und
-  Gültigkeit an die Einträge.
+> **Hinweis:** Der Reiter „Meine Liste“ ist ab 1.3.14 vorerst ausgeschaltet. Die Karte zeigt „Alle Angebote“ und die
+> Merkliste; die Abschnitte unten zu „Meine Liste“ gelten erst wieder, wenn er zurückkommt.
+
 - **Alle Angebote:** ein Regal je Markt mit Suche und Kategorie-Filter – als Kacheln oder als kompakte Liste mit
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
-- **Meine Liste** in zwei Darstellungen: ein Angebot je Zeile oder eine Tabelle mit den Märkten als Spalten.
 - **Abgelaufene Angebote** auf der Liste werden angezeigt und lassen sich auf einmal entfernen.
 - **Bonus-Angebote** (z. B. REWE Bonus) sind als „nur mit der Bonus-App“ gekennzeichnet; auf Wunsch werden die Preise
   mit abgezogenem Bonus verglichen.
@@ -71,16 +70,13 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `category_map` | – | Markt-Kategorien mit eigenen verknüpfen, z. B. `{ Molkereiprodukte: Kühlung, Store: "" }` (leer = keine Kategorie) – im Editor zum Anklicken |
 | `locked` | – | Ansicht festlegen: was hier steht, lässt sich in der Karte nicht umschalten – `[list_view, all_view, group_by, add_to]` oder `true` für alles |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
-| `default_tab` | `list` | `list`, `all` oder `watch` |
+| `default_tab` | `all` | `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
 | `show_price_trend` | `true` | „▲ 0,99 €“ / „▼ 1,79 €“, wenn dasselbe Produkt im selben Markt vorher billiger oder teurer war. Mit SmartLists (ab 4.0.0-beta.13) werden die Preise in Home Assistant gemerkt – in jedem Browser gleich; ohne SmartLists nur in diesem Browser. |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
 | `use_bonus` | `false` | „Ich nutze Bonusprogramme“: Bonus-Angebote zum Preis nach Abzug des Guthabens vergleichen – echter Preis vorn, Bonus-Preis in Klammern |
-| `collect_first` | `false` | ＋ in „Alle Angebote“ merkt erst vor; unter „Meine Liste“ stehen die vorgemerkten Angebote mit Summe, „Auf die Liste“ übernimmt sie. Gemerkt in diesem Browser. |
-| `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
-| `table_max_width` | – | „Meine Liste“ als Tabelle: größte Breite der Tabelle in px. Standard: 760 plus 260 je Markt. `0` = keine Grenze, immer die ganze Breite. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
 | `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint (1–20) |
 | `currency` | `EUR` | ISO-Code der Währung |
@@ -100,7 +96,7 @@ title: Angebote               # Überschrift (Standard: „Angebote“ in deiner
 list: todo.einkauf            # To-do-Liste zum Abgleichen (optional)
 sources: auto                 # "auto" oder eine Liste, siehe „Quellen“
 match: word                   # word | exact | part
-default_tab: list             # list | all | watch
+default_tab: all              # all | watch
 list_view: rows               # rows | table
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder

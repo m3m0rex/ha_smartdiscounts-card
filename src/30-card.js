@@ -440,7 +440,8 @@ class SmartDiscountsCard extends HTMLElement {
   }
   // "tabs": welche Reiter in welcher Reihenfolge, z. B. [all, watch]. Ohne Angabe alle drei.
   _tabs() {
-    const c = this._config, all = ["list", "all", "watch"];
+    // „Meine Liste“ ist vorerst ausgeschaltet (LIST_TAB in 00-head.js) – der Code bleibt
+    const c = this._config, all = LIST_TAB ? ["list", "all", "watch"] : ["all", "watch"];
     const picked = (Array.isArray(c.tabs) ? c.tabs : []).filter((x, i, a) => all.includes(x) && a.indexOf(x) === i);
     const out = (picked.length ? picked : all);
     return out.length ? out : ["all"];
@@ -463,7 +464,7 @@ class SmartDiscountsCard extends HTMLElement {
   _bonusEl(o) {
     const t = this._t, b = o.bonus;
     const amount = b.kind === "pct" ? `${String(b.value).replace(".", ",")} %` : this._money(b.value);
-    return h("span", { class: "bonus", title: t.bonus_help.replace("{store}", o.store) }, `🎁 ${t.bonus_label.replace("{amount}", amount).replace("{store}", o.store)}`);
+    return h("span", { class: "bonus" }, `🎁 ${t.bonus_label.replace("{amount}", amount).replace("{store}", o.store)}`);
   }
   _priceChip(item, o, best, low) {
     const t = this._t, c = this._config, sel = this._sel[item.uid] && this._sel[item.uid].id === o.id;
@@ -471,7 +472,7 @@ class SmartDiscountsCard extends HTMLElement {
     return h("button", { type: "button", class: `pc ${best ? "best" : ""} ${sel ? "sel" : ""}`, title: o.name, "aria-pressed": String(!!sel),
       onclick: () => { if (sel) delete this._sel[item.uid]; else this._sel[item.uid] = o; this._render(); } },
       h("span", { class: "s" }, h("span", { class: "dot", style: `background:${o.color}` }), o.store, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, best ? h("span", { class: "star", title: t.best }, "★") : null,
-        o.bonus ? h("span", { class: "bonus", title: t.bonus_help.replace("{store}", o.store) }, "🎁") : null),
+        o.bonus ? h("span", { class: "bonus", "aria-label": t.bonus_label.replace("{amount}", "").replace("{store}", o.store).trim() }, "🎁") : null),
       h("b", {}, this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, this._unitEl(o, low),
       h("span", { class: "x" }, o.name), extra ? h("span", { class: "x" }, extra) : null);
   }
@@ -839,7 +840,7 @@ class SmartDiscountsCard extends HTMLElement {
     } catch (e) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; }
   }
   // Sammeln geht nur, wenn es den Reiter „Meine Liste“ gibt – sonst wie gewohnt direkt auf die Liste
-  _collect() { return !!this._config.collect_first && this._tabs().includes("list"); }
+  _collect() { return LIST_TAB && !!this._config.collect_first && this._tabs().includes("list"); }
   _stagedIdx(o) { return this._staged.findIndex((x) => x.store === o.store && x.name === o.name); }
   _saveStaged() { try { localStorage.setItem(this._memKey("staged"), JSON.stringify(this._staged)); } catch (e) { /* */ } }
   _toggleStaged(o) {
