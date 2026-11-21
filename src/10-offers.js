@@ -1,4 +1,4 @@
-const DEFAULTS = { show_title: true, shop_view: "own", use_bonus: false, show_cheapest_trip: false, collect_first: false, list: "", match: "word", default_tab: "all", show_images: true, show_unit_price: true, show_valid_until: true, show_price_trend: true, hide_without_offer: false, max_per_store: 10, all_view: "tiles", list_view: "chips", sources: "auto", group_by: "store", tile_flow: "grid", mine_only: false, add_to: "", category_source: "auto", categories_open: true, watch: [], watch_list: "", notify: false, notify_service: "" };
+const DEFAULTS = { show_title: true, preview_start: "monday", shop_view: "own", use_bonus: false, show_cheapest_trip: false, collect_first: false, list: "", match: "word", default_tab: "all", show_images: true, show_unit_price: true, show_valid_until: true, show_price_trend: true, hide_without_offer: false, max_per_store: 10, all_view: "tiles", list_view: "chips", sources: "auto", group_by: "store", tile_flow: "grid", mine_only: false, add_to: "", category_source: "auto", categories_open: true, watch: [], watch_list: "", notify: false, notify_service: "" };
 // bekannte Märkte: Erkennung über entity_id / Namen der Quelle, Farbe des Badges
 const STORES = [["rewe", "REWE", "#cc071e"], ["edeka", "EDEKA", "#f5c400"], ["lidl", "Lidl", "#0050aa"], ["aldi_sued", "ALDI Süd", "#00a0e0"], ["aldi_nord", "ALDI Nord", "#1a4d9f"], ["aldi", "ALDI", "#00549f"],
   ["norma", "Norma", "#d40f14"], ["penny", "Penny", "#cd1414"], ["kaufland", "Kaufland", "#e10915"], ["netto", "Netto", "#ffd400"], ["rossmann", "Rossmann", "#c3002d"], ["dm", "dm", "#002878"], ["globus", "Globus", "#f39200"]];
@@ -101,7 +101,7 @@ function collectOffers(hass, cfg) {
     // Vorschau-Sensor (Prospekt der nächsten Woche, z. B. sensor.rewe_preview): seine Angebote gelten als „demnächst“,
     // auch wenn kein Startdatum dabeisteht – dann ab dem nächsten Montag. `preview: true/false` an der Quelle legt es fest.
     const preview = src.preview === undefined ? /preview|vorschau|next_?week|naechste_?woche|nachste_?woche|upcoming|kommende/.test(norm(`${src.entity} ${state.attributes.friendly_name || ""}`)) : !!src.preview;
-    const nextMon = (() => { const d = new Date(); d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })();
+
     const pick = (o, f) => { const key = (src.map && src.map[f]) || FIELDS[f].find((k) => o[k] != null && o[k] !== ""); return key ? get(o, key) : null; };
     rows.forEach((o, i) => {
       if (!o || typeof o !== "object") return;
@@ -111,7 +111,7 @@ function collectOffers(hass, cfg) {
       if (until && /^\d{4}-\d\d-\d\d$/.test(until) && until < today) return;  // abgelaufen
       // gilt erst ab einem späteren Tag (z. B. das Prospekt der nächsten Woche): als „demnächst“ führen
       const fromRaw = pick(o, "from") ? String(pick(o, "from")).slice(0, 10) : null;
-      const from = fromRaw && /^\d{4}-\d\d-\d\d$/.test(fromRaw) ? fromRaw : preview ? nextMon : null;
+      const from = fromRaw && /^\d{4}-\d\d-\d\d$/.test(fromRaw) ? fromRaw : null;
       const st = pick(o, "store");
       const cat = pick(o, "category"), old = num(pick(o, "old_price"));
       // Rabatt: Angabe der Quelle („-44%“) oder aus altem und neuem Preis berechnet
@@ -123,12 +123,28 @@ function collectOffers(hass, cfg) {
       if (twin) { if (bonus && !twin.bonus) twin.bonus = bonus; if (!twin.image) twin.image = pick(o, "image"); if (!twin.unit && unitText) { twin.unitText = String(unitText).replace(/ /g, " "); twin.unit = unitPrice(unitText); } if (!twin.category) twin.category = Array.isArray(cat) ? cat[0] : cat || ""; return; }
       out.push({ id: `${src.entity}#${i}`, name: String(name), price, old: old && old > price ? old : null, pct, brand: pick(o, "brand") || "", image: pick(o, "image"), until, today: until === today,
         unitText: unitText ? String(unitText).replace(/ /g, " ") : "", unit: unitPrice(unitText), category: Array.isArray(cat) ? cat[0] : cat || "",
-        store: label, color: store.color, entity: src.entity, from, soon: !!from && from > today, bonus });
+        store: label, color: store.color, entity: src.entity, from, soon: !!from && from > today, bonus, pv: preview && !from });
       seen.set(dk, out[out.length - 1]);
     });
   }
+  // Vorschau ohne Startdatum: ab dem Tag nach dem Ende der laufenden Angebote desselben Markts (das häufigste „bis“),
+  // sonst ab dem nächsten eingestellten Wochentag (preview_start, Standard Montag)
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const ends = {};
+  out.forEach((o) => { if (!o.pv && !o.soon && o.until && /^\d{4}-\d\d-\d\d$/.test(o.until)) { const m = ends[o.store] || (ends[o.store] = {}); m[o.until] = (m[o.until] || 0) + 1; } });
+  const weekday = (() => { const d = new Date(); d.setDate(d.getDate() + ((PREVIEW_DAY - d.getDay() + 7) % 7 || 7)); return iso(d); })();
+  out.forEach((o) => {
+    if (!o.pv) return;
+    const m = ends[o.store], end = m ? Object.keys(m).sort((a, b) => m[b] - m[a] || (a < b ? -1 : 1))[0] : null;
+    let from = weekday;
+    if (end) { const d = new Date(`${end}T12:00:00`); d.setDate(d.getDate() + 1); from = iso(d); }
+    o.from = from; o.soon = from > today;
+  });
   return out;
 }
+// Wochentag, an dem eine Vorschau ohne Datum startet (0 = Sonntag … 6 = Samstag) – die Karte setzt ihn aus preview_start
+let PREVIEW_DAY = 1;
+const setPreviewDay = (name) => { const i = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"].indexOf(String(name || "").toLowerCase()); PREVIEW_DAY = i < 0 ? 1 : i; };
 // günstiger: nach Grundpreis, wenn beide denselben haben – sonst nach Preis
 // Angebote nicht bei jedem Zeichnen neu zerlegen (bei mehreren hundert Angeboten spürbar): nur wenn sich ein Sensor,
 // die Angabe der Quellen oder der Tag geändert hat. Die Liste der Sensoren wird höchstens alle 10 s neu gesucht.
@@ -143,7 +159,7 @@ function sourcesCached(hass, cfg) {
 const _offerCache = new Map();
 function offersCached(hass, cfg) {
   const key = JSON.stringify(cfg === undefined ? "auto" : cfg);
-  const sig = sourcesCached(hass, cfg).map((x) => `${x.entity}:${hass.states[x.entity].last_updated || hass.states[x.entity].state}`).join("|") + "|" + new Date().toISOString().slice(0, 10);
+  const sig = sourcesCached(hass, cfg).map((x) => `${x.entity}:${hass.states[x.entity].last_updated || hass.states[x.entity].state}`).join("|") + "|" + new Date().toISOString().slice(0, 10) + "|" + PREVIEW_DAY;
   const hit = _offerCache.get(key);
   if (hit && hit.sig === sig) return hit.list;
   const list = collectOffers(hass, cfg);

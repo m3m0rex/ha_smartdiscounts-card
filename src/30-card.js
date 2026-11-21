@@ -8,6 +8,7 @@ class SmartDiscountsCard extends HTMLElement {
     const before = this._config;
     this._config = { ...DEFAULTS, ...(config || {}) };
     // „Meine Einkaufsliste“: ohne `list` in der Karte gilt die Liste, die man in der Karte verbunden hat (dieser Browser)
+    setPreviewDay(this._config.preview_start);
     this._pickKey = this._memKey("picked"); this._picked = false;
     if (!this._config.list) { try { const v = localStorage.getItem(this._pickKey); if (v) { this._config.list = v; this._picked = true; } } catch (e) { /* */ } }
     // Beim Ändern einer Einstellung (Editor) bleibt man, wo man ist: Reiter, Suche, Auf- und Zugeklapptes. Nur beim
@@ -503,13 +504,25 @@ class SmartDiscountsCard extends HTMLElement {
   // Angebot an einem Eintrag: ⚙OFFER-Zeile (SmartLists) oder die lesbare 🏷️-Zeile
   _noteOffer(note) {
     const s = String(note || ""), m = s.match(/[⚙\u2699]\ufe0f?\s*OFFER\s*:\s*(\{.*\})/);
-    if (m) { try { const j = JSON.parse(m[1]); if (j && j.s) return { store: String(j.s), price: num(j.p), until: j.e || "", bonus: num(j.b) ? { value: num(j.b), kind: j.bk === "pct" ? "pct" : "eur" } : null }; } catch (e) { /* */ } }
+    if (m) { try { const j = JSON.parse(m[1]); if (j && j.s) return { store: String(j.s), price: num(j.p), until: j.e || "", from: this._soonDay(j.v), bonus: num(j.b) ? { value: num(j.b), kind: j.bk === "pct" ? "pct" : "eur" } : null }; } catch (e) { /* */ } }
     const l = s.split("\n").find((x) => /^\s*🏷️/.test(x));
     if (!l) return null;
     const p = l.replace(/^\s*🏷️\s*/, "").split(" · ");
     // nach Markt und Preis nur, was zum Angebot gehört (Bonus, Nachlass, „bis …“) – nicht noch einmal den Preis oder den Namen
     const keep = new RegExp(`^(🎁|${this._t.until} |bis |until |statt |\\(statt )|%`, "i");
-    return { store: p[0] || "", price: num(p[1]), text: p.slice(2).filter((x) => keep.test(x)).join(" · ") };
+    // „ab 23.11.2026“ / „ab 23.11.“ (so schreibt es SmartLists) → Startdatum, wenn es noch in der Zukunft liegt
+    const ab = p.slice(2).map((x) => x.match(new RegExp(`^(?:ab|from|${this._t.from})\\s+(\\d{1,2})\\.(\\d{1,2})\\.(\\d{4})?`, "i"))).find(Boolean);
+    let from = "";
+    if (ab) { const now = new Date(); let y = ab[3] ? +ab[3] : now.getFullYear(); const mk = (yy) => `${yy}-${String(ab[2]).padStart(2, "0")}-${String(ab[1]).padStart(2, "0")}`;
+      if (!ab[3] && mk(y) < new Date(now.getTime() - 200 * 864e5).toISOString().slice(0, 10)) y += 1; from = this._soonDay(mk(y)); }
+    return { store: p[0] || "", price: num(p[1]), from, text: p.slice(2).filter((x) => keep.test(x)).join(" · ") };
+  }
+  // Startdatum nur, solange es noch nicht erreicht ist
+  _soonDay(d) {
+    const v = String(d || "").slice(0, 10), n = new Date(), today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
+    return /^\d{4}-\d\d-\d\d$/.test(v) && v > today ? v : "";
+  }
+  _weekday(d) { try { return new Date(`${d}T12:00:00`).toLocaleDateString(this._hass.language || "de", { weekday: "short" }); } catch (e) { return ""; }
   }
   _shopConnect() {
     const t = this._t;
@@ -546,13 +559,22 @@ class SmartDiscountsCard extends HTMLElement {
       try { localStorage.removeItem(this._pickKey); } catch (e) { /* */ }
       this._config = { ...this._config, list: "" }; this._picked = false; this._items = undefined; this._render(); } }, "✎") : null;
     const head = h("div", { class: "shophead" }, h("span", {}, "📋 ", (st.attributes && st.attributes.friendly_name) || c.list), unlink, h("span", { class: "sp" }), this._addPick());
+    // Kommt das Produkt nächste Woche günstiger (oder überhaupt erst ins Angebot)? Dann am Eintrag sagen
+    const nextHint = (it, o, deals) => {
+      if ((o && o.from) || !this._next.length || !it.name) return null;
+      const nx = dealsForCached(this._next, it.name, c.match).slice().sort((a, b) => a.price - b.price)[0];
+      const cur = o && o.price != null ? o.price : deals && deals.length ? Math.min(...deals.map((d) => d.price)) : null;
+      if (!nx || (cur != null && nx.price >= cur)) return null;
+      return [" · ", h("span", { class: "soon" }, `📅 ${t.sh_next.replace("{date}", this._day(nx.from)).replace("{price}", this._money(nx.price)).replace("{store}", nx.store)}`)];
+    };
     const row = (it) => {
       const o = this._noteOffer(it.note), n = this._countOf(it.text), exp = o && this._expiredNote(it.note), deals = o ? [] : this._matchesFor(it);
       const col = o ? (this._all.find((x) => x.store === o.store) || {}).color || "#888" : "";
       const bonus = o && o.bonus ? ` · 🎁 ${o.bonus.kind === "pct" ? `${String(o.bonus.value).replace(".", ",")} %` : this._money(o.bonus.value)}` : "";
       const sub = o ? [h("span", { class: "store", style: `background:${col}` }, o.store), o.price != null ? ` ${this._money(o.price)}` : "", o.text ? ` · ${o.text}` : "", bonus,
-        o.until ? [" · ", exp ? h("span", { class: "exp" }, t.expired) : `${t.until} ${this._day(o.until)}`] : ""]
-        : deals.length ? h("span", { class: "hint" }, `${deals.length} ${deals.length > 1 ? t.offers : t.offer1} ${t.from} ${this._money(Math.min(...deals.map((d) => d.price)))}`) : null;
+        o.from ? [" ", h("span", { class: "soon" }, `⏳ ${t.sh_not_yet.replace("{date}", `${this._weekday(o.from)}, ${this._day(o.from)}`)}`)]
+          : o.until ? [" · ", exp ? h("span", { class: "exp" }, t.expired) : `${t.until} ${this._day(o.until)}`] : "", nextHint(it, o)]
+        : [deals.length ? h("span", { class: "hint" }, `${deals.length} ${deals.length > 1 ? t.offers : t.offer1} ${t.from} ${this._money(Math.min(...deals.map((d) => d.price)))}`) : null, nextHint(it, null, deals)].filter(Boolean);
       const src = (this._srcName || {})[it.uid];
       const name = String(this._withCount(it.text, 1)).split(/\s+/).filter((w) => w && !/^[@#*!+~]/.test(w)).join(" ") || it.text;
       return h("div", { class: "lrow" },
@@ -563,12 +585,16 @@ class SmartDiscountsCard extends HTMLElement {
           h("button", { type: "button", "aria-label": `+ ${name}`, onclick: () => this._stepIt(it, 1) }, "+")) : h("b", {}, `${n}×`));
     };
     if (!items.length) return h("div", {}, head, h("div", { class: "msg" }, this._error || t.sh_empty));
-    const mine = items.filter((i) => this._noteOffer(i.note)), rest = items.filter((i) => !this._noteOffer(i.note));
-    const sum = mine.reduce((a, i) => a + (this._noteOffer(i.note).price || 0) * this._countOf(i.text), 0);
+    // Aus Angeboten: was heute gilt, darunter in einem eigenen Block, was erst später gilt (zählt nicht zur Summe)
+    const withO = items.filter((i) => this._noteOffer(i.note)), rest = items.filter((i) => !this._noteOffer(i.note));
+    const mine = withO.filter((i) => !this._noteOffer(i.note).from), later = withO.filter((i) => this._noteOffer(i.note).from);
+    const total = (list) => list.reduce((a, i) => a + (this._noteOffer(i.note).price || 0) * this._countOf(i.text), 0);
+    const first = later.map((i) => this._noteOffer(i.note).from).sort()[0];
     return h("div", {}, head,
       mine.length ? [h("div", { class: "grp2" }, `${t.sh_from_offers} · ${mine.length}`), h("div", { class: "lrows" }, mine.map(row))] : null,
+      later.length ? [h("div", { class: "grp2" }, `⏳ ${t.sh_later} · ${later.length}`), h("div", { class: "lrows" }, later.map(row))] : null,
       rest.length ? [h("div", { class: "grp2" }, `${t.sh_rest} · ${rest.length}`), h("div", { class: "lrows" }, rest.map(row))] : null,
-      mine.length ? h("div", { class: "shopsum" }, h("span", {}, t.sh_sum), h("b", {}, this._money(sum))) : null);
+      withO.length ? h("div", { class: "shopsum" }, h("span", {}, t.sh_sum, later.length ? h("small", { class: "soon" }, ` + ${this._money(total(later))} ${t.from} ${this._day(first)}`) : null), h("b", {}, this._money(total(mine)))) : null);
   }
   _renderWatch() {
     if (this._loading && this._watchItems === undefined && this._watchSmart === undefined) return h("div", { class: "msg" }, this._t.loading);
@@ -585,7 +611,8 @@ class SmartDiscountsCard extends HTMLElement {
         this._slot(o));
     };
     const blocks = terms.map((term) => {
-      const offers = dealsForCached(this._all, term.name, c.match);
+      // auch die Vorschau der nächsten Woche zeigen („ab 23.11.“) – gemeldet wird erst, wenn sie gilt
+      const offers = [...dealsForCached(this._all, term.name, c.match), ...dealsForCached(this._next || [], term.name, c.match)];
       const from = this._watchSel === "all" && term.list ? (this._watchLists || []).find((x) => x.id === term.list) : null;
       return h("div", { class: "shelf" }, h("h4", {}, "⭐ ", term.name, h("small", {}, offers.length ? `${offers.length} ${offers.length > 1 ? t.offers : t.offer1}` : t.none, from ? ` · ${from.name}` : ""), h("span", { class: "sp" }),
         term.fixed ? h("small", {}, t.w_fixed) : h("button", { type: "button", "aria-label": `${t.exp_remove}: ${term.name}`, onclick: () => this._watchRemove(term) }, t.exp_remove)),
@@ -964,10 +991,11 @@ class SmartDiscountsCard extends HTMLElement {
     // c = Warengruppe laut Markt: SmartLists (ab 4.0.0-beta.15) ordnet den Artikel danach ein, wenn der Name in die Irre führt
     // b/bk = Bonus-Aktion (Guthaben in der App des Markts, kein niedrigerer Preis): SmartLists zeigt dann „🎁 Bonus“ statt „Angebot“
     const bonus = o.bonus ? { b: o.bonus.value, ...(o.bonus.kind === "pct" ? { bk: "pct" } : {}) } : {};
-    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.full ?? o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), ...bonus, a: Math.floor(Date.now() / 1000) })}`;
+    if (smart) return `⚙OFFER:${JSON.stringify({ s: o.store, p: o.full ?? o.price, ...(o.old ? { o: o.old } : {}), ...(o.until ? { e: o.until } : {}), ...(o.soon && o.from ? { v: o.from } : {}), ...(o.category ? { c: String(o.category).slice(0, 60) } : {}), ...bonus, a: Math.floor(Date.now() / 1000) })}`;
     // Datum mit Jahr, damit sich ein abgelaufenes Angebot später erkennen lässt
     const extra = o.bonus ? ` · 🎁 ${this._t.bonus_label.replace("{amount}", o.bonus.kind === "pct" ? `${o.bonus.value} %` : this._money(o.bonus.value)).replace("{store}", o.store)}` : "";
-    return `🏷️ ${o.store} · ${this._money(o.full ?? o.price)}${extra}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
+    const start = o.soon && o.from ? ` · ${this._t.from} ${this._day(o.from)}${String(o.from).slice(0, 4)}` : "";
+    return `🏷️ ${o.store} · ${this._money(o.full ?? o.price)}${extra}${start}${o.until ? ` · ${this._t.until} ${this._day(o.until)}${String(o.until).slice(0, 4)}` : ""} · ${o.name}`;
   }
   // Ist das an den Eintrag geschriebene Angebot abgelaufen? (⚙OFFER-Zeile von SmartLists oder die lesbare 🏷️-Zeile)
   _expiredNote(note) {

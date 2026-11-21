@@ -75,6 +75,7 @@ const STYLE = `
   .staged .strow .store { color:#fff; border-radius:6px; padding:1px 6px; font-size:.75rem; font-weight:700; } .staged .acts { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
   .staged.onlist { border-color:var(--sd-ok); padding:2px 10px 4px; } .staged.onlist .foldh { display:flex; align-items:center; gap:8px; width:100%; background:none; border:0; color:inherit; font:inherit; padding:8px 0; cursor:pointer; }
   .slwrap { margin:0 -4px; }
+  .soon { color:var(--warning-color,#e65100); font-weight:600; } .shopsum small.soon { font-weight:500; }
   .shophead { display:flex; align-items:center; gap:8px; font-size:.86rem; color:var(--secondary-text-color); padding:2px 2px 6px; } .shophead .sp { flex:1; }
   .grp2 { font-size:.78rem; color:var(--secondary-text-color); padding:10px 2px 2px; }
   .lrow .ck { width:22px; height:22px; flex:none; border-radius:50%; border:1.5px solid var(--secondary-text-color); background:none; cursor:pointer; padding:0; }

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.26] – 2026-11-21
+
+### Added
+
+- **Offers from next week's preview on the shopping list.** An offer added from the preview is written with its
+  start date; "My shopping list" lists it under "Not valid yet" with "valid from Mon, 23.11." until that day. The
+  total counts what is valid today and names the rest ("+ 0,99 € from 23.11.").
+- **"Cheaper next week" hint:** an item that gets a (cheaper) offer in the preview says "from 23.11. for 0,99 € at REWE".
+- **Watch list shows preview offers** with "from …"; they are reported only once they are valid.
+- **Start of a preview without a date:** the day after the store's current offers end; otherwise the weekday set with
+  `preview_start` (default Monday).
+
 ## [1.3.25] – 2026-11-21
 
 ### Added

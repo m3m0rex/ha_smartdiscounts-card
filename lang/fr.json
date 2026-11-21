@@ -189,5 +189,9 @@
   "e_shop_view": "Afficher « Ma liste de courses »",
   "sv_own": "Vue propre (promos en haut)",
   "sv_smart": "Dans le style SmartLists",
-  "e_preview": "Capteurs avec les promos de la semaine prochaine (aperçu)"
+  "e_preview": "Capteurs avec les promos de la semaine prochaine (aperçu)",
+  "sh_not_yet": "valable à partir du {date}",
+  "sh_later": "Pas encore valable",
+  "sh_next": "dès le {date} à {price} chez {store}",
+  "e_preview_start": "Un aperçu sans date commence le (si le magasin n’indique pas la fin des promos en cours)"
 }
