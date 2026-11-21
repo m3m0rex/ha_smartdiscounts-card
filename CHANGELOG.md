@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.19] – 2026-11-21
+
+### Added
+
+- **"On your list" at the top of "All offers":** the offers that are already on the list, with their total; the box
+  folds. The offers stay in their shelf as well, so nothing jumps when you tap ＋.
+
 ## [1.3.18] – 2026-11-21
 
 ### Fixed

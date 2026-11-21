@@ -73,6 +73,7 @@ const STYLE = `
   .staged .bh { display:flex; align-items:center; gap:6px; font-weight:600; margin-bottom:6px; } .staged .sp { flex:1; }
   .staged .strow { display:flex; align-items:center; gap:8px; padding:4px 0; } .staged .strow .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .staged .strow .store { color:#fff; border-radius:6px; padding:1px 6px; font-size:.75rem; font-weight:700; } .staged .acts { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  .staged.onlist { border-color:var(--sd-ok); padding:2px 10px 4px; } .staged.onlist .foldh { display:flex; align-items:center; gap:8px; width:100%; background:none; border:0; color:inherit; font:inherit; padding:8px 0; cursor:pointer; }
   .shophead { display:flex; align-items:center; gap:8px; font-size:.86rem; color:var(--secondary-text-color); padding:2px 2px 6px; } .shophead .sp { flex:1; }
   .grp2 { font-size:.78rem; color:var(--secondary-text-color); padding:10px 2px 2px; }
   .lrow .ck { width:22px; height:22px; flex:none; border-radius:50%; border:1.5px solid var(--secondary-text-color); background:none; cursor:pointer; padding:0; }

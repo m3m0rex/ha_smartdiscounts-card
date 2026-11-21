@@ -184,5 +184,6 @@
   "sh_sum": "Promocje na liście",
   "sh_empty": "Lista jest pusta. ＋ w „Wszystkie promocje” coś doda.",
   "sh_done": "Gotowe",
-  "sh_change": "Połącz inną listę"
+  "sh_change": "Połącz inną listę",
+  "on_yours": "Na twojej liście"
 }

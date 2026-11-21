@@ -184,5 +184,6 @@
   "sh_sum": "Promos sur la liste",
   "sh_empty": "La liste est vide. ＋ sous « Toutes les promos » y ajoute quelque chose.",
   "sh_done": "Fait",
-  "sh_change": "Connecter une autre liste"
+  "sh_change": "Connecter une autre liste",
+  "on_yours": "Sur ta liste"
 }

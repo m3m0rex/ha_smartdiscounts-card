@@ -871,7 +871,17 @@ class SmartDiscountsCard extends HTMLElement {
         all.length > lim && !q && !this._cat ? h("button", { type: "button", onclick: () => { if (open) this._open.delete(s); else this._open.add(s); this._render(); } }, open ? t.less : `${t.all} →`) : null),
         asList ? h("div", { class: "lrows" }, list.map(row)) : h("div", { class: `rail ${open || c.tile_flow !== "scroll" ? "open" : ""}` }, list.map(tile)));  // Standard: Raster von oben nach unten; "scroll" = eine Zeile zum Wischen
     });
-    return h("div", {}, h("div", { class: "filters" }, search, this._locked("group_by") ? null : gbtn, this._locked("all_view") ? null : toggle), whenSel, catSel, shown.length ? shelves : h("div", { class: "msg" }, t.no_hits), this._foot());
+    // Oben: was von diesen Angeboten schon auf der Liste steht (zum Einklappen) – im Regal bleibt es zusätzlich stehen
+    const cnt = new Map();
+    (this._items || []).forEach((i) => { const k = this._key(i.text); if (k) cnt.set(k, (cnt.get(k) || 0) + this._countOf(i.text)); });
+    const seen = new Set();
+    const mineNow = cnt.size && !q && !this._cat ? pool.filter((o) => cnt.get(this._key(o.name)) && !seen.has(`${o.store}|${o.name}`) && seen.add(`${o.store}|${o.name}`)) : [];
+    const mineSum = mineNow.reduce((a, o) => a + (o.full ?? o.price) * cnt.get(this._key(o.name)), 0);
+    const mineBox = mineNow.length ? h("div", { class: "staged onlist" },
+      h("button", { type: "button", class: "foldh", "aria-expanded": String(!this._mineShut), onclick: () => { this._mineShut = !this._mineShut; this._render(); } },
+        h("b", {}, `🛒 ${t.on_yours} · ${mineNow.length}`), h("span", { class: "sp" }), h("small", {}, this._money(mineSum)), h("span", { class: "chev" }, this._mineShut ? "›" : "⌄")),
+      this._mineShut ? null : h("div", { class: "lrows" }, mineNow.map(row))) : null;
+    return h("div", {}, h("div", { class: "filters" }, search, this._locked("group_by") ? null : gbtn, this._locked("all_view") ? null : toggle), whenSel, catSel, mineBox, shown.length ? shelves : h("div", { class: "msg" }, t.no_hits), this._foot());
   }
   _foot() {
     const ts = this._sources().map((s) => this._hass.states[s.entity].last_updated).filter(Boolean).sort().pop();

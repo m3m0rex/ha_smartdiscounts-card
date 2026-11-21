@@ -184,5 +184,6 @@
   "sh_sum": "Offerte nella lista",
   "sh_empty": "La lista è vuota. ＋ in «Tutte le offerte» aggiunge qualcosa.",
   "sh_done": "Fatto",
-  "sh_change": "Collega un’altra lista"
+  "sh_change": "Collega un’altra lista",
+  "on_yours": "Nella tua lista"
 }
