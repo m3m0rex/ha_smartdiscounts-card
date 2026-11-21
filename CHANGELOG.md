@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.12] – 2026-11-21
+
+### Changed
+
+- **"Cheapest shopping trip" is switched off for now.** "My list" no longer shows "One store / Two stores / 3 stores".
+  The calculation stays in the card; `show_cheapest_trip: true` brings it back.
+
 ## [1.3.11] – 2026-11-18
 
 ### Fixed

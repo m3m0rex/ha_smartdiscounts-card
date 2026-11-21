@@ -15,9 +15,6 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
 - **Meine Liste** in drei Darstellungen: ein Angebot je Zeile, eine Zeile je Artikel oder eine Tabelle mit den Märkten als Spalten.
 - **Abgelaufene Angebote** auf der Liste werden angezeigt und lassen sich auf einmal entfernen.
-- **Günstigster Einkauf:** ein Markt für möglichst viel – und ob sich zwei, drei oder mehr Märkte lohnen. Verglichen
-  wird nach Preis je Kilo oder Liter: Eine größere Packung, die pro Liter günstiger ist, gewinnt, und die Ersparnis
-  wird angezeigt.
 - **Bonus-Angebote** (z. B. REWE Bonus) sind als „nur mit der Bonus-App“ gekennzeichnet; auf Wunsch werden die Preise
   mit abgezogenem Bonus verglichen.
 - **Merkliste:** Produkte, bei denen du auf ein Angebot wartest – auf Wunsch mit Benachrichtigung. Mit SmartLists hat

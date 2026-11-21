@@ -15,8 +15,6 @@ A Home Assistant dashboard card that shows **supermarket offers matched with you
   small images; "＋ Add to list" adds an offer.
 - **My list** in three layouts: one offer per row, one line per item, or a table with the stores as columns.
 - **Expired offers** on the list are pointed out and can be removed in one go.
-- **Cheapest shopping trip:** one store for as much as possible – and whether two, three or more stores are worth
-  it. Compared by price per kilo or litre, so a bigger pack that is cheaper per litre wins and the saving is shown.
 - **Bonus offers** (e.g. REWE Bonus) are marked as "only with the bonus app"; on request prices are compared with
   the bonus taken off.
 - **Watch list:** products you are waiting to see on offer – with a notification if you like. With SmartLists every
