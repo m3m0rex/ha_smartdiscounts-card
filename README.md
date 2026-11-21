@@ -8,8 +8,9 @@
 
 A Home Assistant dashboard card that shows **supermarket offers matched with your shopping list**.
 
-> **Note:** the "My list" tab is switched off for now (from 1.3.14). The card shows "All offers" and the watch list;
-> the sections below about "My list" apply again once it is back.
+> **Note:** instead of "My list" there is the tab **"My shopping list"** from 1.3.17: the items of the connected list,
+> what came from offers on top, with a counter and ticking off. The sections below about "My list" ("Apply to list")
+> apply again once that tab is back.
 
 - **All offers:** one shelf per store with search and category filter – as tiles or as a compact list with
   small images; "＋ Add to list" adds an offer.
@@ -70,7 +71,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `locked` | – | Fix the view: whatever is listed cannot be switched inside the card – `[list_view, all_view, group_by, add_to]` or `true` for everything |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
 | `show_title` | `true` | `false` hides the card header (title, number of offers, stores). |
-| `default_tab` | `all` | `all` or `watch` |
+| `default_tab` | `all` | `shop`, `all` or `watch` |
 | `show_images` | `true` | Product images |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |
 | `show_valid_until` | `true` | "until 21.11." |
@@ -96,7 +97,7 @@ title: Offers                 # heading (default: "Offers" in your language)
 list: todo.shopping           # to-do list to match against (optional)
 sources: auto                 # "auto" or a list, see "Sources"
 match: word                   # word | exact | part
-default_tab: all              # all | watch
+default_tab: all              # shop | all | watch
 list_view: rows               # rows | table
 all_view: tiles               # tiles | list
 show_images: true             # product images

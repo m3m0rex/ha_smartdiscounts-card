@@ -174,5 +174,15 @@
   "w_todo_none": "Brak listy zadań do wyboru. Nową mogą utworzyć tylko administratorzy.",
   "w_linked": "Twoja lista obserwowanych jest na liście zadań „{list}”.",
   "w_unlink": "Prowadź znów prywatnie",
-  "e_show_title": "Pokaż tytuł i liczbę promocji"
+  "e_show_title": "Pokaż tytuł i liczbę promocji",
+  "tab_shop": "Moja lista zakupów",
+  "sh_connect_title": "Połącz swoją listę zakupów",
+  "sh_connect_sub": "Wtedy zobaczysz tutaj, co dodano z promocji.",
+  "sh_pick": "Wybierz listę …",
+  "sh_from_offers": "Dodane z promocji",
+  "sh_rest": "Pozostałe pozycje",
+  "sh_sum": "Promocje na liście",
+  "sh_empty": "Lista jest pusta. ＋ w „Wszystkie promocje” coś doda.",
+  "sh_done": "Gotowe",
+  "sh_change": "Połącz inną listę"
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.17] – 2026-11-21
+
+### Added
+
+- **New tab "My shopping list"** in place of "My list": the items of the connected list, with what came from offers on
+  top (store, price, bonus, "until", expired marked), the other items below with a hint when there are offers for
+  them, − / + for the count, a circle to tick an item off and the total of the offers on the list. With a combined
+  SmartLists list every item names its source list and "＋ Add to" picks where new offers go. Without `list` in the
+  card the tab offers to connect a to-do list (remembered in this browser). `tabs` / `default_tab` use `shop`;
+  an old `list` is read as `shop`.
+
 ## [1.3.16] – 2026-11-21
 
 ### Added

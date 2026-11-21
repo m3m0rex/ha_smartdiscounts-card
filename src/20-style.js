@@ -73,6 +73,12 @@ const STYLE = `
   .staged .bh { display:flex; align-items:center; gap:6px; font-weight:600; margin-bottom:6px; } .staged .sp { flex:1; }
   .staged .strow { display:flex; align-items:center; gap:8px; padding:4px 0; } .staged .strow .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .staged .strow .store { color:#fff; border-radius:6px; padding:1px 6px; font-size:.75rem; font-weight:700; } .staged .acts { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  .shophead { display:flex; align-items:center; gap:8px; font-size:.86rem; color:var(--secondary-text-color); padding:2px 2px 6px; } .shophead .sp { flex:1; }
+  .grp2 { font-size:.78rem; color:var(--secondary-text-color); padding:10px 2px 2px; }
+  .lrow .ck { width:22px; height:22px; flex:none; border-radius:50%; border:1.5px solid var(--secondary-text-color); background:none; cursor:pointer; padding:0; }
+  .lrow .ck:hover { border-color:var(--sd-ok); background:rgba(67,160,71,.15); }
+  .lrow .n small .store { color:#fff; border-radius:5px; padding:0 5px; font-size:.7rem; font-weight:700; } .lrow .exp { color:var(--error-color,#db4437); } .lrow .hint { color:var(--sd-ok); }
+  .shopsum { display:flex; justify-content:space-between; padding:10px 2px 0; margin-top:6px; border-top:1px solid var(--divider-color,#e0e0e0); font-size:.86rem; }
   .expbox small { color:var(--secondary-text-color); } .expbox .sp { flex:1; }
   .plan .ph { display:flex; align-items:center; gap:8px; } .plan .ph b { flex:1; }
   .vbtn.sm { width:32px; height:32px; font-size:.95rem; }

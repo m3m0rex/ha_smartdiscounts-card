@@ -174,5 +174,15 @@
   "w_todo_none": "There is no to-do list to choose. Only admins can create a new one.",
   "w_linked": "Your watch list is kept in the to-do list \"{list}\".",
   "w_unlink": "Keep it private again",
-  "e_show_title": "Show title and number of offers"
+  "e_show_title": "Show title and number of offers",
+  "tab_shop": "My shopping list",
+  "sh_connect_title": "Connect your shopping list",
+  "sh_connect_sub": "Then you see here what you added from the offers.",
+  "sh_pick": "Choose a list …",
+  "sh_from_offers": "Added from offers",
+  "sh_rest": "Other items",
+  "sh_sum": "Offers on the list",
+  "sh_empty": "The list is empty. ＋ under \"All offers\" adds something.",
+  "sh_done": "Done",
+  "sh_change": "Connect another list"
 }

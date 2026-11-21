@@ -174,5 +174,15 @@
   "w_todo_none": "Es gibt keine To-do-Liste zur Auswahl. Eine neue anlegen können nur Admins.",
   "w_linked": "Deine Merkliste liegt in der To-do-Liste „{list}“.",
   "w_unlink": "Wieder privat führen",
-  "e_show_title": "Titel und Zahl der Angebote anzeigen"
+  "e_show_title": "Titel und Zahl der Angebote anzeigen",
+  "tab_shop": "Meine Einkaufsliste",
+  "sh_connect_title": "Verbinde deine Einkaufsliste",
+  "sh_connect_sub": "Dann siehst du hier, was du aus den Angeboten hinzugefügt hast.",
+  "sh_pick": "Liste wählen …",
+  "sh_from_offers": "Aus Angeboten hinzugefügt",
+  "sh_rest": "Weitere Einträge",
+  "sh_sum": "Angebote auf der Liste",
+  "sh_empty": "Die Liste ist leer. Mit ＋ unter „Alle Angebote“ kommt etwas dazu.",
+  "sh_done": "Erledigt",
+  "sh_change": "Andere Liste verbinden"
 }

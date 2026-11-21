@@ -8,8 +8,9 @@
 
 Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner Einkaufsliste abgleicht**.
 
-> **Hinweis:** Der Reiter „Meine Liste“ ist ab 1.3.14 vorerst ausgeschaltet. Die Karte zeigt „Alle Angebote“ und die
-> Merkliste; die Abschnitte unten zu „Meine Liste“ gelten erst wieder, wenn er zurückkommt.
+> **Hinweis:** Statt „Meine Liste“ gibt es ab 1.3.17 den Reiter **„Meine Einkaufsliste“**: die Einträge der verbundenen
+> Liste, oben das aus Angeboten Hinzugefügte, mit Zähler und Abhaken. Die Abschnitte unten zu „Meine Liste“
+> („In Liste übernehmen“) gelten erst wieder, wenn dieser Reiter zurückkommt.
 
 - **Alle Angebote:** ein Regal je Markt mit Suche und Kategorie-Filter – als Kacheln oder als kompakte Liste mit
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
@@ -70,7 +71,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `locked` | – | Ansicht festlegen: was hier steht, lässt sich in der Karte nicht umschalten – `[list_view, all_view, group_by, add_to]` oder `true` für alles |
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
 | `show_title` | `true` | `false` blendet den Kopf der Karte aus (Titel, Zahl der Angebote, Märkte). |
-| `default_tab` | `all` | `all` oder `watch` |
+| `default_tab` | `all` | `shop`, `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |
 | `show_valid_until` | `true` | „bis 21.11.“ |
@@ -96,7 +97,7 @@ title: Angebote               # Überschrift (Standard: „Angebote“ in deiner
 list: todo.einkauf            # To-do-Liste zum Abgleichen (optional)
 sources: auto                 # "auto" oder eine Liste, siehe „Quellen“
 match: word                   # word | exact | part
-default_tab: all              # all | watch
+default_tab: all              # shop | all | watch
 list_view: rows               # rows | table
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder

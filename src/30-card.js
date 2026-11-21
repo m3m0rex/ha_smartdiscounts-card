@@ -7,10 +7,13 @@ class SmartDiscountsCard extends HTMLElement {
   setConfig(config) {
     const before = this._config;
     this._config = { ...DEFAULTS, ...(config || {}) };
+    // „Meine Einkaufsliste“: ohne `list` in der Karte gilt die Liste, die man in der Karte verbunden hat (dieser Browser)
+    this._pickKey = this._memKey("picked"); this._picked = false;
+    if (!this._config.list) { try { const v = localStorage.getItem(this._pickKey); if (v) { this._config.list = v; this._picked = true; } } catch (e) { /* */ } }
     // Beim Ändern einer Einstellung (Editor) bleibt man, wo man ist: Reiter, Suche, Auf- und Zugeklapptes. Nur beim
     // ersten Aufbau – oder wenn gerade der Start-Reiter geändert wurde – gilt `default_tab`.
     if (!before || before.default_tab !== this._config.default_tab || !this._tab) {
-      this._tab = ["all", "watch"].includes(this._config.default_tab) ? this._config.default_tab : "list";
+      this._tab = ["all", "watch", "shop"].includes(this._config.default_tab) ? this._config.default_tab : "list";
     }
     if (!this._tabs().includes(this._tab)) this._tab = this._tabs()[0];
     if (!before) {
@@ -152,6 +155,9 @@ class SmartDiscountsCard extends HTMLElement {
       try {
         const r = await this._hass.callWS({ type: "smartlists/get_list", entity_id: id });
         if (r && r.permissions) this._perm = { ...this._perm, ...r.permissions };
+        // Kombinierte Liste: zu jedem Eintrag der Name seiner Quell-Liste (für „Meine Einkaufsliste“)
+        const nm = r && r.type === "combined" && Array.isArray(r.sources) ? Object.fromEntries(r.sources.map((x) => [x.entity_id, x.name || x.entity_id])) : null;
+        this._src = nm && Array.isArray(r.items) ? Object.fromEntries(r.items.map((i) => [i.uid, nm[i.source_entity] || ""])) : {};
         // Kombinierte Liste: die eigenen Quell-Listen – daraus wählt jeder Benutzer in der Karte, wohin Neues kommt
         this._mine = r && r.type === "combined" && Array.isArray(r.sources) ? r.sources.filter((s) => s.mine).map((s) => ({ id: s.entity_id, name: s.name || s.entity_id })) : [];
         // Kombinierte Liste mit "mine_only": nur Artikel aus Quell-Listen, die zu diesem Benutzer gehören
@@ -479,6 +485,64 @@ class SmartDiscountsCard extends HTMLElement {
     } catch (e) { console.warn("smartdiscounts-card: notify", e); }
     this._notifying = false;
   }
+  // ----- Meine Einkaufsliste: die Einträge der verbundenen Liste – oben, was aus Angeboten kam
+  // Angebot an einem Eintrag: ⚙OFFER-Zeile (SmartLists) oder die lesbare 🏷️-Zeile
+  _noteOffer(note) {
+    const s = String(note || ""), m = s.match(/[⚙\u2699]\ufe0f?\s*OFFER\s*:\s*(\{.*\})/);
+    if (m) { try { const j = JSON.parse(m[1]); if (j && j.s) return { store: String(j.s), price: num(j.p), until: j.e || "", bonus: num(j.b) ? { value: num(j.b), kind: j.bk === "pct" ? "pct" : "eur" } : null }; } catch (e) { /* */ } }
+    const l = s.split("\n").find((x) => /^\s*🏷️/.test(x));
+    if (!l) return null;
+    const p = l.replace(/^\s*🏷️\s*/, "").split(" · ");
+    return { store: p[0] || "", price: num(p[1]), text: p.slice(1, Math.max(2, p.length - 1)).join(" · ") };
+  }
+  _shopConnect() {
+    const t = this._t;
+    const todos = Object.keys(this._hass.states).filter((e) => e.startsWith("todo."));
+    const sel = h("select", { class: "search", "aria-label": t.sh_pick, onchange: (e) => {
+      if (!e.target.value) return;
+      try { localStorage.setItem(this._pickKey, e.target.value); } catch (err) { /* gilt, solange die Karte offen ist */ }
+      this._config = { ...this._config, list: e.target.value }; this._picked = true; this._items = undefined; this._perm = null; this._sig = null; this._refresh(true);
+    } }, h("option", { value: "" }, t.sh_pick), todos.map((e) => h("option", { value: e }, (this._hass.states[e].attributes || {}).friendly_name || e)));
+    return h("div", { class: "msg" }, h("div", { style: "font-size:1.6rem" }, "🛒"), h("b", {}, t.sh_connect_title), h("div", { style: "margin:4px 0 12px" }, t.sh_connect_sub), sel);
+  }
+  async _checkOff(it) {
+    this._items = this._items.filter((x) => x !== it); this._render();
+    try { await this._hass.callService("todo", "update_item", { item: it.uid, status: "completed" }, { entity_id: this._config.list }); this._sig = null; await this._loadList(true); this._render(); }
+    catch (e) { await this._loadList(true); this._render(); this._toastErr(e); }
+  }
+  _renderShop() {
+    const t = this._t, c = this._config;
+    if (!c.list || !this._hass.states[c.list]) return this._shopConnect();
+    if (this._loading && this._items === undefined) return h("div", { class: "msg" }, t.loading);
+    const items = this._items || [], st = this._hass.states[c.list];
+    const unlink = this._picked ? h("button", { type: "button", class: "btn", title: t.sh_change, "aria-label": t.sh_change, onclick: () => {
+      try { localStorage.removeItem(this._pickKey); } catch (e) { /* */ }
+      this._config = { ...this._config, list: "" }; this._picked = false; this._items = undefined; this._render(); } }, "✎") : null;
+    const head = h("div", { class: "shophead" }, h("span", {}, "📋 ", (st.attributes && st.attributes.friendly_name) || c.list), unlink, h("span", { class: "sp" }), this._addPick());
+    const row = (it) => {
+      const o = this._noteOffer(it.note), n = this._countOf(it.text), exp = o && this._expiredNote(it.note), deals = o ? [] : this._matchesFor(it);
+      const col = o ? (this._all.find((x) => x.store === o.store) || {}).color || "#888" : "";
+      const bonus = o && o.bonus ? ` · 🎁 ${o.bonus.kind === "pct" ? `${String(o.bonus.value).replace(".", ",")} %` : this._money(o.bonus.value)}` : "";
+      const sub = o ? [h("span", { class: "store", style: `background:${col}` }, o.store), o.price != null ? ` ${this._money(o.price)}` : "", o.text ? ` · ${o.text}` : "", bonus,
+        o.until ? [" · ", exp ? h("span", { class: "exp" }, t.expired) : `${t.until} ${this._day(o.until)}`] : ""]
+        : deals.length ? h("span", { class: "hint" }, `${deals.length} ${deals.length > 1 ? t.offers : t.offer1} ${t.from} ${this._money(Math.min(...deals.map((d) => d.price)))}`) : null;
+      const src = (this._src || {})[it.uid];
+      const name = String(this._withCount(it.text, 1)).split(/\s+/).filter((w) => w && !/^[@#*!+~]/.test(w)).join(" ") || it.text;
+      return h("div", { class: "lrow" },
+        this._may("toggle") ? h("button", { type: "button", class: "ck", title: t.sh_done, "aria-label": `${t.sh_done}: ${name}`, onclick: () => this._checkOff(it) }) : null,
+        h("div", { class: "n" }, name, sub || src ? h("small", {}, sub, sub && src ? " · " : "", src || "") : null),
+        this._may("rename") ? h("span", { class: "stepper slot" },
+          h("button", { type: "button", "aria-label": `− ${name}`, onclick: () => this._stepIt(it, -1) }, "−"), h("b", {}, String(n)),
+          h("button", { type: "button", "aria-label": `+ ${name}`, onclick: () => this._stepIt(it, 1) }, "+")) : h("b", {}, `${n}×`));
+    };
+    if (!items.length) return h("div", {}, head, h("div", { class: "msg" }, this._error || t.sh_empty));
+    const mine = items.filter((i) => this._noteOffer(i.note)), rest = items.filter((i) => !this._noteOffer(i.note));
+    const sum = mine.reduce((a, i) => a + (this._noteOffer(i.note).price || 0) * this._countOf(i.text), 0);
+    return h("div", {}, head,
+      mine.length ? [h("div", { class: "grp2" }, `${t.sh_from_offers} · ${mine.length}`), h("div", { class: "lrows" }, mine.map(row))] : null,
+      rest.length ? [h("div", { class: "grp2" }, `${t.sh_rest} · ${rest.length}`), h("div", { class: "lrows" }, rest.map(row))] : null,
+      mine.length ? h("div", { class: "shopsum" }, h("span", {}, t.sh_sum), h("b", {}, this._money(sum))) : null);
+  }
   _renderWatch() {
     if (this._loading && this._watchItems === undefined && this._watchSmart === undefined) return h("div", { class: "msg" }, this._t.loading);
     const t = this._t, c = this._config, terms = this._watchTerms();
@@ -511,12 +575,12 @@ class SmartDiscountsCard extends HTMLElement {
     const stores = [...new Set(this._all.map((o) => o.store))];
     const head = c.show_title === false ? null : h("div", { class: "head" }, h("h1", {}, c.title || t.title), h("small", {}, `${this._all.length} ${t.offers} · ${stores.length ? stores.join(", ") : "–"}`));
     const hits = this._watchHits();
-    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), all: "🏷️ " + t.tab_all, watch: "⭐ " + t.tab_watch + (hits ? ` · ${hits}` : "") };
+    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), shop: "🛒 " + t.tab_shop + (this._items && this._items.length ? ` · ${this._items.length}` : ""), all: "🏷️ " + t.tab_all, watch: "⭐ " + t.tab_watch + (hits ? ` · ${hits}` : "") };
     const shown = this._tabs();
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>
       h("button", { type: "button", class: this._tab === v ? "on" : "", onclick: () => { this._tab = v; this._render(); } }, names[v]))) : null;
-    const body = !this._all.length ? h("div", { class: "msg" }, t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
+    const body = this._tab === "shop" ? this._renderShop() : !this._all.length ? h("div", { class: "msg" }, t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
     this._card.className = `wrap ${c.show_images ? "" : "noimg"}`;
     this._card.replaceChildren(...[head, tabs, body].filter(Boolean));  // ohne Reiter-Leiste sonst „null“ als Text
   }
@@ -557,8 +621,9 @@ class SmartDiscountsCard extends HTMLElement {
   // "tabs": welche Reiter in welcher Reihenfolge, z. B. [all, watch]. Ohne Angabe alle drei.
   _tabs() {
     // „Meine Liste“ ist vorerst ausgeschaltet (LIST_TAB in 00-head.js) – der Code bleibt
-    const c = this._config, all = LIST_TAB ? ["list", "all", "watch"] : ["all", "watch"];
-    const picked = (Array.isArray(c.tabs) ? c.tabs : []).filter((x, i, a) => all.includes(x) && a.indexOf(x) === i);
+    // „Meine Einkaufsliste“ (shop) steht an der Stelle des früheren „Meine Liste“ (list)
+    const c = this._config, all = LIST_TAB ? ["shop", "list", "all", "watch"] : ["shop", "all", "watch"];
+    const picked = (Array.isArray(c.tabs) ? c.tabs : []).map((x) => (x === "list" && !LIST_TAB ? "shop" : x)).filter((x, i, a) => all.includes(x) && a.indexOf(x) === i);
     const out = (picked.length ? picked : all);
     return out.length ? out : ["all"];
   }
@@ -910,6 +975,9 @@ class SmartDiscountsCard extends HTMLElement {
   async _step(o, delta, btn) {
     const it = this._same(o)[0];
     if (!it) return this._add(o, btn);
+    return this._stepIt(it, delta);
+  }
+  async _stepIt(it, delta) {
     if (String(it.uid).startsWith("tmp-")) return;  // gerade erst hinzugefügt – kurz warten, bis Home Assistant es kennt
     const n = this._countOf(it.text) + delta, before = it.text;
     if (n <= 0) this._items = this._items.filter((x) => x !== it); else { it.text = this._withCount(it.text, n); it.name = itemName(it.text); }

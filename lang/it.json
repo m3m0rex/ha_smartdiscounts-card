@@ -174,5 +174,15 @@
   "w_todo_none": "Nessuna lista di cose da fare da scegliere. Solo gli amministratori possono crearne una.",
   "w_linked": "La tua lista dei preferiti è nella lista di cose da fare «{list}».",
   "w_unlink": "Tienila di nuovo privata",
-  "e_show_title": "Mostra titolo e numero di offerte"
+  "e_show_title": "Mostra titolo e numero di offerte",
+  "tab_shop": "La mia lista della spesa",
+  "sh_connect_title": "Collega la tua lista della spesa",
+  "sh_connect_sub": "Così vedi qui cosa hai aggiunto dalle offerte.",
+  "sh_pick": "Scegli una lista …",
+  "sh_from_offers": "Aggiunti dalle offerte",
+  "sh_rest": "Altri articoli",
+  "sh_sum": "Offerte nella lista",
+  "sh_empty": "La lista è vuota. ＋ in «Tutte le offerte» aggiunge qualcosa.",
+  "sh_done": "Fatto",
+  "sh_change": "Collega un’altra lista"
 }
