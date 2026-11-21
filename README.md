@@ -365,6 +365,13 @@ automation:
 Nothing leaves your Home Assistant: the card only reads your offer sensors. Product images are loaded by your
 browser from the addresses in the sensors.
 
+## Next week's offers
+
+When an offer starts in the future, "All offers" shows a switch "Now / from …" at the top. A sensor with "preview",
+"vorschau" or "next_week" in its name (e.g. `sensor.rewe_preview`) counts as a preview as a whole: its offers are
+listed under "from …" even without a start date (then from next Monday). With your own `sources:`, `preview: true`
+or `preview: false` sets it per source.
+
 ## Expired offers
 
 When an offer you applied to the list has run out, the card shows a note above "My list" with **Remove** and

@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.23";
+const VERSION = "1.3.24";
 const TAG = "smartdiscounts-card";
 // Reiter „Meine Liste“ (Abgleich mit der Liste, Sammeln, günstigster Einkauf) – vorerst ausgeschaltet
 const LIST_TAB = false;
@@ -36,7 +36,7 @@ const STORES = [["rewe", "REWE", "#cc071e"], ["edeka", "EDEKA", "#f5c400"], ["li
 const FIELDS = { name: ["product", "title", "name", "product_name", "description"], price: ["price", "new_price", "discount_price", "offer_price", "sale_price", "price_euro", "current_price"],
   old_price: ["old_price", "regular_price", "original_price", "was_price", "oldPrice", "base_price_old"], image: ["picture_link", "image_url", "image", "picture", "img", "thumbnail"],
   until: ["valid_until", "end_date", "valid_to", "until", "valid_through", "validTo"], from: ["valid_from", "start_date", "valid_start", "from", "validFrom", "starts"], unit: ["price_per_unit", "base_price", "unit_price", "grundpreis"], bonus: ["loyalty_bonus_value", "bonus_value", "bonus"], bonus_type: ["loyalty_bonus_type", "bonus_type"], category: ["category", "categories", "group"], discount: ["discount", "discount_percent", "savings"], brand: ["brand", "manufacturer"], store: ["store", "market", "retailer", "advertiser"] };
-const LIST_ATTRS = ["discounts", "offers", "deals", "items", "results", "products"];
+const LIST_ATTRS = ["discounts", "offers", "deals", "items", "results", "products", "preview", "preview_discounts", "preview_offers", "upcoming", "next_week"];
 
 const h = (tag, attrs, ...kids) => {
   const e = document.createElement(tag);
@@ -126,6 +126,10 @@ function collectOffers(hass, cfg) {
     const rows = get(state.attributes, attr);
     if (!Array.isArray(rows)) continue;
     const store = storeOf(src, state);
+    // Vorschau-Sensor (Prospekt der nächsten Woche, z. B. sensor.rewe_preview): seine Angebote gelten als „demnächst“,
+    // auch wenn kein Startdatum dabeisteht – dann ab dem nächsten Montag. `preview: true/false` an der Quelle legt es fest.
+    const preview = src.preview === undefined ? /preview|vorschau|next_?week|naechste_?woche|nachste_?woche|upcoming|kommende/.test(norm(`${src.entity} ${state.attributes.friendly_name || ""}`)) : !!src.preview;
+    const nextMon = (() => { const d = new Date(); d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })();
     const pick = (o, f) => { const key = (src.map && src.map[f]) || FIELDS[f].find((k) => o[k] != null && o[k] !== ""); return key ? get(o, key) : null; };
     rows.forEach((o, i) => {
       if (!o || typeof o !== "object") return;
@@ -135,7 +139,7 @@ function collectOffers(hass, cfg) {
       if (until && /^\d{4}-\d\d-\d\d$/.test(until) && until < today) return;  // abgelaufen
       // gilt erst ab einem späteren Tag (z. B. das Prospekt der nächsten Woche): als „demnächst“ führen
       const fromRaw = pick(o, "from") ? String(pick(o, "from")).slice(0, 10) : null;
-      const from = fromRaw && /^\d{4}-\d\d-\d\d$/.test(fromRaw) ? fromRaw : null;
+      const from = fromRaw && /^\d{4}-\d\d-\d\d$/.test(fromRaw) ? fromRaw : preview ? nextMon : null;
       const st = pick(o, "store");
       const cat = pick(o, "category"), old = num(pick(o, "old_price"));
       // Rabatt: Angabe der Quelle („-44%“) oder aus altem und neuem Preis berechnet

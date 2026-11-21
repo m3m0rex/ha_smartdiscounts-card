@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.24] – 2026-11-21
+
+### Added
+
+- **Preview sensors count as next week's offers.** A sensor with "preview", "vorschau" or "next_week" in its name is
+  listed under "from …" in "All offers", also when its offers carry no start date (then from next Monday).
+  `preview: true` / `false` on a source sets it by hand.
+
 ## [1.3.23] – 2026-11-21
 
 ### Added

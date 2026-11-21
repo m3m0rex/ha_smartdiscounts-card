@@ -366,6 +366,13 @@ automation:
 Nichts verlässt dein Home Assistant: Die Karte liest nur deine Angebots-Sensoren. Produktbilder lädt dein Browser
 von den Adressen, die in den Sensoren stehen.
 
+## Angebote der nächsten Woche
+
+Hat ein Angebot ein Startdatum in der Zukunft, erscheint unter „Alle Angebote“ oben der Umschalter „Jetzt / ab …“.
+Ein Sensor, der „preview“, „vorschau“ oder „next_week“ im Namen trägt (z. B. `sensor.rewe_preview`), gilt ganz als
+Vorschau: seine Angebote stehen unter „ab …“, auch ohne Startdatum (dann ab dem nächsten Montag). Mit eigenen
+`sources:` legt `preview: true` bzw. `preview: false` das je Quelle fest.
+
 ## Abgelaufene Angebote
 
 Ist ein Angebot abgelaufen, das du in die Liste übernommen hast, zeigt die Karte über „Meine Liste“ einen Hinweis
