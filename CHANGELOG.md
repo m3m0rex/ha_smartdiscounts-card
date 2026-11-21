@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.20] – 2026-11-21
+
+### Changed
+
+- **Shorter bonus label:** "🎁 0,20 € bonus" instead of "… · only with the REWE app".
+
 ## [1.3.19] – 2026-11-21
 
 ### Added

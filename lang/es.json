@@ -52,7 +52,7 @@
   "w_adopted": "{n} productos traídos de este dispositivo.",
   "w_list_unused": "Tu lista de seguimiento se guarda ahora para ti en Home Assistant. La lista de tareas «{list}» de los ajustes de la tarjeta ya no se usa; lo que hay en ella se queda.",
   "w_list_take": "Copiar a mi lista de seguimiento",
-  "bonus_label": "{amount} de bonus · solo con la app de {store}",
+  "bonus_label": "{amount} de bonificación",
   "bonus_help": "Oferta bonus: pagas el precio normal y recibes el saldo en la app de {store}, solo si la usas al pagar.",
   "e_bonus": "Uso programas de bonus (comparar con el bonus)",
   "with_bonus": "con el bonus descontado",

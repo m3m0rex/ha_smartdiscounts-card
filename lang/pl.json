@@ -52,7 +52,7 @@
   "w_adopted": "Przeniesiono {n} produktów z tego urządzenia.",
   "w_list_unused": "Twoja lista obserwowanych jest teraz zapisana dla Ciebie w Home Assistant. Lista zadań „{list}” z ustawień karty nie jest już do tego używana; jej zawartość pozostaje.",
   "w_list_take": "Skopiuj na moją listę",
-  "bonus_label": "{amount} bonusu · tylko z aplikacją {store}",
+  "bonus_label": "{amount} bonusu",
   "bonus_help": "Oferta bonusowa: płacisz normalną cenę, a kredyt trafia do aplikacji {store} – tylko jeśli użyjesz jej przy kasie.",
   "e_bonus": "Korzystam z programów bonusowych (porównuj z bonusem)",
   "with_bonus": "po odjęciu bonusu",

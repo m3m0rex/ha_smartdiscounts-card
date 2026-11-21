@@ -52,7 +52,7 @@
   "w_adopted": "{n} products taken over from this device.",
   "w_list_unused": "Your watch list is now kept for you in Home Assistant. The to-do list “{list}” from the card settings is no longer used for it; what is on it stays there.",
   "w_list_take": "Copy to my watch list",
-  "bonus_label": "{amount} bonus · {store} app only",
+  "bonus_label": "{amount} bonus",
   "bonus_help": "Bonus offer: you pay the normal price and get the credit in the {store} app – only if you use it at checkout.",
   "e_bonus": "I use bonus programmes (compare prices with the bonus)",
   "with_bonus": "with the bonus credit taken off",

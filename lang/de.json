@@ -52,7 +52,7 @@
   "w_adopted": "{n} Produkte von diesem Gerät übernommen.",
   "w_list_unused": "Die Merkliste liegt jetzt bei dir in Home Assistant. Die To-do-Liste „{list}“ aus der Karten-Einstellung wird dafür nicht mehr benutzt; was dort steht, bleibt stehen.",
   "w_list_take": "In meine Merkliste kopieren",
-  "bonus_label": "{amount} Bonus · nur mit der {store}-App",
+  "bonus_label": "{amount} Bonus",
   "bonus_help": "Bonus-Aktion: Du zahlst den normalen Preis und bekommst das Guthaben in der {store}-App gutgeschrieben – nur, wenn du sie beim Bezahlen nutzt.",
   "e_bonus": "Bonus-Programme nutzen (Preise mit Bonus vergleichen)",
   "with_bonus": "mit Bonus-Guthaben gerechnet",
