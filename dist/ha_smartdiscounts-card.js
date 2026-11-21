@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.17";
+const VERSION = "1.3.18";
 const TAG = "smartdiscounts-card";
 // Reiter „Meine Liste“ (Abgleich mit der Liste, Sammeln, günstigster Einkauf) – vorerst ausgeschaltet
 const LIST_TAB = false;
@@ -622,7 +622,7 @@ class SmartDiscountsCard extends HTMLElement {
         if (r && r.permissions) this._perm = { ...this._perm, ...r.permissions };
         // Kombinierte Liste: zu jedem Eintrag der Name seiner Quell-Liste (für „Meine Einkaufsliste“)
         const nm = r && r.type === "combined" && Array.isArray(r.sources) ? Object.fromEntries(r.sources.map((x) => [x.entity_id, x.name || x.entity_id])) : null;
-        this._src = nm && Array.isArray(r.items) ? Object.fromEntries(r.items.map((i) => [i.uid, nm[i.source_entity] || ""])) : {};
+        this._srcName = nm && Array.isArray(r.items) ? Object.fromEntries(r.items.map((i) => [i.uid, nm[i.source_entity] || ""])) : {};
         // Kombinierte Liste: die eigenen Quell-Listen – daraus wählt jeder Benutzer in der Karte, wohin Neues kommt
         this._mine = r && r.type === "combined" && Array.isArray(r.sources) ? r.sources.filter((s) => s.mine).map((s) => ({ id: s.entity_id, name: s.name || s.entity_id })) : [];
         // Kombinierte Liste mit "mine_only": nur Artikel aus Quell-Listen, die zu diesem Benutzer gehören
@@ -991,7 +991,7 @@ class SmartDiscountsCard extends HTMLElement {
       const sub = o ? [h("span", { class: "store", style: `background:${col}` }, o.store), o.price != null ? ` ${this._money(o.price)}` : "", o.text ? ` · ${o.text}` : "", bonus,
         o.until ? [" · ", exp ? h("span", { class: "exp" }, t.expired) : `${t.until} ${this._day(o.until)}`] : ""]
         : deals.length ? h("span", { class: "hint" }, `${deals.length} ${deals.length > 1 ? t.offers : t.offer1} ${t.from} ${this._money(Math.min(...deals.map((d) => d.price)))}`) : null;
-      const src = (this._src || {})[it.uid];
+      const src = (this._srcName || {})[it.uid];
       const name = String(this._withCount(it.text, 1)).split(/\s+/).filter((w) => w && !/^[@#*!+~]/.test(w)).join(" ") || it.text;
       return h("div", { class: "lrow" },
         this._may("toggle") ? h("button", { type: "button", class: "ck", title: t.sh_done, "aria-label": `${t.sh_done}: ${name}`, onclick: () => this._checkOff(it) }) : null,

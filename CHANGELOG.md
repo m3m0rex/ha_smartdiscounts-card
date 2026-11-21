@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.18] – 2026-11-21
+
+### Fixed
+
+- **With SmartLists the tabs could no longer be switched** (1.3.17): the card stopped drawing after loading the list.
+
 ## [1.3.17] – 2026-11-21
 
 ### Added
