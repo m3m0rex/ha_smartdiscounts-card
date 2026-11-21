@@ -595,13 +595,15 @@ class SmartDiscountsCard extends HTMLElement {
   // günstiger: nach Grundpreis, wenn beide denselben haben – sonst nach Preis
   _cmp(a, b) { return cheaper(a, b); }
 
-  async _loadList() {
+  // light = nur die Einträge neu holen (nach ＋/−): Rechte und Quell-Listen ändern sich dabei nicht
+  async _loadList(light = false) {
     const id = this._config.list;
     if (!id || !this._hass.states[id]) { this._items = null; return; }
     try {
       const r = await this._hass.callWS({ type: "todo/item/list", entity_id: id });
       this._items = (r.items || []).filter((i) => i.status !== "completed").map((i) => ({ uid: i.uid, text: i.summary || "", note: i.description || "", name: itemName(i.summary) }));
     } catch (e) { this._items = []; this._error = (e && e.message) || this._t.error; }
+    if (light && this._perm) return;
     // Mit SmartLists: dessen Rechte für diese Liste und diesen Benutzer gelten auch hier (nur abhaken = nichts hinzufügen/ändern).
     this._perm = { add: true, rename: true, delete: true, note: true };
     this._mine = [];
@@ -630,15 +632,21 @@ class SmartDiscountsCard extends HTMLElement {
     const sig = ids.map((e) => (st[e] ? st[e].last_updated || st[e].state : "")).join("|") + "|" + (this._hass.language || "");
     if (!force && sig === this._sig) return;
     this._sig = sig;
-    // „demnächst“ (gilt erst ab einem späteren Tag) getrennt führen: alles Übrige rechnet nur mit dem, was jetzt gilt
-    this._every = this._offers();
-    this._next = this._every.filter((o) => o.soon);
-    this._all = this._every.filter((o) => !o.soon);
-    this._remember();
-    // „Ich nutze Bonus-Programme“: verglichen wird mit dem Preis nach Abzug des Guthabens (erst nach dem Preisverlauf,
-    // der mit echten Preisen rechnet)
-    if (this._config.use_bonus) this._all = this._all.map(withBonus);
-    this._tellSources();
+    // Angebote nur neu einlesen, wenn sich eine Angebots-Quelle geändert hat – nicht bei jeder Änderung an der Liste
+    // (sonst kostet jedes ＋ das Einlesen aller Angebote und die Kategorien von SmartLists)
+    const osig = this._sources().map((s) => `${s.entity}=${st[s.entity] ? st[s.entity].last_updated || st[s.entity].state : ""}`).join("|") + "|" + (this._config.use_bonus ? 1 : 0);
+    if (force || osig !== this._osig || !this._every) {
+      this._osig = osig;
+      // „demnächst“ (gilt erst ab einem späteren Tag) getrennt führen: alles Übrige rechnet nur mit dem, was jetzt gilt
+      this._every = this._offers();
+      this._next = this._every.filter((o) => o.soon);
+      this._all = this._every.filter((o) => !o.soon);
+      this._remember();
+      // „Ich nutze Bonus-Programme“: verglichen wird mit dem Preis nach Abzug des Guthabens (erst nach dem Preisverlauf,
+      // der mit echten Preisen rechnet)
+      if (this._config.use_bonus) this._all = this._all.map(withBonus);
+      this._tellSources();
+    }
     // Schnell sichtbar: die Angebote sofort zeichnen, Liste und Merkliste gleichzeitig laden (nicht nacheinander) und
     // die Kategorien von SmartLists zuletzt – das ist bei vielen Angeboten die längste Abfrage.
     const first = this._loading === undefined;
@@ -875,8 +883,10 @@ class SmartDiscountsCard extends HTMLElement {
     const src = this._config.category_source;
     const need = src === "store_only" ? [] : src === "store" ? this._every.filter((o) => !this._ownCat(o)) : this._every;
     if (!need.length || !(this._hass.config.components || []).includes("smartlists")) { this._catMap = null; return; }
-    if (this._catFor === this._every && this._catLang === this._hass.language) return;  // gleiche Angebote: nicht erneut fragen
-    this._catMap = null; this._catFor = this._every; this._catLang = this._hass.language;
+    // gleiche Angebots-Namen: nicht erneut fragen (auch wenn die Angebote neu eingelesen wurden)
+    const key = need.map((o) => o.name).sort().join("\n");
+    if (this._catFor === key && this._catLang === this._hass.language) return;
+    this._catMap = null; this._catFor = key; this._catLang = this._hass.language;
     try {
       const r = await this._hass.callWS({ type: "smartlists/categorize", names: [...new Set(need.map((o) => o.name))], language: this._hass.language });
       const labels = Object.fromEntries((r.categories || []).map((x) => [x.id, x.label]));
@@ -1252,17 +1262,21 @@ class SmartDiscountsCard extends HTMLElement {
   _key(text) { return norm(this._withCount(String(text || "").split(/\s+/).filter((w) => w && !/^[@#*!+~]/.test(w)).join(" "), 1)).replace(/\s+/g, " ").trim(); }
   _same(o) { const key = this._key(o.name); return key ? (this._items || []).filter((i) => this._key(i.text) === key) : []; }
   _onListCount(o) { return this._same(o).reduce((a, i) => a + this._countOf(i.text), 0); }
+  // ＋/− zählen sofort (in der Karte), geschrieben wird danach im Hintergrund; danach nur die Einträge neu holen
   async _step(o, delta, btn) {
     const it = this._same(o)[0];
     if (!it) return this._add(o, btn);
-    if (btn) btn.disabled = true;
+    if (String(it.uid).startsWith("tmp-")) return;  // gerade erst hinzugefügt – kurz warten, bis Home Assistant es kennt
+    const n = this._countOf(it.text) + delta, before = it.text;
+    if (n <= 0) this._items = this._items.filter((x) => x !== it); else { it.text = this._withCount(it.text, n); it.name = itemName(it.text); }
+    this._render();
     try {
-      const n = this._countOf(it.text) + delta;
       if (n <= 0) await this._hass.callService("todo", "remove_item", { item: it.uid }, { entity_id: this._config.list });
-      else await this._hass.callService("todo", "update_item", { item: it.uid, rename: this._withCount(it.text, n) }, { entity_id: this._config.list });
-      this._sig = null; await this._loadList(); this._render();
-    } catch (e) { if (btn) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; } }
+      else await this._hass.callService("todo", "update_item", { item: it.uid, rename: this._withCount(before, n) }, { entity_id: this._config.list });
+      this._sig = null; await this._loadList(true); this._render();
+    } catch (e) { await this._loadList(true); this._render(); this._toastErr(e); }
   }
+  _toastErr(e) { this.dispatchEvent(new CustomEvent("hass-notification", { detail: { message: (e && e.message) || this._t.error }, bubbles: true, composed: true })); }
   // Breite der Tabelle „Märkte als Spalten“: wächst mit der Karte bis zu einer Grenze. `table_max_width` (in px) setzt
   // sie selbst, 0 = keine Grenze (immer die ganze Breite).
   _tableMax(stores) {
@@ -1343,12 +1357,17 @@ class SmartDiscountsCard extends HTMLElement {
     } catch (e) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; }
   }
   async _add(o, btn) {
-    btn.disabled = true;
+    // sofort als „1“ zählen (vorläufiger Eintrag), dann im Hintergrund schreiben
+    const note = this._offerNote(o);
+    if (this._addTarget() === this._config.list) {
+      this._items = [...(this._items || []), { uid: `tmp-${Date.now()}`, text: o.name, note, name: itemName(o.name) }];
+      this._render();
+    } else if (btn) btn.disabled = true;
     try {
       // "add_to": in diese Liste hinzufügen (z. B. die eigene Quell-Liste einer kombinierten Liste) – sonst in "list"
-      await this._hass.callService("todo", "add_item", { item: o.name, description: this._offerNote(o) }, { entity_id: this._addTarget() });
-      this._sig = null; await this._loadList(); this._render();
-    } catch (e) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; }
+      await this._hass.callService("todo", "add_item", { item: o.name, description: note }, { entity_id: this._addTarget() });
+      this._sig = null; await this._loadList(true); this._render();
+    } catch (e) { await this._loadList(true); this._render(); this._toastErr(e); }
   }
 }
 

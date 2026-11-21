@@ -17,6 +17,9 @@
 
 ### Fixed
 
+- **＋ counts at once.** Adding an offer or changing the count shows the new number immediately and writes to Home
+  Assistant in the background; before, the card waited for the write and reloaded list and rights first. A change on
+  the list no longer re-reads all offers or asks SmartLists for the categories again.
 - **List of offers:** a price with bonus ("1,59 € (1,49 €)") no longer runs into the − 0 + counter; the bonus price
   sits below.
 - **Bonus offers:** no tooltip on "🎁 … Bonus · only with the … app" any more – the label says it already.
