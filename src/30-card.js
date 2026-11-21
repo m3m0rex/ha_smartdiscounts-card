@@ -45,6 +45,7 @@ class SmartDiscountsCard extends HTMLElement {
   set hass(hass) {
     this._hass = hass;
     this._t = TEXTS[String(hass.language || "en").slice(0, 2)] || TEXTS.en;
+    if (this._slCard) this._slCard.hass = hass;  // eingebettete SmartLists-Karte („Meine Einkaufsliste“ im Stil von SmartLists)
     this._refresh(false);
   }
   getCardSize() { return 6; }
@@ -515,6 +516,17 @@ class SmartDiscountsCard extends HTMLElement {
   _renderShop() {
     const t = this._t, c = this._config;
     if (!c.list || !this._hass.states[c.list]) return this._shopConnect();
+    // shop_view: smartlists – die Liste in der echten SmartLists-Karte zeigen (nur mit SmartLists, sonst die eigene Ansicht)
+    if (c.shop_view === "smartlists" && this._smart() && customElements.get("smartlists-card")) {
+      if (!this._slCard || this._slFor !== c.list) {
+        try {
+          const el = document.createElement("smartlists-card");
+          el.setConfig({ type: "custom:smartlists-card", entity: c.list, show_title: false });
+          this._slCard = el; this._slFor = c.list; this._slWrap = h("div", { class: "slwrap" }, el);
+        } catch (e) { this._slCard = null; this._slWrap = null; }
+      }
+      if (this._slCard) { this._slCard.hass = this._hass; return this._slWrap; }
+    }
     if (this._loading && this._items === undefined) return h("div", { class: "msg" }, t.loading);
     const items = this._items || [], st = this._hass.states[c.list];
     const unlink = this._picked ? h("button", { type: "button", class: "btn", title: t.sh_change, "aria-label": t.sh_change, onclick: () => {
@@ -584,6 +596,14 @@ class SmartDiscountsCard extends HTMLElement {
       h("button", { type: "button", class: this._tab === v ? "on" : "", onclick: () => { this._tab = v; this._render(); } }, names[v]))) : null;
     const body = this._tab === "shop" ? this._renderShop() : !this._all.length ? h("div", { class: "msg" }, t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
     this._card.className = `wrap ${c.show_images ? "" : "noimg"}`;
+    // Die eingebettete SmartLists-Karte bleibt im Dokument stehen (sonst baut sie sich bei jedem Zeichnen neu auf):
+    // nur Kopf und Reiter davor austauschen
+    if (body && body === this._slWrap && body.parentNode === this._card) {
+      while (this._card.firstChild !== body) this._card.firstChild.remove();
+      while (this._card.lastChild !== body) this._card.lastChild.remove();
+      body.before(...[head, tabs].filter(Boolean));
+      return;
+    }
     this._card.replaceChildren(...[head, tabs, body].filter(Boolean));  // ohne Reiter-Leiste sonst „null“ als Text
   }
   // Kategorie eines Angebots: mit SmartLists dessen Einkaufs-Kategorien (einheitlich über alle Märkte), sonst die des Sensors

@@ -71,6 +71,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `locked` | – | Fix the view: whatever is listed cannot be switched inside the card – `[list_view, all_view, group_by, add_to]` or `true` for everything |
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
 | `show_title` | `true` | `false` hides the card header (title, number of offers, stores). |
+| `shop_view` | `own` | "My shopping list": `own` (own view, offers on top) or `smartlists` (the list in the SmartLists card, needs SmartLists). |
 | `default_tab` | `all` | `shop`, `all` or `watch` |
 | `show_images` | `true` | Product images |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |

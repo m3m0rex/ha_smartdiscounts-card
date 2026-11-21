@@ -185,5 +185,8 @@
   "sh_empty": "Lista jest pusta. ＋ w „Wszystkie promocje” coś doda.",
   "sh_done": "Gotowe",
   "sh_change": "Połącz inną listę",
-  "on_yours": "Na twojej liście"
+  "on_yours": "Na twojej liście",
+  "e_shop_view": "Pokaż „Moja lista zakupów”",
+  "sv_own": "Własny widok (promocje na górze)",
+  "sv_smart": "W stylu SmartLists"
 }

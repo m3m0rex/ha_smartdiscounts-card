@@ -185,5 +185,8 @@
   "sh_empty": "La liste est vide. ＋ sous « Toutes les promos » y ajoute quelque chose.",
   "sh_done": "Fait",
   "sh_change": "Connecter une autre liste",
-  "on_yours": "Sur ta liste"
+  "on_yours": "Sur ta liste",
+  "e_shop_view": "Afficher « Ma liste de courses »",
+  "sv_own": "Vue propre (promos en haut)",
+  "sv_smart": "Dans le style SmartLists"
 }

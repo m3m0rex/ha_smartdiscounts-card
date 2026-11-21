@@ -185,5 +185,8 @@
   "sh_empty": "Die Liste ist leer. Mit ＋ unter „Alle Angebote“ kommt etwas dazu.",
   "sh_done": "Erledigt",
   "sh_change": "Andere Liste verbinden",
-  "on_yours": "Auf deiner Liste"
+  "on_yours": "Auf deiner Liste",
+  "e_shop_view": "„Meine Einkaufsliste“ anzeigen",
+  "sv_own": "Eigene Ansicht (Angebote oben)",
+  "sv_smart": "Im Stil von SmartLists"
 }

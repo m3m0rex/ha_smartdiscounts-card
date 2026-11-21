@@ -185,5 +185,8 @@
   "sh_empty": "La lista è vuota. ＋ in «Tutte le offerte» aggiunge qualcosa.",
   "sh_done": "Fatto",
   "sh_change": "Collega un’altra lista",
-  "on_yours": "Nella tua lista"
+  "on_yours": "Nella tua lista",
+  "e_shop_view": "Mostra «La mia lista della spesa»",
+  "sv_own": "Vista propria (offerte in alto)",
+  "sv_smart": "Nello stile di SmartLists"
 }

@@ -185,5 +185,8 @@
   "sh_empty": "The list is empty. ＋ under \"All offers\" adds something.",
   "sh_done": "Done",
   "sh_change": "Connect another list",
-  "on_yours": "On your list"
+  "on_yours": "On your list",
+  "e_shop_view": "Show \"My shopping list\"",
+  "sv_own": "Own view (offers on top)",
+  "sv_smart": "In the SmartLists style"
 }

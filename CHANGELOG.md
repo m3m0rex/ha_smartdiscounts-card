@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.23] – 2026-11-21
+
+### Added
+
+- **"My shopping list" in the SmartLists style** (`shop_view: smartlists`, editor → *Look*): with SmartLists installed
+  the tab shows the connected list in the SmartLists card itself – input, categories, badges, ticking off, offer hints.
+
 ## [1.3.22] – 2026-11-21
 
 ### Fixed
