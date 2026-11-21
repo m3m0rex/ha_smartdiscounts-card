@@ -192,6 +192,6 @@
   "e_preview": "Czujniki z promocjami na przyszły tydzień (zapowiedź)",
   "sh_not_yet": "ważne od {date}",
   "sh_later": "Jeszcze nieważne",
-  "sh_next": "od {date} za {price} w {store}",
+  "sh_next": "od {date} {price} w {store} (zamiast {old})",
   "e_preview_start": "Zapowiedź bez daty zaczyna się w (jeśli sklep nie podaje końca bieżących promocji)"
 }

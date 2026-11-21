@@ -192,6 +192,6 @@
   "e_preview": "Sensori con le offerte della prossima settimana (anteprima)",
   "sh_not_yet": "valido dal {date}",
   "sh_later": "Non ancora valido",
-  "sh_next": "dal {date} a {price} da {store}",
+  "sh_next": "dal {date} {price} da {store} (invece di {old})",
   "e_preview_start": "Un’anteprima senza data inizia di (se il negozio non indica la fine delle offerte in corso)"
 }

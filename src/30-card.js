@@ -562,10 +562,15 @@ class SmartDiscountsCard extends HTMLElement {
     // Kommt das Produkt nächste Woche günstiger (oder überhaupt erst ins Angebot)? Dann am Eintrag sagen
     const nextHint = (it, o, deals) => {
       if ((o && o.from) || !this._next.length || !it.name) return null;
-      const nx = dealsForCached(this._next, it.name, c.match).slice().sort((a, b) => a.price - b.price)[0];
-      const cur = o && o.price != null ? o.price : deals && deals.length ? Math.min(...deals.map((d) => d.price)) : null;
-      if (!nx || (cur != null && nx.price >= cur)) return null;
-      return [" · ", h("span", { class: "soon" }, `📅 ${t.sh_next.replace("{date}", this._day(nx.from)).replace("{price}", this._money(nx.price)).replace("{store}", nx.store)}`)];
+      // verglichen wird nur der Grundpreis (€/l, €/kg) – ein Sechserpack ist nicht „günstiger“ als ein Kasten
+      const now = (o ? dealsForCached(this._all, it.name, c.match).filter((d) => d.store === o.store && (o.price == null || Math.abs((d.full ?? d.price) - o.price) < 0.005)) : deals || []).filter((d) => d.unit);
+      const best = (list, u) => list.filter((d) => d.unit && (!u || d.unit.unit === u)).sort((x, y) => (x.unit.full ?? x.unit.value) - (y.unit.full ?? y.unit.value))[0];
+      const cur = best(now);
+      if (!cur) return null;
+      const nx = best(dealsForCached(this._next, it.name, c.match), cur.unit.unit);
+      const up = (d) => d.unit.full ?? d.unit.value;
+      if (!nx || up(nx) >= up(cur) - 0.004) return null;
+      return [" · ", h("span", { class: "soon" }, `📅 ${t.sh_next.replace("{date}", this._day(nx.from)).replace("{price}", `${this._money(up(nx))}/${nx.unit.unit}`).replace("{old}", `${this._money(up(cur))}/${cur.unit.unit}`).replace("{store}", nx.store)}`)];
     };
     const row = (it) => {
       const o = this._noteOffer(it.note), n = this._countOf(it.text), exp = o && this._expiredNote(it.note), deals = o ? [] : this._matchesFor(it);

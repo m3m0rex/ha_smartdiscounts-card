@@ -376,8 +376,8 @@ einen anderen Namen, wähle ihn im Editor unter „Weitere“ bei „Sensoren mi
 (`preview_entities: [sensor.xyz]`). Mit eigenen `sources:` legt `preview: true` bzw. `preview: false` das je Quelle fest.
 
 Fügst du ein Angebot aus der Vorschau hinzu, steht es unter „Meine Einkaufsliste“ im Block „Noch nicht gültig“ mit
-„gilt erst ab …“ und zählt nicht zur Summe; am Starttag rückt es von selbst nach oben. Kommt ein Artikel deiner Liste
-nächste Woche günstiger, sagt das ein Hinweis am Eintrag. Die Merkliste zeigt Vorschau-Angebote mit „ab …“ und meldet
+„gilt erst ab …“ und zählt nicht zur Summe; am Starttag rückt es von selbst nach oben. Ist ein Artikel deiner Liste
+nächste Woche pro Liter oder Kilo günstiger, sagt das ein Hinweis am Eintrag. Die Merkliste zeigt Vorschau-Angebote mit „ab …“ und meldet
 sie erst, wenn sie gelten.
 
 ## Abgelaufene Angebote

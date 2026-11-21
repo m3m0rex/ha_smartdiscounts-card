@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.27] – 2026-11-21
+
+### Changed
+
+- **"Cheaper next week" compares the price per litre or kilo** and shows it ("from 27.11. 1,51 €/l at REWE (instead of
+  1,91 €/l)"). Without a unit price on both sides there is no hint – a six-pack is not "cheaper" than a crate.
+
 ## [1.3.26] – 2026-11-21
 
 ### Added

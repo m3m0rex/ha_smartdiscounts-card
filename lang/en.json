@@ -192,6 +192,6 @@
   "e_preview": "Sensors with next week's offers (preview)",
   "sh_not_yet": "valid from {date}",
   "sh_later": "Not valid yet",
-  "sh_next": "from {date} for {price} at {store}",
+  "sh_next": "from {date} {price} at {store} (instead of {old})",
   "e_preview_start": "A preview without a date starts on (if the store gives no end of the current offers)"
 }

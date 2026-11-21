@@ -374,8 +374,8 @@ weekday in `preview_start` (default `monday`). If your sensor is named different
 (`preview_entities: [sensor.xyz]`). With your own `sources:`, `preview: true` or `preview: false` sets it per source.
 
 An offer added from the preview is listed under "My shopping list" in the block "Not valid yet" with "valid from …"
-and does not count towards the total; on its first day it moves up by itself. When an item on your list gets cheaper
-next week, a hint on the item says so. The watch list shows preview offers with "from …" and reports them only once
+and does not count towards the total; on its first day it moves up by itself. When an item on your list is cheaper per litre
+or kilo next week, a hint on the item says so. The watch list shows preview offers with "from …" and reports them only once
 they are valid.
 
 ## Expired offers

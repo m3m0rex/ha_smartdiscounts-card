@@ -192,6 +192,6 @@
   "e_preview": "Sensores con las ofertas de la próxima semana (avance)",
   "sh_not_yet": "válido desde el {date}",
   "sh_later": "Aún no válido",
-  "sh_next": "desde el {date} por {price} en {store}",
+  "sh_next": "desde el {date} {price} en {store} (en vez de {old})",
   "e_preview_start": "Un avance sin fecha empieza el (si la tienda no indica el fin de las ofertas actuales)"
 }

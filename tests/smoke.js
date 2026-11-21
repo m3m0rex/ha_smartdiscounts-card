@@ -16,8 +16,8 @@ const C=defs["smartdiscounts-card"]; const c=new C();
 const day=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
 let items=[{uid:"1",summary:"Butter 2",description:"",status:"needs_action"},{uid:"2",summary:"Spaghetti",description:`⚙OFFER:${JSON.stringify({s:"Lidl",p:0.99,v:day(3)})}`,status:"needs_action"},{uid:"3",summary:"Bananen",description:"🏷️ REWE · 1,79 € · bis 23.11.",status:"needs_action"}];
 const st={"todo.demo":{entity_id:"todo.demo",state:"3",last_updated:"x",attributes:{friendly_name:"Einkauf"}},
- "sensor.rewe":{entity_id:"sensor.rewe",state:"2",last_updated:"a",attributes:{friendly_name:"REWE",discounts:[{title:"Butter mild",price:"1,29 €",end_date:day(2)},{title:"Kaffee",price:"5,79 €",end_date:day(2)}]}},
- "sensor.rewe_preview":{entity_id:"sensor.rewe_preview",state:"1",last_updated:"a",attributes:{friendly_name:"REWE Vorschau",discounts:[{title:"Butter Süßrahm",price:"0,99 €"}]}}};
+ "sensor.rewe":{entity_id:"sensor.rewe",state:"2",last_updated:"a",attributes:{friendly_name:"REWE",discounts:[{title:"Butter mild",price:"1,29 €",price_per_unit:"1 kg = 5,16 €",end_date:day(2)},{title:"Kaffee",price:"5,79 €",end_date:day(2)}]}},
+ "sensor.rewe_preview":{entity_id:"sensor.rewe_preview",state:"1",last_updated:"a",attributes:{friendly_name:"REWE Vorschau",discounts:[{title:"Butter Süßrahm",price:"0,99 €",price_per_unit:"1 kg = 3,96 €"}]}}};
 const ud={};
 const hass={language:"de",config:{components:["todo"]},user:{is_admin:false,id:"u"},states:st,services:{},
  callWS:(m)=>Promise.resolve(m.type==="todo/item/list"?{items}:m.type==="frontend/get_user_data"?{value:ud[m.key]||null}:m.type==="frontend/set_user_data"?(ud[m.key]=m.value,{}):{}),
