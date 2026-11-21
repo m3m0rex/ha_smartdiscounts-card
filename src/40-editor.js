@@ -72,6 +72,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
   // (Vorschläge: die Kategorien von SmartLists und schon vergebene). Leer = unverändert, „keine“ = zählt nicht.
   _drawCats(t) {
     const box = this._cats, cfg = this._config;
+    if (!CATEGORY_MAP) { box.replaceChildren(); return; }
     const open = box.firstChild ? box.firstChild.open : false;
     const map = cfg.category_map && typeof cfg.category_map === "object" ? { ...cfg.category_map } : {};
     const counts = {};

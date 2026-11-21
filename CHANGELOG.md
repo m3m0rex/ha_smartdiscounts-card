@@ -7,6 +7,8 @@
 - **"My list" is switched off for now.** The card starts with "All offers"; `tabs` and `default_tab` that name `list`
   are ignored, and the editor no longer offers the tab, its layouts and "Collect under My list first". The code stays.
   With it the note about expired offers and the "merge duplicates" hint are gone too, as they lived in that tab.
+- **"Link store categories" is switched off for now:** the section is gone from the editor and `category_map` is
+  ignored. The code stays.
 
 ### Added
 

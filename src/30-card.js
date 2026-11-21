@@ -429,7 +429,7 @@ class SmartDiscountsCard extends HTMLElement {
   // liefert nur solche) und zählen als „keine“. `category_map` verknüpft Markt-Kategorien mit eigenen Namen, z. B.
   // mit denen von SmartLists: { "Molkereiprodukte": "Kühlung", "Store": "" } (leer = keine Kategorie).
   _ownCat(o) {
-    const raw = String(o.category || "").trim(), map = this._config.category_map;
+    const raw = String(o.category || "").trim(), map = CATEGORY_MAP ? this._config.category_map : null;
     if (map && typeof map === "object") {
       if (!this._cmap || this._cmapOf !== map) { this._cmapOf = map; this._cmap = new Map(Object.entries(map).map(([k, v]) => [norm(k).trim(), String(v == null ? "" : v).trim()])); }
       if (this._cmap.has(norm(raw))) return this._cmap.get(norm(raw));

@@ -15,6 +15,8 @@ const VERSION = "1.3.14";
 const TAG = "smartdiscounts-card";
 // Reiter „Meine Liste“ (Abgleich mit der Liste, Sammeln, günstigster Einkauf) – vorerst ausgeschaltet
 const LIST_TAB = false;
+// Markt-Kategorien mit eigenen verknüpfen (category_map, Abschnitt im Editor) – vorerst ausgeschaltet
+const CATEGORY_MAP = false;
 if (customElements.get(TAG)) return;  // schon geladen (z. B. doppelt als Ressource eingetragen)
 
 // Texte: je Sprache eine Datei in lang/<sprache>.json – scripts/build.py setzt sie hier ein.
