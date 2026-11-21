@@ -321,7 +321,7 @@ Where the watch list is stored:
   in the SmartLists settings (Global → Prices & currency → Watch list). The target "In Home Assistant" is seen by
   the whole household, so only admins can choose it.
 - **Without SmartLists:** `watch:` – fixed products in the configuration; `watch_list:` – a Home Assistant to-do
-  list, the same on all devices; with neither, what you enter is stored **in this browser only**.
+  list, the same on all devices; with neither, your watch lists are kept **per user in Home Assistant** (private, on all your devices, several lists possible). In the watch-list tab "Keep as a to-do list" moves a list to a to-do list later.
 
 With `notify: true` (only without SmartLists) the card creates a Home Assistant notification as soon as a watched
 product is newly on offer; `notify_targets` also sends it e.g. to your phone. Every offer is reported once per device.

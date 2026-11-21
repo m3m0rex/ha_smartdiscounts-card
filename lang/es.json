@@ -162,5 +162,16 @@
   "st_on": "Apartado",
   "st_apply": "Añadir a la lista",
   "st_clear": "Vaciar",
-  "cs_store_only": "solo de la tienda"
+  "cs_store_only": "solo de la tienda",
+  "w_user": "Guardado en Home Assistant: solo para ti, en todos tus dispositivos.",
+  "w_to_todo": "Llevar como lista de tareas",
+  "w_todo_pick": "Lista de tareas",
+  "w_todo_new": "Crear una lista de tareas nueva",
+  "w_todo_name": "Nombre de la lista nueva",
+  "w_todo_hint": "Los productos pasan a una lista de tareas y esta tarjeta te los muestra desde allí. Todos los usuarios de Home Assistant ven una lista de tareas.",
+  "w_todo_go": "Mover",
+  "w_todo_fail": "No se pudo crear la lista de tareas.",
+  "w_todo_none": "No hay ninguna lista de tareas para elegir. Solo los administradores pueden crear una.",
+  "w_linked": "Tu lista de seguimiento está en la lista de tareas «{list}».",
+  "w_unlink": "Volver a llevarla en privado"
 }

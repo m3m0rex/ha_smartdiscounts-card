@@ -227,9 +227,23 @@ class SmartDiscountsCard extends HTMLElement {
         else { this._watchErr = (e && e.message) || this._t.error || "Error"; this._watchItems = this._watchItems || []; return; }
       }
     }
+    // Ohne SmartLists: Merklisten je Benutzer im Benutzer-Speicher von Home Assistant (privat, auf allen Geräten) –
+    // oder, wenn dieser Benutzer die Karte mit einer To-do-Liste verbunden hat, dort. „watch_list“ in der Karte geht vor.
+    this._watchUser = false; this._watchLinked = false; this._watchEntity = id;
+    if (!this._watchSmart && !this._watchShared && await this._udLoad()) {
+      const linked = (this._ud.todo || {})[this._memKey("watch")];
+      if (linked && this._hass.states[linked]) { this._watchShared = true; this._watchLinked = true; this._watchEntity = linked; }
+      else {
+        this._watchUser = true;
+        const r = await this._udCmd(this._wl());
+        this._watchItems = r.items; this._watchLists = r.lists; this._watchSel = r.list; this._watchDefault = r.default; this._watchCanAll = true; this._watchErr = "";
+        await this._adoptLocalWatch();
+        return;
+      }
+    }
     if (this._watchShared) {
       try {
-        const r = await this._hass.callWS({ type: "todo/item/list", entity_id: id });
+        const r = await this._hass.callWS({ type: "todo/item/list", entity_id: this._watchEntity });
         this._watchItems = (r.items || []).filter((i) => i.status !== "completed").map((i) => ({ uid: i.uid, name: itemName(i.summary) || String(i.summary || "") }));
       } catch (e) { this._watchItems = []; }
     } else {
@@ -239,6 +253,90 @@ class SmartDiscountsCard extends HTMLElement {
     }
   }
   _wl() { return this._watchSel ? { list: this._watchSel } : {}; }
+  // Merklisten in Home Assistant: mit SmartLists dessen Befehl, sonst der Benutzer-Speicher (gleiche Antwort)
+  _wset(msg) { return this._watchUser ? this._udCmd(msg, true) : this._hass.callWS({ type: "smartlists/watch_set", ...msg }); }
+  async _udLoad() {
+    try { const r = await this._hass.callWS({ type: "frontend/get_user_data", key: "smartdiscounts" }); this._ud = r && r.value && typeof r.value === "object" ? r.value : {}; return true; }
+    catch (e) { this._ud = null; return false; }  // kein Benutzer-Speicher: wie bisher in diesem Browser
+  }
+  _udSave() { return this._hass.callWS({ type: "frontend/set_user_data", key: "smartdiscounts", value: this._ud }); }
+  // Bildet smartlists/watch und smartlists/watch_set nach: { names, items, lists, list, default, show_all }
+  async _udCmd(msg, write) {
+    const ud = this._ud, ck = this._memKey("watch");
+    if (!Array.isArray(ud.lists) || !ud.lists.length) ud.lists = [{ id: "l1", name: this._t.tab_watch, names: [] }];
+    if (!ud.lists.some((x) => x.id === ud.default)) ud.default = ud.lists[0].id;
+    ud.sel = ud.sel || {};
+    if (typeof msg.show_all === "boolean") ud.sel[ck] = msg.show_all ? "all" : (msg.list && msg.list !== "all" ? msg.list : ud.default);
+    const pick = msg.list || ud.sel[ck];
+    let cur = ud.lists.find((x) => x.id === pick) || ud.lists.find((x) => x.id === ud.default);
+    const name = (v) => String(v || "").trim().slice(0, 40);
+    if (msg.new_list && name(msg.new_list)) { cur = { id: `l${Date.now().toString(36)}`, name: name(msg.new_list), names: [] }; ud.lists.push(cur); ud.sel[ck] = cur.id; }
+    if (msg.rename && name(msg.rename)) cur.name = name(msg.rename);
+    if (msg.make_default) ud.default = cur.id;
+    if (msg.delete_list && ud.lists.length > 1) {
+      ud.lists = ud.lists.filter((x) => x !== cur);
+      if (ud.default === cur.id) ud.default = ud.lists[0].id;
+      cur = ud.lists.find((x) => x.id === ud.default); ud.sel[ck] = cur.id;
+    }
+    if (Array.isArray(msg.names)) cur.names = msg.names.map(String);
+    if (msg.add && !cur.names.some((n) => norm(n) === norm(msg.add))) cur.names.push(String(msg.add));
+    if (msg.remove) ud.lists.forEach((l) => { if (l === cur || pick === "all") l.names = l.names.filter((n) => n !== msg.remove); });
+    if (write) await this._udSave();
+    const all = (msg.new_list || msg.delete_list ? false : pick === "all") && ud.lists.length > 1;
+    return { names: cur.names.slice(), items: (all ? ud.lists : [cur]).flatMap((l) => l.names.map((n) => ({ name: n, list: l.id }))),
+      lists: ud.lists.map((l) => ({ id: l.id, name: l.name, count: l.names.length })), list: all ? "all" : cur.id, default: ud.default, show_all: all };
+  }
+  // ----- Merkliste als To-do-Liste führen (auf Nachfrage): Einträge ziehen um, diese Karte zeigt für diesen Benutzer dann die Liste
+  _watchTodoPanel() {
+    const t = this._t, admin = !!(this._hass.user && this._hass.user.is_admin);
+    const todos = Object.keys(this._hass.states).filter((e) => e.startsWith("todo.") && e !== this._config.list);
+    const sel = h("select", { class: "search", "aria-label": t.w_todo_pick },
+      admin ? h("option", { value: "" }, "＋ " + t.w_todo_new) : null,
+      todos.map((e) => h("option", { value: e }, (this._hass.states[e].attributes || {}).friendly_name || e)));
+    const input = h("input", { type: "text", class: "search", maxlength: "40", placeholder: t.w_todo_name, "aria-label": t.w_todo_name, value: t.tab_watch });
+    const sync = () => { input.hidden = !!sel.value; }; sel.addEventListener("change", sync); sync();
+    const close = () => { this._wtodo = false; this._wtodoErr = ""; this._render(); };
+    if (!admin && !todos.length) return h("div", { class: "foot", style: "text-align:left" }, t.w_todo_none, " ", h("button", { type: "button", class: "btn", onclick: close }, t.wl_cancel));
+    return h("div", { class: "staged" }, h("div", { class: "bh" }, "📝 " + t.w_to_todo), h("div", { class: "foot", style: "text-align:left;padding:0 0 8px" }, t.w_todo_hint),
+      h("div", { class: "filters one" }, sel, input),
+      this._wtodoErr ? h("div", { class: "msg", role: "alert", style: "padding:4px 0;text-align:left;color:var(--error-color,#db4437)" }, this._wtodoErr) : null,
+      h("div", { class: "acts" }, h("button", { type: "button", class: "btn", onclick: close }, t.wl_cancel),
+        h("button", { type: "button", class: "btn pri", onclick: (e) => { e.currentTarget.disabled = true; this._watchToTodo(sel.value, input.value.trim()); } }, t.w_todo_go)));
+  }
+  async _watchToTodo(entity, name) {
+    try {
+      if (!entity) {  // neue lokale To-do-Liste (nur Admins)
+        if (!name) throw new Error(this._t.w_todo_name);
+        const before = new Set(Object.keys(this._hass.states).filter((e) => e.startsWith("todo.")));
+        const flow = await this._hass.callApi("POST", "config/config_entries/flow", { handler: "local_todo", show_advanced_options: false });
+        const done = await this._hass.callApi("POST", `config/config_entries/flow/${flow.flow_id}`, { todo_list_name: name });
+        if (!done || done.type !== "create_entry") throw new Error(this._t.w_todo_fail);
+        for (let i = 0; i < 40 && !entity; i++) {  // die Entität erscheint kurz nach dem Anlegen
+          entity = Object.keys(this._hass.states).find((e) => e.startsWith("todo.") && !before.has(e)) || "";
+          if (!entity) await new Promise((r) => setTimeout(r, 250));
+        }
+        if (!entity) throw new Error(this._t.w_todo_fail);
+      }
+      const r = await this._hass.callWS({ type: "todo/item/list", entity_id: entity });
+      const have = new Set((r.items || []).filter((i) => i.status !== "completed").map((i) => norm(itemName(i.summary) || i.summary || "")));
+      for (const x of this._watchItems || []) {
+        if (have.has(norm(x.name))) continue;
+        have.add(norm(x.name));
+        await this._hass.callService("todo", "add_item", { item: x.name }, { entity_id: entity });
+      }
+      // umgezogen: aus dem Benutzer-Speicher nehmen (die gezeigte Liste bzw. alle) und die Karte mit der To-do-Liste verbinden
+      const ud = this._ud, moved = new Set((this._watchItems || []).map((x) => x.name));
+      (ud.lists || []).forEach((l) => { if (this._watchSel === "all" || l.id === this._watchSel) l.names = l.names.filter((n) => !moved.has(n)); });
+      ud.todo = { ...(ud.todo || {}), [this._memKey("watch")]: entity };
+      await this._udSave();
+      this._wtodo = false; this._wtodoErr = "";
+    } catch (e) { this._wtodoErr = (e && (e.message || (e.body && e.body.message))) || this._t.w_todo_fail; }
+    this._sig = null; await this._refresh(true);
+  }
+  async _watchUnlink() {
+    if (this._ud && this._ud.todo) { delete this._ud.todo[this._memKey("watch")]; try { await this._udSave(); } catch (e) { /* */ } }
+    this._sig = null; await this._refresh(true);
+  }
   // Was früher nur in diesem Browser lag, zieht einmal in die Merkliste in Home Assistant um – erst danach wird es hier entfernt
   async _adoptLocalWatch() {
     let local = [];
@@ -249,7 +347,7 @@ class SmartDiscountsCard extends HTMLElement {
     const fresh = local.filter((n) => !have.has(norm(n)) && have.add(norm(n)));
     try {
       if (fresh.length) {
-        const r = await this._hass.callWS({ type: "smartlists/watch_set", names: [...(this._watchItems || []).map((x) => x.name), ...fresh], ...this._wl() });
+        const r = await this._wset({ names: [...(this._watchItems || []).map((x) => x.name), ...fresh], ...(this._watchSel === "all" ? {} : this._wl()) });
         this._watchItems = (r.names || []).map((name) => ({ name }));
         if (Array.isArray(r.lists)) this._watchLists = r.lists;
         this._watchAdopted = fresh.length;
@@ -261,14 +359,14 @@ class SmartDiscountsCard extends HTMLElement {
   async _watchListCmd(patch) {
     this._wlErr = "";
     try {
-      const r = await this._hass.callWS({ type: "smartlists/watch_set", ...this._wl(), ...patch });
+      const r = await this._wset({ ...this._wl(), ...patch });
       this._watchSel = r.list || null; this._wlEdit = null; this._wlSure = false;
     } catch (e) { this._wlErr = (e && e.message) || this._t.error || "Error"; }
     this._sig = null; await this._refresh(true);
   }
   _watchListBar() {
     const t = this._t, lists = this._watchLists;
-    if (!this._watchSmart || !lists) return null;
+    if (!(this._watchSmart || this._watchUser) || !lists) return null;
     const err = this._wlErr ? h("div", { class: "msg", role: "alert", style: "padding:4px 0;text-align:left;color:var(--error-color,#db4437)" }, this._wlErr) : null;
     if (this._wlEdit) {
       const cur = lists.find((x) => x.id === this._watchSel);
@@ -308,6 +406,11 @@ class SmartDiscountsCard extends HTMLElement {
         h("button", { type: "button", class: "btn", onclick: () => this._watchTakeOver(old) }, t.w_list_take)) : null;
       return h("div", {}, h("div", { class: "foot" }, this._watchAdopted ? `${t.w_adopted.replace("{n}", this._watchAdopted)} ` : "", t.w_ha), unused);
     }
+    if (this._watchUser) return this._wtodo ? this._watchTodoPanel() : h("div", { class: "foot" }, this._watchAdopted ? `${t.w_adopted.replace("{n}", this._watchAdopted)} ` : "", t.w_user, " ",
+      h("button", { type: "button", class: "btn", onclick: () => { this._wtodo = true; this._render(); } }, t.w_to_todo + " …"));
+    if (this._watchLinked) { const st = this._hass.states[this._watchEntity];
+      return h("div", { class: "foot" }, t.w_linked.replace("{list}", (st && st.attributes && st.attributes.friendly_name) || this._watchEntity), " ",
+        h("button", { type: "button", class: "btn", onclick: () => this._watchUnlink() }, t.w_unlink)); }
     return this._watchShared ? null : h("div", { class: "foot" }, t.w_local);
   }
   // Offene Einträge der früheren To-do-Merkliste in die eigene Merkliste kopieren (dort bleibt alles stehen)
@@ -329,14 +432,14 @@ class SmartDiscountsCard extends HTMLElement {
   async _watchAdd(name) {
     name = String(name || "").trim();
     if (!name || this._watchTerms().some((x) => norm(x.name) === norm(name))) return;
-    if (this._watchSmart) { try { await this._hass.callWS({ type: "smartlists/watch_set", add: name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
-    else if (this._watchShared) await this._hass.callService("todo", "add_item", { item: name }, { entity_id: this._config.watch_list });
+    if (this._watchSmart || this._watchUser) { try { await this._wset({ add: name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
+    else if (this._watchShared) await this._hass.callService("todo", "add_item", { item: name }, { entity_id: this._watchEntity });
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify([...(this._watchItems || []).map((x) => x.name), name])); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
   }
   async _watchRemove(term) {
-    if (this._watchSmart) { try { await this._hass.callWS({ type: "smartlists/watch_set", remove: term.name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
-    else if (this._watchShared && term.uid) await this._hass.callService("todo", "remove_item", { item: term.uid }, { entity_id: this._config.watch_list });
+    if (this._watchSmart || this._watchUser) { try { await this._wset({ remove: term.name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
+    else if (this._watchShared && term.uid) await this._hass.callService("todo", "remove_item", { item: term.uid }, { entity_id: this._watchEntity });
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify((this._watchItems || []).map((x) => x.name).filter((n) => n !== term.name))); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
   }

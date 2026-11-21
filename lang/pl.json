@@ -162,5 +162,16 @@
   "st_on": "Odłożone",
   "st_apply": "Dodaj do listy",
   "st_clear": "Wyczyść",
-  "cs_store_only": "tylko ze sklepu"
+  "cs_store_only": "tylko ze sklepu",
+  "w_user": "Zapisane w Home Assistant – tylko dla ciebie, na wszystkich twoich urządzeniach.",
+  "w_to_todo": "Prowadź jako listę zadań",
+  "w_todo_pick": "Lista zadań",
+  "w_todo_new": "Utwórz nową listę zadań",
+  "w_todo_name": "Nazwa nowej listy",
+  "w_todo_hint": "Produkty przenoszą się na listę zadań, a ta karta pokazuje ci je stamtąd. Listę zadań widzą wszyscy użytkownicy Home Assistant.",
+  "w_todo_go": "Przenieś",
+  "w_todo_fail": "Nie udało się utworzyć listy zadań.",
+  "w_todo_none": "Brak listy zadań do wyboru. Nową mogą utworzyć tylko administratorzy.",
+  "w_linked": "Twoja lista obserwowanych jest na liście zadań „{list}”.",
+  "w_unlink": "Prowadź znów prywatnie"
 }

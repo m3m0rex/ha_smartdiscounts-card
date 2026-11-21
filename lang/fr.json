@@ -162,5 +162,16 @@
   "st_on": "Mis de côté",
   "st_apply": "Ajouter à la liste",
   "st_clear": "Vider",
-  "cs_store_only": "seulement du magasin"
+  "cs_store_only": "seulement du magasin",
+  "w_user": "Enregistré dans Home Assistant – rien que pour toi, sur tous tes appareils.",
+  "w_to_todo": "Tenir comme liste de tâches",
+  "w_todo_pick": "Liste de tâches",
+  "w_todo_new": "Créer une nouvelle liste de tâches",
+  "w_todo_name": "Nom de la nouvelle liste",
+  "w_todo_hint": "Les produits passent dans une liste de tâches, et cette carte les affiche pour toi à partir de là. Tous les utilisateurs de Home Assistant voient une liste de tâches.",
+  "w_todo_go": "Déplacer",
+  "w_todo_fail": "La liste de tâches n’a pas pu être créée.",
+  "w_todo_none": "Aucune liste de tâches à choisir. Seuls les admins peuvent en créer une.",
+  "w_linked": "Ta liste de suivi est dans la liste de tâches « {list} ».",
+  "w_unlink": "La garder privée à nouveau"
 }

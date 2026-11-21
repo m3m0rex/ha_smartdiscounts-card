@@ -321,7 +321,7 @@ Wo die Merkliste gespeichert ist:
   seine Ziele wählt jeder Benutzer selbst in den SmartLists-Einstellungen (Global → Preise & Währung → Merkliste).
   Das Ziel „In Home Assistant“ sieht der ganze Haushalt, deshalb können es nur Admins wählen.
 - **Ohne SmartLists:** `watch:` – feste Produkte in der Konfiguration; `watch_list:` – eine To-do-Liste von Home
-  Assistant, auf allen Geräten gleich; ohne beides speichert die Karte, was du einträgst, **nur in diesem Browser**.
+  Assistant, auf allen Geräten gleich; ohne beides liegen deine Merklisten **je Benutzer in Home Assistant** (privat, auf allen deinen Geräten; mehrere Listen möglich). Im Reiter Merkliste lässt sich eine Liste später mit „Als To-do-Liste führen“ in eine To-do-Liste umziehen.
 
 Mit `notify: true` (nur ohne SmartLists) legt die Karte eine Benachrichtigung in Home Assistant an, sobald ein gemerktes
 Produkt neu im Angebot ist; `notify_targets` schickt sie zusätzlich z. B. aufs Smartphone. Jedes Angebot wird je Gerät
@@ -355,7 +355,7 @@ automation:
 
 | Was | Mit SmartLists | Ohne SmartLists |
 |---|---|---|
-| Merklisten | Eine Datei je Benutzer in Home Assistant (`.storage/smartlists/watch/`) | To-do-Liste aus `watch_list`, sonst dieser Browser |
+| Merklisten | Eine Datei je Benutzer in Home Assistant (`.storage/smartlists/watch/`) | To-do-Liste aus `watch_list`, sonst je Benutzer im Benutzer-Speicher von Home Assistant |
 | Preisverlauf („▲ / ▼“) | In Home Assistant, für alle gleich; alte Einträge fallen nach Ende des Angebots weg | Nur dieser Browser |
 | Gewählte Ansicht (Reiter, Darstellung, offene Kategorien) | Je Karte, in diesem Browser | Je Karte, in diesem Browser |
 | In die Liste übernommene Angebote | Am Eintrag der To-do-Liste (Badge) | In der Beschreibung des Eintrags |

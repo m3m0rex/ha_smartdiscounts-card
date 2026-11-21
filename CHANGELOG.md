@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.15] – 2026-11-21
+
+### Added
+
+- **Without SmartLists: watch lists per user in Home Assistant.** They are kept in Home Assistant's own per-user
+  storage instead of this browser – private, the same on all your devices, several lists per user, and every card
+  remembers which one it shows. What was kept in the browser moves over once.
+- **Keep the watch list as a to-do list** (on request, in the watch-list tab): the products move to an existing
+  to-do list or – for admins – a new one, and the card shows them from there for this user. "Keep it private again"
+  undoes the link. A `watch_list` set in the card still comes first.
+
 ## [1.3.14] – 2026-11-21
 
 ### Changed

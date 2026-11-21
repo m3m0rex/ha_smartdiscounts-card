@@ -162,5 +162,16 @@
   "st_on": "Vorgemerkt",
   "st_apply": "Auf die Liste",
   "st_clear": "Leeren",
-  "cs_store_only": "nur vom Markt"
+  "cs_store_only": "nur vom Markt",
+  "w_user": "In Home Assistant gespeichert – nur für dich, auf allen deinen Geräten.",
+  "w_to_todo": "Als To-do-Liste führen",
+  "w_todo_pick": "To-do-Liste",
+  "w_todo_new": "Neue To-do-Liste anlegen",
+  "w_todo_name": "Name der neuen Liste",
+  "w_todo_hint": "Die gemerkten Produkte ziehen in eine To-do-Liste um, und diese Karte zeigt sie für dich von dort. Eine To-do-Liste sehen alle Benutzer von Home Assistant.",
+  "w_todo_go": "Umziehen",
+  "w_todo_fail": "Die To-do-Liste konnte nicht angelegt werden.",
+  "w_todo_none": "Es gibt keine To-do-Liste zur Auswahl. Eine neue anlegen können nur Admins.",
+  "w_linked": "Deine Merkliste liegt in der To-do-Liste „{list}“.",
+  "w_unlink": "Wieder privat führen"
 }

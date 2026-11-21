@@ -11,7 +11,7 @@
  * base_price/price_per_unit, category) und lassen sich je Quelle mit `map:` festlegen.
  * Keine externen Abhängigkeiten; nutzt die Theme-Variablen von Home Assistant. */
 (() => {
-const VERSION = "1.3.14";
+const VERSION = "1.3.15";
 const TAG = "smartdiscounts-card";
 // Reiter „Meine Liste“ (Abgleich mit der Liste, Sammeln, günstigster Einkauf) – vorerst ausgeschaltet
 const LIST_TAB = false;

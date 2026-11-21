@@ -162,5 +162,16 @@
   "st_on": "Messo da parte",
   "st_apply": "Aggiungi alla lista",
   "st_clear": "Svuota",
-  "cs_store_only": "solo dal negozio"
+  "cs_store_only": "solo dal negozio",
+  "w_user": "Salvato in Home Assistant: solo per te, su tutti i tuoi dispositivi.",
+  "w_to_todo": "Tieni come lista di cose da fare",
+  "w_todo_pick": "Lista di cose da fare",
+  "w_todo_new": "Crea una nuova lista di cose da fare",
+  "w_todo_name": "Nome della nuova lista",
+  "w_todo_hint": "I prodotti passano a una lista di cose da fare e questa scheda te li mostra da lì. Tutti gli utenti di Home Assistant vedono una lista di cose da fare.",
+  "w_todo_go": "Sposta",
+  "w_todo_fail": "Impossibile creare la lista di cose da fare.",
+  "w_todo_none": "Nessuna lista di cose da fare da scegliere. Solo gli amministratori possono crearne una.",
+  "w_linked": "La tua lista dei preferiti è nella lista di cose da fare «{list}».",
+  "w_unlink": "Tienila di nuovo privata"
 }

@@ -162,5 +162,16 @@
   "st_on": "Set aside",
   "st_apply": "Add to list",
   "st_clear": "Clear",
-  "cs_store_only": "from the store only"
+  "cs_store_only": "from the store only",
+  "w_user": "Kept in Home Assistant – only for you, on all your devices.",
+  "w_to_todo": "Keep as a to-do list",
+  "w_todo_pick": "To-do list",
+  "w_todo_new": "Create a new to-do list",
+  "w_todo_name": "Name of the new list",
+  "w_todo_hint": "The products move to a to-do list, and this card shows them for you from there. All Home Assistant users can see a to-do list.",
+  "w_todo_go": "Move",
+  "w_todo_fail": "The to-do list could not be created.",
+  "w_todo_none": "There is no to-do list to choose. Only admins can create a new one.",
+  "w_linked": "Your watch list is kept in the to-do list \"{list}\".",
+  "w_unlink": "Keep it private again"
 }
