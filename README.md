@@ -13,7 +13,7 @@ A Home Assistant dashboard card that shows **supermarket offers matched with you
   to the items.
 - **All offers:** one shelf per store with search and category filter – as tiles or as a compact list with
   small images; "＋ Add to list" adds an offer.
-- **My list** in three layouts: one offer per row, one line per item, or a table with the stores as columns.
+- **My list** in two layouts: one offer per row or a table with the stores as columns.
 - **Expired offers** on the list are pointed out and can be removed in one go.
 - **Bonus offers** (e.g. REWE Bonus) are marked as "only with the bonus app"; on request prices are compared with
   the bonus taken off.
@@ -45,7 +45,7 @@ SmartLists no longer ships it – it is installed only from here and has its own
 
 **Coming from an older SmartLists beta:** install the card through HACS as above and reload the browser. Your
 configuration stays valid. Removed: `show_list_tab` (now `tabs`), `notify_service` (now `notify_targets`) and `compact`
-(now `list_view: compact`).
+(no replacement).
 
 ## Configuration
 
@@ -78,7 +78,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `show_price_trend` | `true` | "▲ 0,99 €" / "▼ 1,79 €" when the same product in the same shop was cheaper or dearer before. With SmartLists (4.0.0-beta.13 or newer) the prices are remembered in Home Assistant – the same in every browser; without it, in this browser only. |
 | `hide_without_offer` | `false` | Hide list items without an offer |
 | `use_bonus` | `false` | "I use bonus programmes": compare bonus offers at the price after the credit – real price first, bonus price in brackets |
-| `list_view` | `rows` | "My list": `rows` (one offer per row), `compact` (one line per item) or `table` (stores as columns). The buttons in the card switch. |
+| `list_view` | `rows` | "My list": `rows` (one offer per row) or `table` (stores as columns). The buttons in the card switch. |
 | `table_max_width` | – | "My list" as a table: widest the table gets, in px. Default: 760 plus 260 per store. `0` = no limit, always the full width. |
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
 | `max_per_store` | `10` | Offers per store before "all →" (1–20) |
@@ -100,7 +100,7 @@ list: todo.shopping           # to-do list to match against (optional)
 sources: auto                 # "auto" or a list, see "Sources"
 match: word                   # word | exact | part
 default_tab: list             # list | all | watch
-list_view: rows               # rows | compact | table
+list_view: rows               # rows | table
 all_view: tiles               # tiles | list
 show_images: true             # product images
 show_unit_price: true         # unit price (€/kg, €/l)

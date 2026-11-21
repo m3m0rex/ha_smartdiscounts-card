@@ -13,7 +13,7 @@ Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner E
   Gültigkeit an die Einträge.
 - **Alle Angebote:** ein Regal je Markt mit Suche und Kategorie-Filter – als Kacheln oder als kompakte Liste mit
   kleinen Bildern; „＋ Auf die Liste“ fügt ein Angebot hinzu.
-- **Meine Liste** in drei Darstellungen: ein Angebot je Zeile, eine Zeile je Artikel oder eine Tabelle mit den Märkten als Spalten.
+- **Meine Liste** in zwei Darstellungen: ein Angebot je Zeile oder eine Tabelle mit den Märkten als Spalten.
 - **Abgelaufene Angebote** auf der Liste werden angezeigt und lassen sich auf einmal entfernen.
 - **Bonus-Angebote** (z. B. REWE Bonus) sind als „nur mit der Bonus-App“ gekennzeichnet; auf Wunsch werden die Preise
   mit abgezogenem Bonus verglichen.
@@ -45,7 +45,7 @@ SmartLists sie nicht mehr mit – sie wird nur noch hier installiert und hat ihr
 
 **Von einer älteren SmartLists-Beta kommend:** Karte wie oben über HACS installieren und den Browser neu laden. Die
 Konfiguration bleibt gültig. Entfallen sind `show_list_tab` (jetzt `tabs`), `notify_service` (jetzt `notify_targets`) und
-`compact` (jetzt `list_view: compact`).
+`compact` (ohne Ersatz).
 
 ## Konfiguration
 
@@ -78,7 +78,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `show_price_trend` | `true` | „▲ 0,99 €“ / „▼ 1,79 €“, wenn dasselbe Produkt im selben Markt vorher billiger oder teurer war. Mit SmartLists (ab 4.0.0-beta.13) werden die Preise in Home Assistant gemerkt – in jedem Browser gleich; ohne SmartLists nur in diesem Browser. |
 | `hide_without_offer` | `false` | Artikel ohne Angebot ausblenden |
 | `use_bonus` | `false` | „Ich nutze Bonusprogramme“: Bonus-Angebote zum Preis nach Abzug des Guthabens vergleichen – echter Preis vorn, Bonus-Preis in Klammern |
-| `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile), `compact` (eine Zeile je Artikel) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
+| `list_view` | `rows` | „Meine Liste“: `rows` (ein Angebot je Zeile) oder `table` (Märkte als Spalten). Die Knöpfe in der Karte schalten um. |
 | `table_max_width` | – | „Meine Liste“ als Tabelle: größte Breite der Tabelle in px. Standard: 760 plus 260 je Markt. `0` = keine Grenze, immer die ganze Breite. |
 | `all_view` | `tiles` | „Alle Angebote“ als `tiles` (Kacheln) oder `list` (Liste mit kleinen Bildern); ☰ in der Karte schaltet um, je Gerät gemerkt |
 | `max_per_store` | `10` | Angebote je Markt, bevor „alle →“ erscheint (1–20) |
@@ -100,7 +100,7 @@ list: todo.einkauf            # To-do-Liste zum Abgleichen (optional)
 sources: auto                 # "auto" oder eine Liste, siehe „Quellen“
 match: word                   # word | exact | part
 default_tab: list             # list | all | watch
-list_view: rows               # rows | compact | table
+list_view: rows               # rows | table
 all_view: tiles               # tiles | list
 show_images: true             # Produktbilder
 show_unit_price: true         # Grundpreis (€/kg, €/l)

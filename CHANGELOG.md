@@ -6,6 +6,8 @@
 
 - **"Cheapest shopping trip" is switched off for now.** "My list" no longer shows "One store / Two stores / 3 stores".
   The calculation stays in the card; `show_cheapest_trip: true` brings it back.
+- **"One line per item" (`list_view: compact`) is switched off for now.** "My list" offers "One offer per row" and
+  "Table"; a card set to `compact` shows rows.
 
 ## [1.3.11] – 2026-11-18
 

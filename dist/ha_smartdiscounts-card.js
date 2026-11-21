@@ -476,7 +476,8 @@ class SmartDiscountsCard extends HTMLElement {
     this._group = this._config.group_by === "category" ? "category" : "store";
     try { const v = localStorage.getItem(this._memKey("group")); if (free("group_by") && (v === "category" || v === "store")) this._group = v; } catch (e) { /* */ }
     // drei Ansichten; die frühere „Preise nebeneinander“ (chips) gibt es nicht mehr – wer sie eingetragen hat, sieht „rows“
-    const LV = ["rows", "compact", "table"];
+    // „compact“ (eine Zeile je Artikel) ist vorerst ausgeschaltet – die Darstellung bleibt im Code, wer sie eingetragen hat, sieht „rows“
+    const LV = ["rows", "table"];
     this._lview = LV.includes(this._config.list_view) ? this._config.list_view : "rows";
     try { const v = localStorage.getItem(this._memKey("list-view")); if (free("list_view") && LV.includes(v)) this._lview = v; } catch (e) { /* */ }
     this._cexp = new Set();
@@ -947,7 +948,7 @@ class SmartDiscountsCard extends HTMLElement {
     const isCheapest = hit.length && hit.every((r) => this._sel[r.it.uid] && this._sel[r.it.uid].id === r.offers[0].id);
     const asCompact = this._lview === "compact", asTable = this._lview === "table", asRows = !asCompact && !asTable;
     // drei Ansichten zum Umschalten: ein Angebot je Zeile · kompakt (eine Zeile je Artikel) · Tabelle
-    const toggle = h("span", { class: "vsw", role: "group", "aria-label": t.e_lview }, [["rows", "☰", t.v_rows], ["compact", "≡", t.v_compact], ["table", "▤", t.v_table]].map(([v, icon, label]) =>
+    const toggle = h("span", { class: "vsw", role: "group", "aria-label": t.e_lview }, [["rows", "☰", t.v_rows], ["table", "▤", t.v_table]].map(([v, icon, label]) =>
       h("button", { type: "button", class: `btn vbtn sm ${this._lview === v ? "on" : ""}`, title: label, "aria-label": label, "aria-pressed": String(this._lview === v),
         onclick: () => { this._lview = v; try { localStorage.setItem(this._memKey("list-view"), v); } catch (e) { /* */ } this._render(); } }, icon)));
     const plan = h("div", { class: "plan" }, h("div", { class: "ph" }, h("b", {}, "💡 " + t.on_offer.replace("{n}", hit.length).replace("{m}", items.length)), hit.length && !this._locked("list_view") ? toggle : null),
@@ -1315,7 +1316,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "entities", selector: { entity: { multiple: true, ...(found.length ? { include_entities: [...new Set([...found, ...(this._config.entities || [])])] } : { domain: "sensor" }) } } },
       { name: "match", selector: { select: { mode: "dropdown", options: [["word", t.m_word], ["exact", t.m_exact], ["part", t.m_part]].map(([value, label]) => ({ value, label })) } } },
       { name: "default_tab", selector: { select: { mode: "dropdown", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
-      { name: "list_view", selector: { select: { mode: "dropdown", options: [["rows", t.v_rows], ["compact", t.v_compact], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
+      { name: "list_view", selector: { select: { mode: "dropdown", options: [["rows", t.v_rows], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
       b("mine_only"),
       { name: "add_to", selector: { entity: { domain: "todo" } } },
       { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
