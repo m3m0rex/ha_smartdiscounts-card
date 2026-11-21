@@ -19,6 +19,9 @@ class SmartDiscountsCard extends HTMLElement {
       this._open = new Set();
       this._query = ""; this._cat = "";
     }
+    // „Erst unter Meine Liste sammeln“: vorgemerkte Angebote aus „Alle Angebote“ (in diesem Browser, je Karte)
+    try { this._staged = JSON.parse(localStorage.getItem(this._memKey("staged")) || "[]"); } catch (e) { this._staged = []; }
+    if (!Array.isArray(this._staged)) this._staged = [];
     this._view = this._config.all_view === "list" ? "list" : "tiles";
     // "locked": was hier steht, ist in der Karte nicht umschaltbar – es gilt die Einstellung, nicht die gemerkte Wahl
     const free = (k) => !this._locked(k);
@@ -397,7 +400,7 @@ class SmartDiscountsCard extends HTMLElement {
     const stores = [...new Set(this._all.map((o) => o.store))];
     const head = h("div", { class: "head" }, h("h1", {}, c.title || t.title), h("small", {}, `${this._all.length} ${t.offers} · ${stores.length ? stores.join(", ") : "–"}`));
     const hits = this._watchHits();
-    const names = { list: "📝 " + t.tab_list, all: "🏷️ " + t.tab_all, watch: "⭐ " + t.tab_watch + (hits ? ` · ${hits}` : "") };
+    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), all: "🏷️ " + t.tab_all, watch: "⭐ " + t.tab_watch + (hits ? ` · ${hits}` : "") };
     const shown = this._tabs();
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>
@@ -488,7 +491,7 @@ class SmartDiscountsCard extends HTMLElement {
     if (!c.list || !this._hass.states[c.list]) return h("div", { class: "msg" }, t.no_list);
     if (this._loading && this._items === undefined) return h("div", { class: "msg" }, t.loading);
     const items = this._items || [];
-    if (!items.length) return h("div", { class: "msg" }, this._error || t.list_empty);
+    if (!items.length) return h("div", {}, this._stagedBox(), h("div", { class: "msg" }, this._error || t.list_empty));
     const rows = items.map((it) => ({ it, offers: this._matchesFor(it) }));
     const hit = rows.filter((r) => r.offers.length);
     // Wie viele Artikel der Liste hat welcher Markt im Angebot?
@@ -593,7 +596,7 @@ class SmartDiscountsCard extends HTMLElement {
       h("span", { class: "sp" }), h("button", { type: "button", class: "btn", onclick: () => { this._expLater = true; this._render(); } }, t.exp_later),
       h("button", { type: "button", class: "btn pri", onclick: (e) => this._clearExpired(e.currentTarget) }, t.exp_remove)) : null;
     const ro = this._may("add") && this._may("rename") ? null : h("div", { class: "foot", role: "status" }, "🔒 " + t.read_only);
-    return h("div", {}, ro, expBox, dupBox, plan, basket, soonBox, mx, h("div", { class: "rows" }, rows.map(line)), sum, this._foot());
+    return h("div", {}, ro, this._stagedBox(), expBox, dupBox, plan, basket, soonBox, mx, h("div", { class: "rows" }, rows.map(line)), sum, this._foot());
   }
   _renderAll(stores) {
     const t = this._t, c = this._config;
@@ -809,6 +812,7 @@ class SmartDiscountsCard extends HTMLElement {
   _slot(o) {
     const t = this._t, n = this._onListCount(o);
     if (!this._config.list || !this._may("add")) return null;  // ohne Recht zum Hinzufügen: nur ansehen
+    if (!n && this._collect()) return this._stageBtn(o, false);
     return h("span", { class: `stepper slot ${n ? "" : "zero"}`, title: n ? t.on_n.replace("{n}", n) : t.add },
       h("button", { type: "button", "aria-label": `− ${o.name}`, disabled: n ? null : "", onclick: (e) => this._step(o, -1, e.currentTarget) }, "−"),
       h("b", {}, String(n)),
@@ -818,6 +822,7 @@ class SmartDiscountsCard extends HTMLElement {
   _addCtl(o, wide) {
     const t = this._t, n = this._onListCount(o);
     if (!this._config.list || !this._may("add")) return null;  // ohne Recht zum Hinzufügen: nur ansehen
+    if (!n && this._collect()) return this._stageBtn(o, wide);
     if (!n) return h("button", { type: "button", class: wide ? "btn" : "btn plus", title: t.add, "aria-label": `${t.add}: ${o.name}`, onclick: (e) => this._add(o, e.currentTarget) }, wide ? "＋ " + t.add : "＋");
     return h("span", { class: "stepper", title: t.on_n.replace("{n}", n) },
       h("button", { type: "button", "aria-label": `− ${o.name}`, onclick: (e) => this._step(o, -1, e.currentTarget) }, "−"), h("b", {}, `${n}×`),
@@ -831,6 +836,47 @@ class SmartDiscountsCard extends HTMLElement {
       await this._hass.callService("todo", "update_item", { item: group[0].uid, rename: this._withCount(group[0].text, total) }, { entity_id: this._config.list });
       await this._hass.callService("todo", "remove_item", { item: group.slice(1).map((i) => i.uid) }, { entity_id: this._config.list });
       this._sig = null; await this._refresh(true);
+    } catch (e) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; }
+  }
+  // Sammeln geht nur, wenn es den Reiter „Meine Liste“ gibt – sonst wie gewohnt direkt auf die Liste
+  _collect() { return !!this._config.collect_first && this._tabs().includes("list"); }
+  _stagedIdx(o) { return this._staged.findIndex((x) => x.store === o.store && x.name === o.name); }
+  _saveStaged() { try { localStorage.setItem(this._memKey("staged"), JSON.stringify(this._staged)); } catch (e) { /* */ } }
+  _toggleStaged(o) {
+    const i = this._stagedIdx(o);
+    if (i >= 0) this._staged.splice(i, 1);
+    else this._staged.push({ name: o.name, store: o.store, color: o.color, price: o.price, full: o.full, old: o.old, until: o.until, category: o.category, bonus: o.bonus });
+    this._saveStaged(); this._render();
+  }
+  // Knopf in „Alle Angebote“, wenn gesammelt wird: ＋ merkt vor, ✓ nimmt wieder heraus
+  _stageBtn(o, wide) {
+    const t = this._t, on = this._stagedIdx(o) >= 0;
+    return h("button", { type: "button", class: `${wide ? "btn" : "btn plus"} ${on ? "pri" : ""}`, title: on ? t.st_on : t.st_add, "aria-pressed": String(on),
+      "aria-label": `${on ? t.st_on : t.st_add}: ${o.name}`, onclick: () => this._toggleStaged(o) }, on ? (wide ? "✓ " + t.st_on : "✓") : (wide ? "＋ " + t.st_add : "＋"));
+  }
+  // Kasten oben in „Meine Liste“: was vorgemerkt ist, und alles auf einmal auf die Liste
+  _stagedBox() {
+    const t = this._t;
+    if (!this._collect() || !this._staged.length) return null;
+    const sum = this._staged.reduce((a, o) => a + (o.full ?? o.price ?? 0), 0);
+    return h("div", { class: "staged" },
+      h("div", { class: "bh" }, `🛒 ${t.st_title} · ${this._staged.length}`, h("span", { class: "sp" }), h("b", {}, this._money(sum))),
+      this._staged.map((o) => h("div", { class: "strow" },
+        h("span", { class: "store", style: `background:${o.color || "#888"}` }, o.store), h("span", { class: "n" }, o.name),
+        h("span", { class: "p" }, this._money(o.full ?? o.price)),
+        h("button", { type: "button", class: "btn plus", title: t.exp_remove, "aria-label": `${t.exp_remove}: ${o.name}`, onclick: () => this._toggleStaged(o) }, "✕"))),
+      h("div", { class: "acts" },
+        h("button", { type: "button", class: "btn", onclick: () => { this._staged = []; this._saveStaged(); this._render(); } }, t.st_clear),
+        this._may("add") ? h("button", { type: "button", class: "btn pri", onclick: (e) => this._addStaged(e.currentTarget) }, "＋ " + t.st_apply) : null));
+  }
+  async _addStaged(btn) {
+    btn.disabled = true;
+    try {
+      for (const o of this._staged.slice()) {
+        await this._hass.callService("todo", "add_item", { item: o.name, description: this._offerNote(o) }, { entity_id: this._addTarget() });
+        this._staged.splice(this._stagedIdx(o), 1); this._saveStaged();
+      }
+      this._sig = null; await this._loadList(); this._render();
     } catch (e) { btn.disabled = false; btn.textContent = (e && e.message) || this._t.error; }
   }
   async _add(o, btn) {

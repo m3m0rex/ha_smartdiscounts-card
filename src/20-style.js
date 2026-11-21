@@ -68,6 +68,10 @@ const STYLE = `
   .lrow .plus { width:34px; height:34px; padding:0; font-size:1.1rem; flex:none; }
   .expbox { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; padding:9px 12px; border-radius:12px; font-size:.86rem;
     background:color-mix(in srgb, var(--warning-color,#ff9800) 14%, transparent); border:1px solid color-mix(in srgb, var(--warning-color,#ff9800) 40%, transparent); }
+  .staged { margin-bottom:10px; padding:10px 12px; border:1px solid var(--sd-accent); border-radius:12px; }
+  .staged .bh { display:flex; align-items:center; gap:6px; font-weight:600; margin-bottom:6px; } .staged .sp { flex:1; }
+  .staged .strow { display:flex; align-items:center; gap:8px; padding:4px 0; } .staged .strow .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .staged .strow .store { color:#fff; border-radius:6px; padding:1px 6px; font-size:.75rem; font-weight:700; } .staged .acts { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
   .expbox small { color:var(--secondary-text-color); } .expbox .sp { flex:1; }
   .plan .ph { display:flex; align-items:center; gap:8px; } .plan .ph b { flex:1; }
   .vbtn.sm { width:32px; height:32px; font-size:.95rem; }

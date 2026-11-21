@@ -155,5 +155,11 @@
   "bk_amount": "{a} zamiast {b}",
   "bk_per": "{a} zamiast {b}",
   "bk_same": "za {a} to o {sum} mniej",
-  "loading": "Wczytywanie …"
+  "loading": "Wczytywanie …",
+  "e_collect": "Najpierw zbieraj w „Moja lista” (＋ w „Wszystkie promocje” odkłada, „Moja lista” dodaje)",
+  "st_title": "Odłożone",
+  "st_add": "Odłóż",
+  "st_on": "Odłożone",
+  "st_apply": "Dodaj do listy",
+  "st_clear": "Wyczyść"
 }

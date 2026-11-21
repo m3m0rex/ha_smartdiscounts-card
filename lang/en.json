@@ -155,5 +155,11 @@
   "bk_amount": "{a} instead of {b}",
   "bk_per": "{a} instead of {b}",
   "bk_same": "for {a} that is {sum} less",
-  "loading": "Loading …"
+  "loading": "Loading …",
+  "e_collect": "Collect under \"My list\" first (＋ in \"All offers\" sets aside, \"My list\" adds to the list)",
+  "st_title": "Set aside",
+  "st_add": "Set aside",
+  "st_on": "Set aside",
+  "st_apply": "Add to list",
+  "st_clear": "Clear"
 }

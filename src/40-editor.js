@@ -24,6 +24,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "list_view", selector: { select: { mode: "dropdown", options: [["rows", t.v_rows], ["table", t.v_table]].map(([value, label]) => ({ value, label })) } } },
       b("mine_only"),
       { name: "add_to", selector: { entity: { domain: "todo" } } },
+      { name: "collect_first", selector: { boolean: {} } },
       { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [["list", t.tab_list], ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
       b("categories_open"),
       { name: "locked", selector: { select: { multiple: true, mode: "list", options: [["list_view", t.lk_list], ["all_view", t.lk_all], ["group_by", t.lk_group], ...((this._hass.config.components || []).includes("smartlists") ? [["add_to", t.lk_add]] : [])].map(([value, label]) => ({ value, label })) } } },
@@ -38,7 +39,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       b("notify"),
       { name: "currency_symbol", selector: { text: {} } },
     ];
-    const labels = { title: t.e_title, list: t.e_list, match: t.e_match, default_tab: t.e_tab, list_view: t.e_lview, all_view: t.e_view, group_by: t.e_group, entities: t.e_entities, stores: t.e_stores, tabs: t.e_tabs, tile_flow: t.e_flow, sec_look: t.s_look, sec_all: t.tab_all, sec_watch: t.s_watch, sec_more: t.s_more, mine_only: t.e_mine, add_to: t.e_add_to, category_source: t.e_cat_src, category_map: t.e_cat_map, locked: t.e_locked, categories_open: t.e_cat_open, show_images: t.e_images, show_unit_price: t.e_unit,
+    const labels = { title: t.e_title, list: t.e_list, match: t.e_match, default_tab: t.e_tab, list_view: t.e_lview, all_view: t.e_view, group_by: t.e_group, entities: t.e_entities, stores: t.e_stores, tabs: t.e_tabs, tile_flow: t.e_flow, sec_look: t.s_look, sec_all: t.tab_all, sec_watch: t.s_watch, sec_more: t.s_more, mine_only: t.e_mine, add_to: t.e_add_to, collect_first: t.e_collect, category_source: t.e_cat_src, category_map: t.e_cat_map, locked: t.e_locked, categories_open: t.e_cat_open, show_images: t.e_images, show_unit_price: t.e_unit,
       show_valid_until: t.e_until, show_price_trend: t.e_trend, hide_without_offer: t.e_hide_none, use_bonus: t.e_bonus, max_per_store: t.e_max,
       watch: t.e_watch, watch_list: t.e_watch_list, notify: t.e_notify,  currency_symbol: t.e_symbol };
     if (!this._form) {
@@ -60,7 +61,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       sec("sec_look", "mdi:palette-outline", [...pick("tabs", "default_tab", "list_view", "match"), grid, ...pick("locked")]),
       sec("sec_all", "mdi:tag-multiple-outline", pick("all_view", "tile_flow", "group_by", "categories_open", ...(smart ? ["category_source"] : []), "max_per_store")),
       sec("sec_watch", "mdi:star-outline", pick("watch", "watch_list", "notify")),
-      sec("sec_more", "mdi:tune", pick("entities", "add_to", ...(smart ? ["mine_only"] : []), "currency_symbol"))];
+      sec("sec_more", "mdi:tune", pick("entities", "add_to", "collect_first", ...(smart ? ["mine_only"] : []), "currency_symbol"))];
     this._form.hass = this._hass; this._form.schema = grouped; this._form.data = { ...DEFAULTS, ...this._config };
     this._form.computeLabel = (s) => labels[s.name] || s.name;
     this._drawTargets(t);

@@ -155,5 +155,11 @@
   "bk_amount": "{a} statt {b}",
   "bk_per": "{a} statt {b}",
   "bk_same": "für {a} wären das {sum} weniger",
-  "loading": "Lädt …"
+  "loading": "Lädt …",
+  "e_collect": "Erst unter „Meine Liste“ sammeln (＋ in „Alle Angebote“ merkt vor, übernommen wird unter „Meine Liste“)",
+  "st_title": "Vorgemerkt",
+  "st_add": "Vormerken",
+  "st_on": "Vorgemerkt",
+  "st_apply": "Auf die Liste",
+  "st_clear": "Leeren"
 }

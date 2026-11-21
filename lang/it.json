@@ -155,5 +155,11 @@
   "bk_amount": "{a} invece di {b}",
   "bk_per": "{a} invece di {b}",
   "bk_same": "per {a} sono {sum} in meno",
-  "loading": "Caricamento …"
+  "loading": "Caricamento …",
+  "e_collect": "Raccogli prima in «La mia lista» (＋ in «Tutte le offerte» mette da parte, «La mia lista» aggiunge)",
+  "st_title": "Messi da parte",
+  "st_add": "Metti da parte",
+  "st_on": "Messo da parte",
+  "st_apply": "Aggiungi alla lista",
+  "st_clear": "Svuota"
 }

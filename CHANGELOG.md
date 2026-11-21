@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.13] – 2026-11-21
+
+### Added
+
+- **Collect under "My list" first** (`collect_first: true`, visual editor → *More*, off by default). ＋ in "All offers"
+  sets an offer aside instead of adding it straight away; "My list" shows the set-aside offers with their total and
+  adds them with "Add to list". Kept in this browser, per card. Without the "My list" tab ＋ adds directly as before.
+
 ## [1.3.12] – 2026-11-21
 
 ### Changed

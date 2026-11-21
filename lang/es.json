@@ -155,5 +155,11 @@
   "bk_amount": "{a} en vez de {b}",
   "bk_per": "{a} en vez de {b}",
   "bk_same": "para {a} son {sum} menos",
-  "loading": "Cargando …"
+  "loading": "Cargando …",
+  "e_collect": "Reunir primero en «Mi lista» (＋ en «Todas las ofertas» aparta, «Mi lista» añade)",
+  "st_title": "Apartado",
+  "st_add": "Apartar",
+  "st_on": "Apartado",
+  "st_apply": "Añadir a la lista",
+  "st_clear": "Vaciar"
 }

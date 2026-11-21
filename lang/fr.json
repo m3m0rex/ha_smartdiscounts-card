@@ -155,5 +155,11 @@
   "bk_amount": "{a} au lieu de {b}",
   "bk_per": "{a} au lieu de {b}",
   "bk_same": "pour {a}, c'est {sum} de moins",
-  "loading": "Chargement …"
+  "loading": "Chargement …",
+  "e_collect": "Rassembler d’abord sous « Ma liste » (＋ dans « Toutes les promos » met de côté, « Ma liste » ajoute)",
+  "st_title": "De côté",
+  "st_add": "Mettre de côté",
+  "st_on": "Mis de côté",
+  "st_apply": "Ajouter à la liste",
+  "st_clear": "Vider"
 }

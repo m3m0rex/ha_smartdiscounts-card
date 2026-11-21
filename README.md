@@ -78,6 +78,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `show_price_trend` | `true` | "▲ 0,99 €" / "▼ 1,79 €" when the same product in the same shop was cheaper or dearer before. With SmartLists (4.0.0-beta.13 or newer) the prices are remembered in Home Assistant – the same in every browser; without it, in this browser only. |
 | `hide_without_offer` | `false` | Hide list items without an offer |
 | `use_bonus` | `false` | "I use bonus programmes": compare bonus offers at the price after the credit – real price first, bonus price in brackets |
+| `collect_first` | `false` | ＋ in "All offers" sets an offer aside; "My list" shows them with the total and "Add to list" adds them. Kept in this browser. |
 | `list_view` | `rows` | "My list": `rows` (one offer per row) or `table` (stores as columns). The buttons in the card switch. |
 | `table_max_width` | – | "My list" as a table: widest the table gets, in px. Default: 760 plus 260 per store. `0` = no limit, always the full width. |
 | `all_view` | `tiles` | "All offers" as `tiles` or as a `list` with small images (☰ in the card switches, remembered per device) |
