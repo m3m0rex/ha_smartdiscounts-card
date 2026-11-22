@@ -1135,7 +1135,14 @@ class SmartDiscountsCard extends HTMLElement {
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>
       h("button", { type: "button", class: this._tab === v ? "on" : "", onclick: () => { this._tab = v; this._render(); } }, names[v]))) : null;
-    const body = this._tab === "shop" ? this._renderShop() : !this._all.length && !(this._next || []).length ? h("div", { class: "msg" }, this._anySensor() ? t.no_offers_now : t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
+    // Nichts gültig: gibt es Sensoren, bleibt die Merkliste bedienbar (mit dem Hinweis darüber) – „keine Sensoren gefunden“
+    // steht nur da, wenn wirklich keiner da ist
+    const none = !this._all.length && !(this._next || []).length, sensors = none && this._anySensor();
+    const body = this._tab === "shop" ? this._renderShop()
+      : none && !sensors ? h("div", { class: "msg" }, t.no_sources)
+      : this._tab === "watch" ? (none ? h("div", {}, h("div", { class: "foot", role: "status" }, t.no_offers_now), this._renderWatch()) : this._renderWatch())
+      : none ? h("div", { class: "msg" }, t.no_offers_now)
+      : this._tab === "list" ? this._renderList(stores) : this._renderAll(stores);
     this._card.className = `wrap ${c.show_images ? "" : "noimg"}`;
     // Die eingebettete SmartLists-Karte bleibt im Dokument stehen (sonst baut sie sich bei jedem Zeichnen neu auf):
     // nur Kopf und Reiter davor austauschen
