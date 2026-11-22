@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.28] – 2026-11-22
+
+### Fixed
+
+- **"No offer sensors found" on a day without valid offers** (e.g. Sunday, between two leaflets). When only next
+  week's preview is there, "All offers" shows it right away; when nothing is valid, the card says so instead of
+  asking you to install a sensor.
+
 ## [1.3.27] – 2026-11-21
 
 ### Changed

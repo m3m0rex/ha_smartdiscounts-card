@@ -193,5 +193,6 @@
   "sh_not_yet": "gilt erst ab {date}",
   "sh_later": "Noch nicht gültig",
   "sh_next": "ab {date} {price} bei {store} (statt {old})",
-  "e_preview_start": "Vorschau ohne Datum startet am (falls der Markt kein Ende der laufenden Angebote nennt)"
+  "e_preview_start": "Vorschau ohne Datum startet am (falls der Markt kein Ende der laufenden Angebote nennt)",
+  "no_offers_now": "Heute gilt kein Angebot – die Sensoren liefern gerade keine gültigen Angebote (z. B. zwischen zwei Prospekten). Sobald neue da sind, erscheinen sie hier."
 }

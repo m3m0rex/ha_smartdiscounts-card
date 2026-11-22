@@ -601,6 +601,12 @@ class SmartDiscountsCard extends HTMLElement {
       rest.length ? [h("div", { class: "grp2" }, `${t.sh_rest} · ${rest.length}`), h("div", { class: "lrows" }, rest.map(row))] : null,
       withO.length ? h("div", { class: "shopsum" }, h("span", {}, t.sh_sum, later.length ? h("small", { class: "soon" }, ` + ${this._money(total(later))} ${t.from} ${this._day(first)}`) : null), h("b", {}, this._money(total(mine)))) : null);
   }
+  // Gibt es Angebots-Sensoren, auch wenn ihre Liste gerade leer ist oder alles abgelaufen ist?
+  _anySensor() {
+    if (this._sources().length) return true;
+    const st = this._hass.states;
+    return Object.keys(st).some((id) => id.startsWith("sensor.") && LIST_ATTRS.some((a) => Array.isArray(st[id].attributes[a])));
+  }
   _renderWatch() {
     if (this._loading && this._watchItems === undefined && this._watchSmart === undefined) return h("div", { class: "msg" }, this._t.loading);
     const t = this._t, c = this._config, terms = this._watchTerms();
@@ -639,7 +645,7 @@ class SmartDiscountsCard extends HTMLElement {
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>
       h("button", { type: "button", class: this._tab === v ? "on" : "", onclick: () => { this._tab = v; this._render(); } }, names[v]))) : null;
-    const body = this._tab === "shop" ? this._renderShop() : !this._all.length ? h("div", { class: "msg" }, t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
+    const body = this._tab === "shop" ? this._renderShop() : !this._all.length && !(this._next || []).length ? h("div", { class: "msg" }, this._anySensor() ? t.no_offers_now : t.no_sources) : this._tab === "list" ? this._renderList(stores) : this._tab === "watch" ? this._renderWatch() : this._renderAll(stores);
     this._card.className = `wrap ${c.show_images ? "" : "noimg"}`;
     // Die eingebettete SmartLists-Karte bleibt im Dokument stehen (sonst baut sie sich bei jedem Zeichnen neu auf):
     // nur Kopf und Reiter davor austauschen
@@ -858,6 +864,8 @@ class SmartDiscountsCard extends HTMLElement {
     // gibt es Angebote, die erst später gelten (Prospekt der nächsten Woche)? Dann oben umschaltbar
     const soonFrom = this._next.length ? this._next.map((o) => o.from).sort()[0] : null;
     if (!soonFrom) this._when = "now";
+    // heute gilt nichts mehr (z. B. sonntags zwischen zwei Prospekten), aber die Vorschau ist da: gleich die zeigen
+    else if (!this._all.length) this._when = "next";
     const pool = this._when === "next" ? this._next : this._all;
     const whenSel = soonFrom ? h("div", { class: "catbar when" }, [["now", t.w_now, this._all.length], ["next", t.w_next.replace("{date}", this._day(soonFrom)), this._next.length]].map(([v, label, n]) =>
       h("button", { type: "button", class: `chip ${(this._when || "now") === v ? "on" : ""}`, "aria-pressed": String((this._when || "now") === v),

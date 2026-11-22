@@ -193,5 +193,6 @@
   "sh_not_yet": "valido dal {date}",
   "sh_later": "Non ancora valido",
   "sh_next": "dal {date} {price} da {store} (invece di {old})",
-  "e_preview_start": "Un’anteprima senza data inizia di (se il negozio non indica la fine delle offerte in corso)"
+  "e_preview_start": "Un’anteprima senza data inizia di (se il negozio non indica la fine delle offerte in corso)",
+  "no_offers_now": "Oggi nessuna offerta valida: i sensori non hanno offerte valide al momento (ad esempio tra due volantini). Le nuove compariranno qui."
 }

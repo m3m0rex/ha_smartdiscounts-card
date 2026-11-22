@@ -193,5 +193,6 @@
   "sh_not_yet": "ważne od {date}",
   "sh_later": "Jeszcze nieważne",
   "sh_next": "od {date} {price} w {store} (zamiast {old})",
-  "e_preview_start": "Zapowiedź bez daty zaczyna się w (jeśli sklep nie podaje końca bieżących promocji)"
+  "e_preview_start": "Zapowiedź bez daty zaczyna się w (jeśli sklep nie podaje końca bieżących promocji)",
+  "no_offers_now": "Dziś żadna promocja nie obowiązuje – czujniki nie mają teraz ważnych promocji (np. między dwiema gazetkami). Nowe pojawią się tutaj."
 }

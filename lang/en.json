@@ -193,5 +193,6 @@
   "sh_not_yet": "valid from {date}",
   "sh_later": "Not valid yet",
   "sh_next": "from {date} {price} at {store} (instead of {old})",
-  "e_preview_start": "A preview without a date starts on (if the store gives no end of the current offers)"
+  "e_preview_start": "A preview without a date starts on (if the store gives no end of the current offers)",
+  "no_offers_now": "No offer is valid today – the sensors have no valid offers right now (for example between two leaflets). New ones show up here as soon as they arrive."
 }
