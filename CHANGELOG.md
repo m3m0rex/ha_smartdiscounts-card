@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.29] – 2026-11-25
+
+### Changed
+
+- **README with screenshots** of "My shopping list" and "All offers" (English and German).
+- **HACS validation** runs on every push, in preparation for the HACS default catalog.
+
 ## [1.3.28] – 2026-11-22
 
 ### Fixed
