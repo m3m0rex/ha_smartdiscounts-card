@@ -8,6 +8,11 @@
 
 A Home Assistant dashboard card that shows **supermarket offers matched with your shopping list**.
 
+<p>
+  <img src="https://raw.githubusercontent.com/m3m0rex/ha_smartdiscounts-card/main/docs/images/card-shopping-list-en.png" alt="Tab My shopping list: the items of the list, each with the number of matching offers and the lowest price" width="400">
+  <img src="https://raw.githubusercontent.com/m3m0rex/ha_smartdiscounts-card/main/docs/images/card-all-offers-en.png" alt="Tab All offers: one shelf per store with discount, unit price and Add to list" width="400">
+</p>
+
 > **Note:** instead of "My list" there is the tab **"My shopping list"** from 1.3.17: the items of the connected list,
 > what came from offers on top, with a counter and ticking off. The sections below about "My list" ("Apply to list")
 > apply again once that tab is back.

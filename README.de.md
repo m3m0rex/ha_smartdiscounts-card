@@ -8,6 +8,11 @@
 
 Eine Dashboard-Karte für Home Assistant, die **Supermarkt-Angebote mit deiner Einkaufsliste abgleicht**.
 
+<p>
+  <img src="https://raw.githubusercontent.com/m3m0rex/ha_smartdiscounts-card/main/docs/images/card-shopping-list-de.png" alt="Reiter Meine Einkaufsliste: die Einträge der Liste, je mit Anzahl passender Angebote und günstigstem Preis" width="400">
+  <img src="https://raw.githubusercontent.com/m3m0rex/ha_smartdiscounts-card/main/docs/images/card-all-offers-de.png" alt="Reiter Alle Angebote: ein Regal je Markt mit Rabatt, Grundpreis und Auf die Liste" width="400">
+</p>
+
 > **Hinweis:** Statt „Meine Liste“ gibt es ab 1.3.17 den Reiter **„Meine Einkaufsliste“**: die Einträge der verbundenen
 > Liste, oben das aus Angeboten Hinzugefügte, mit Zähler und Abhaken. Die Abschnitte unten zu „Meine Liste“
 > („In Liste übernehmen“) gelten erst wieder, wenn dieser Reiter zurückkommt.
