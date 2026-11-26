@@ -10,6 +10,10 @@
 ### Added
 
 - **`show_tab_icons: false`** (visual editor → *Header and tabs*) hides the icons on all tabs.
+- **`shop_clear_done: false`** (visual editor → *My shopping list*, with `shop_view: smartlists`) removes the
+  "Remove completed" button from the embedded SmartLists card.
+- **`shop_card:`** passes any option of the SmartLists card on to the embedded card (YAML), for example
+  `sort`, `show_clear_done` or `clear_expired_done`. The list itself always comes from `list`.
 
 ## [1.3.32] – 2026-11-26
 

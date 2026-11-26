@@ -198,5 +198,6 @@
   "no_offers_now": "Dziś żadna promocja nie obowiązuje – czujniki nie mają teraz ważnych promocji (np. między dwiema gazetkami). Nowe pojawią się tutaj.",
   "e_label": "Własna nazwa dla „{tab}” (puste = domyślna)",
   "e_tab_counts": "Pokaż liczniki na zakładkach (np. „· 3”)",
-  "e_tab_icons": "Pokaż ikony na kartach (🛒 🏷️ ⭐)"
+  "e_tab_icons": "Pokaż ikony na kartach (🛒 🏷️ ⭐)",
+  "e_shop_clear": "Pokaż przycisk „Usuń ukończone”"
 }

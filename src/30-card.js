@@ -544,11 +544,15 @@ class SmartDiscountsCard extends HTMLElement {
     if (!c.list || !this._hass.states[c.list]) return this._shopConnect();
     // shop_view: smartlists – die Liste in der echten SmartLists-Karte zeigen (nur mit SmartLists, sonst die eigene Ansicht)
     if (c.shop_view === "smartlists" && this._smart() && customElements.get("smartlists-card")) {
-      if (!this._slCard || this._slFor !== c.list) {
+      // shop_card reicht Einstellungen der SmartLists-Karte durch; shop_clear_done: false nimmt den Knopf „Erledigte entfernen“ weg
+      const extra = c.shop_card && typeof c.shop_card === "object" && !Array.isArray(c.shop_card) ? c.shop_card : {};
+      const slCfg = { show_title: false, ...extra, ...(c.shop_clear_done === false ? { show_clear_done: false } : {}), type: "custom:smartlists-card", entity: c.list };
+      const slSig = JSON.stringify(slCfg);
+      if (!this._slCard || this._slFor !== slSig) {
         try {
           const el = document.createElement("smartlists-card");
-          el.setConfig({ type: "custom:smartlists-card", entity: c.list, show_title: false });
-          this._slCard = el; this._slFor = c.list; this._slWrap = h("div", { class: "slwrap" }, el);
+          el.setConfig(slCfg);
+          this._slCard = el; this._slFor = slSig; this._slWrap = h("div", { class: "slwrap" }, el);
         } catch (e) { this._slCard = null; this._slWrap = null; }
       }
       if (this._slCard) { this._slCard.hass = this._hass; return this._slWrap; }

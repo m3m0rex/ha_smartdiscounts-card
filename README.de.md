@@ -83,6 +83,8 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `match` | `word` | `word` (Butter ≠ Butterkeks), `exact`, `part` |
 | `show_title` | `true` | `false` blendet den Kopf der Karte aus (Titel, Zahl der Angebote, Märkte). |
 | `shop_view` | `own` | „Meine Einkaufsliste“: `own` (eigene Ansicht, Angebote oben) oder `smartlists` (die Liste in der SmartLists-Karte, nur mit SmartLists). |
+| `shop_clear_done` | `true` | Bei `shop_view: smartlists`: `false` nimmt den Knopf „Erledigte entfernen“ weg. |
+| `shop_card` | – | Bei `shop_view: smartlists`: Einstellungen der SmartLists-Karte für die eingebettete Karte (nur YAML), z. B. `shop_card: { sort: category, clear_expired_done: true }`. |
 | `default_tab` | `all` | `shop`, `all` oder `watch` |
 | `show_images` | `true` | Produktbilder |
 | `show_unit_price` | `true` | Grundpreis (€/kg, €/l) |

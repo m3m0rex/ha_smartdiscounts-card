@@ -198,5 +198,6 @@
   "no_offers_now": "Aucune promo valable aujourd’hui – les capteurs n’ont pas de promos valables pour l’instant (par exemple entre deux prospectus). Les nouvelles apparaîtront ici.",
   "e_label": "Nom personnalisé pour « {tab} » (vide = par défaut)",
   "e_tab_counts": "Afficher les compteurs sur les onglets (p. ex. « · 3 »)",
-  "e_tab_icons": "Afficher les icônes sur les onglets (🛒 🏷️ ⭐)"
+  "e_tab_icons": "Afficher les icônes sur les onglets (🛒 🏷️ ⭐)",
+  "e_shop_clear": "Afficher le bouton « Supprimer les éléments cochés »"
 }

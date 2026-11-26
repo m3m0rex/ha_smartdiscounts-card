@@ -83,6 +83,8 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `match` | `word` | `word` (butter ≠ butter biscuit), `exact`, `part` |
 | `show_title` | `true` | `false` hides the card header (title, number of offers, stores). |
 | `shop_view` | `own` | "My shopping list": `own` (own view, offers on top) or `smartlists` (the list in the SmartLists card, needs SmartLists). |
+| `shop_clear_done` | `true` | With `shop_view: smartlists`: `false` removes the "Remove completed" button. |
+| `shop_card` | – | With `shop_view: smartlists`: options of the SmartLists card for the embedded card (YAML only), e.g. `shop_card: { sort: category, clear_expired_done: true }`. |
 | `default_tab` | `all` | `shop`, `all` or `watch` |
 | `show_images` | `true` | Product images |
 | `show_unit_price` | `true` | Unit price (€/kg, €/l) |

@@ -198,5 +198,6 @@
   "no_offers_now": "No offer is valid today – the sensors have no valid offers right now (for example between two leaflets). New ones show up here as soon as they arrive.",
   "e_label": "Own name for \"{tab}\" (empty = default)",
   "e_tab_counts": "Show counters on the tabs (e.g. \"· 3\")",
-  "e_tab_icons": "Show icons on the tabs (🛒 🏷️ ⭐)"
+  "e_tab_icons": "Show icons on the tabs (🛒 🏷️ ⭐)",
+  "e_shop_clear": "Show the \"Remove completed\" button"
 }
