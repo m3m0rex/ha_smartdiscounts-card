@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.30] – 2026-11-26
+
+### Added
+
+- **Own names for the tabs:** `label_shop`, `label_all` and `label_watch` (visual editor → *Look*) replace
+  "My shopping list", "All offers" and "Watch list". Counters such as "· 3" stay behind the name.
+
 ## [1.3.29] – 2026-11-25
 
 ### Changed

@@ -72,7 +72,8 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `add_to` | – | In diese Liste hinzufügen, z. B. die eigene Quell-Liste einer kombinierten Liste (leer = `list`) |
 | `mine_only` | `false` | Kombinierte SmartLists-Liste: nur Artikel aus Listen berücksichtigen, die zum angemeldeten Benutzer gehören |
 | `tile_flow` | `grid` | Kacheln untereinander im Raster (`grid`) oder in einer Zeile zum Wischen (`scroll`) |
-| `tabs` | `[list, all, watch]` | Welche Reiter in welcher Reihenfolge – z. B. `[all, watch]`; bei nur einem Reiter entfällt die Leiste |
+| `label_shop`, `label_all`, `label_watch` | – | Eigener Name für den Reiter „Meine Einkaufsliste“, „Alle Angebote“ bzw. „Merkliste“, z. B. `label_all: "🛒 Prospekte"`. Leer = der übliche Name mit Symbol. |
+| `tabs` | `[shop, all, watch]` | Welche Reiter in welcher Reihenfolge – z. B. `[all, watch]`; bei nur einem Reiter entfällt die Leiste |
 | `group_by` | `store` | „Alle Angebote“ nach `store` (Markt) oder `category` (Kategorie) einsortieren; 🗂️ in der Karte schaltet um |
 | `categories_open` | `true` | Kategorien ausgeklappt; `false` = zugeklappt starten |
 | `category_source` | `auto` | `auto`: Kategorien von SmartLists, sonst vom Markt · `store`: die des Markts, sonst von SmartLists · `store_only`: nur die des Markts (ohne → „Sonstiges“) |
