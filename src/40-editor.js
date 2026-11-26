@@ -40,14 +40,13 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "tile_flow", selector: { select: { mode: "dropdown", options: [["grid", t.tf_grid], ["scroll", t.tf_scroll]].map(([value, label]) => ({ value, label })) } } },
       { name: "group_by", selector: { select: { mode: "dropdown", options: [["store", t.g_store], ["category", t.g_cat]].map(([value, label]) => ({ value, label })) } } },
       { name: "all_view", selector: { select: { mode: "dropdown", options: [["tiles", t.v_tiles], ["list", t.v_list]].map(([value, label]) => ({ value, label })) } } },
-      { type: "grid", name: "", schema: [b("show_images"), b("show_unit_price"), b("show_valid_until"), b("show_price_trend"), b("hide_without_offer"), b("use_bonus")] },
       { name: "max_per_store", selector: { number: { min: 1, max: 20, mode: "box" } } },
       { name: "watch", selector: { text: { multiple: true } } },
       { name: "watch_list", selector: { entity: { domain: "todo" } } },
       b("notify"),
       { name: "currency_symbol", selector: { text: {} } },
     ];
-    const labels = { title: t.e_title, show_tab_counts: t.e_tab_counts, label_shop: t.e_label.replace("{tab}", t.tab_shop), label_all: t.e_label.replace("{tab}", t.tab_all), label_watch: t.e_label.replace("{tab}", t.tab_watch), show_title: t.e_show_title, list: t.e_list, match: t.e_match, default_tab: t.e_tab, list_view: t.e_lview, all_view: t.e_view, group_by: t.e_group, entities: t.e_entities, preview_entities: t.e_preview, preview_start: t.e_preview_start, stores: t.e_stores, tabs: t.e_tabs, tile_flow: t.e_flow, sec_look: t.s_look, sec_all: t.tab_all, sec_watch: t.s_watch, sec_more: t.s_more, mine_only: t.e_mine, add_to: t.e_add_to, collect_first: t.e_collect, shop_view: t.e_shop_view, category_source: t.e_cat_src, category_map: t.e_cat_map, locked: t.e_locked, categories_open: t.e_cat_open, show_images: t.e_images, show_unit_price: t.e_unit,
+    const labels = { title: t.e_title, show_tab_counts: t.e_tab_counts, label_shop: t.e_label.replace("{tab}", t.tab_shop), label_all: t.e_label.replace("{tab}", t.tab_all), label_watch: t.e_label.replace("{tab}", t.tab_watch), show_title: t.e_show_title, list: t.e_list, match: t.e_match, default_tab: t.e_tab, list_view: t.e_lview, all_view: t.e_view, group_by: t.e_group, entities: t.e_entities, preview_entities: t.e_preview, preview_start: t.e_preview_start, stores: t.e_stores, tabs: t.e_tabs, tile_flow: t.e_flow, sec_head: t.s_head, sec_shop: t.tab_shop, sec_all: t.tab_all, sec_watch: t.s_watch, sec_src: t.s_src, sec_lock: t.s_lock, mine_only: t.e_mine, add_to: t.e_add_to, collect_first: t.e_collect, shop_view: t.e_shop_view, category_source: t.e_cat_src, category_map: t.e_cat_map, locked: t.e_locked, categories_open: t.e_cat_open, show_images: t.e_images, show_unit_price: t.e_unit,
       show_valid_until: t.e_until, show_price_trend: t.e_trend, hide_without_offer: t.e_hide_none, use_bonus: t.e_bonus, max_per_store: t.e_max,
       watch: t.e_watch, watch_list: t.e_watch_list, notify: t.e_notify,  currency_symbol: t.e_symbol };
     if (!this._form) {
@@ -59,17 +58,22 @@ class SmartDiscountsCardEditor extends HTMLElement {
       this._cats = h("div", {});
       this.append(this._form, this._cats, this._targets, this._hint);
     }
-    // Übersichtlich auch ohne SmartLists: oben nur das Nötigste, der Rest in aufklappbaren Abschnitten;
+    // Übersichtlich auch ohne SmartLists: oben nur Liste und Märkte, der Rest in Abschnitten, die nach den Reitern benannt sind;
     // Felder, die nur mit SmartLists etwas bewirken, erscheinen nur, wenn es installiert ist.
     const smart = (this._hass.config.components || []).includes("smartlists");
-    const by = Object.fromEntries(schema.filter((s) => s.name).map((s) => [s.name, s])), grid = schema.find((s) => s.type === "grid");
+    const by = Object.fromEntries(schema.filter((s) => s.name).map((s) => [s.name, s]));
     const pick = (...names) => names.map((n) => by[n]).filter(Boolean);
-    const sec = (name, icon, items) => ({ type: "expandable", name, flatten: true, title: labels[name], icon, schema: items.filter(Boolean) });
-    const grouped = [...pick("title", "show_title", "list", "stores"),
-      sec("sec_look", "mdi:palette-outline", [...pick("tabs", "label_shop", "label_all", "label_watch", "show_tab_counts", "default_tab", ...(smart ? ["shop_view"] : []), ...(LIST_TAB ? ["list_view"] : []), "match"), grid, ...pick("locked")]),
-      sec("sec_all", "mdi:tag-multiple-outline", pick("all_view", "tile_flow", "group_by", "categories_open", ...(smart ? ["category_source"] : []), "max_per_store")),
+    const flags = (...names) => ({ type: "grid", name: "", schema: names.map(b) });
+    // Die Zahl im Titel sagt, wie viele Einstellungen im Abschnitt stecken (Raster zählen mit ihren Schaltern)
+    const sec = (name, icon, items) => { const list = items.filter(Boolean), n = list.reduce((sum, x) => sum + (x.type === "grid" ? x.schema.length : 1), 0);
+      return n ? { type: "expandable", name, flatten: true, title: `${labels[name]} (${n})`, icon, schema: list } : null; };
+    const grouped = [...pick("list", "stores"),
+      sec("sec_head", "mdi:page-layout-header", pick("title", "show_title", "tabs", "default_tab", "label_shop", "label_all", "label_watch", "show_tab_counts")),
+      sec("sec_shop", "mdi:cart-outline", [...pick(...(smart ? ["shop_view"] : []), "add_to", ...(smart ? ["mine_only"] : []), ...(LIST_TAB ? ["list_view", "collect_first"] : [])), LIST_TAB ? flags("hide_without_offer") : null]),
+      sec("sec_all", "mdi:tag-multiple-outline", [...pick("all_view", "tile_flow", "group_by", "categories_open", ...(smart ? ["category_source"] : []), "max_per_store"), flags("show_images", "show_unit_price", "show_valid_until", "show_price_trend")]),
       sec("sec_watch", "mdi:star-outline", pick("watch", "watch_list", "notify")),
-      sec("sec_more", "mdi:tune", pick("entities", "preview_entities", "preview_start", "add_to", ...(LIST_TAB ? ["collect_first"] : []), ...(smart ? ["mine_only"] : []), "currency_symbol"))];
+      sec("sec_src", "mdi:connection", [...pick("entities", "preview_entities", "preview_start", "match"), flags("use_bonus"), ...pick("currency_symbol")]),
+      sec("sec_lock", "mdi:lock-outline", pick("locked"))].filter(Boolean);
     this._form.hass = this._hass; this._form.schema = grouped; this._form.data = { ...DEFAULTS, ...this._config };
     this._form.computeLabel = (s) => labels[s.name] || s.name;
     this._drawTargets(t);

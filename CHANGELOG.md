@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.32] – 2026-11-26
+
+### Changed
+
+- **Visual editor regrouped.** List and stores stay on top; everything else sits in sections named after what
+  it changes: *Header and tabs*, *My shopping list*, *All offers*, *Watch list*, *Offer sensors* and *Fix*.
+  Each title shows how many settings the section holds. No option was renamed or removed.
+- "Hide items without an offer" no longer appears in the editor: it only worked in the old "My list" tab,
+  which is switched off.
+
 ## [1.3.31] – 2026-11-26
 
 ### Added
