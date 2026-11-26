@@ -37,8 +37,11 @@ Die echte Karte mit Beispieldaten zum Ausprobieren: **[ha-smartlists.com → Dis
 
 ## Installation
 
-**HACS:** `https://github.com/m3m0rex/ha_smartdiscounts-card` als benutzerdefiniertes Repository hinzufügen
-(Typ *Dashboard*), „SmartDiscounts“ installieren und den Browser neu laden.
+**HACS:** SmartDiscounts ist im HACS-Standard enthalten. In HACS nach **SmartDiscounts** suchen
+([direkt öffnen](https://my.home-assistant.io/redirect/hacs_repository/?owner=m3m0rex&repository=ha_smartdiscounts-card&category=plugin)), herunterladen und den Browser neu laden.
+
+Taucht die Karte in deinem HACS noch nicht auf: unter ⋮ → *Benutzerdefinierte Repositories*
+`https://github.com/m3m0rex/ha_smartdiscounts-card` als Typ *Dashboard* hinzufügen.
 
 Voraussetzung: Home Assistant 2024.9 oder neuer.
 

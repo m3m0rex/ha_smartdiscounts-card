@@ -37,8 +37,11 @@ Try the real card with sample data: **[ha-smartlists.com → Discounts Card](htt
 
 ## Installation
 
-**HACS:** add `https://github.com/m3m0rex/ha_smartdiscounts-card` as a custom repository (type *Dashboard*),
-install "SmartDiscounts" and reload the browser.
+**HACS:** SmartDiscounts is in the HACS default store. Search for **SmartDiscounts** in HACS
+([open it directly](https://my.home-assistant.io/redirect/hacs_repository/?owner=m3m0rex&repository=ha_smartdiscounts-card&category=plugin)), download it and reload the browser.
+
+Not listed yet in your HACS? Add `https://github.com/m3m0rex/ha_smartdiscounts-card` under ⋮ → *Custom repositories*,
+type *Dashboard*.
 
 Requires Home Assistant 2024.9 or newer.
 
