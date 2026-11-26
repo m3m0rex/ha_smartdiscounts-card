@@ -195,5 +195,6 @@
   "sh_next": "desde el {date} {price} en {store} (en vez de {old})",
   "e_preview_start": "Un avance sin fecha empieza el (si la tienda no indica el fin de las ofertas actuales)",
   "no_offers_now": "Hoy no hay ninguna oferta válida: los sensores no tienen ofertas válidas ahora mismo (por ejemplo, entre dos folletos). Las nuevas aparecerán aquí.",
-  "e_label": "Nombre propio para «{tab}» (vacío = predeterminado)"
+  "e_label": "Nombre propio para «{tab}» (vacío = predeterminado)",
+  "e_tab_counts": "Mostrar contadores en las pestañas (p. ej. «· 3»)"
 }

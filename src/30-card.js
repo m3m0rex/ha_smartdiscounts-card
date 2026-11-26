@@ -641,8 +641,9 @@ class SmartDiscountsCard extends HTMLElement {
     const head = c.show_title === false ? null : h("div", { class: "head" }, h("h1", {}, c.title || t.title), h("small", {}, `${this._all.length} ${t.offers} · ${stores.length ? stores.join(", ") : "–"}`));
     const hits = this._watchHits();
     // eigene Namen für die Reiter (label_shop / label_all / label_watch); leer = der übliche Name mit Symbol
+    const cnt = (text) => (c.show_tab_counts === false ? "" : text);  // Zähler hinter den Namen abschaltbar
     const own = (k, std) => { const v = String(c[`label_${k}`] || "").trim(); return v || std; };
-    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), shop: own("shop", "🛒 " + t.tab_shop) + (this._items && this._items.length ? ` · ${this._items.length}` : ""), all: own("all", "🏷️ " + t.tab_all), watch: own("watch", "⭐ " + t.tab_watch) + (hits ? ` · ${hits}` : "") };
+    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), shop: own("shop", "🛒 " + t.tab_shop) + cnt(this._items && this._items.length ? ` · ${this._items.length}` : ""), all: own("all", "🏷️ " + t.tab_all), watch: own("watch", "⭐ " + t.tab_watch) + cnt(hits ? ` · ${hits}` : "") };
     const shown = this._tabs();
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>

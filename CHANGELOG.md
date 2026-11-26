@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.31] – 2026-11-26
+
+### Added
+
+- **`show_tab_counts: false`** (visual editor → *Look*) hides the counters on the tabs, such as "· 3".
+
 ## [1.3.30] – 2026-11-26
 
 ### Added

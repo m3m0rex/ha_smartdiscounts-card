@@ -195,5 +195,6 @@
   "sh_next": "dès le {date} {price} chez {store} (au lieu de {old})",
   "e_preview_start": "Un aperçu sans date commence le (si le magasin n’indique pas la fin des promos en cours)",
   "no_offers_now": "Aucune promo valable aujourd’hui – les capteurs n’ont pas de promos valables pour l’instant (par exemple entre deux prospectus). Les nouvelles apparaîtront ici.",
-  "e_label": "Nom personnalisé pour « {tab} » (vide = par défaut)"
+  "e_label": "Nom personnalisé pour « {tab} » (vide = par défaut)",
+  "e_tab_counts": "Afficher les compteurs sur les onglets (p. ex. « · 3 »)"
 }
