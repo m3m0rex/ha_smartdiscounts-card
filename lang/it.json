@@ -197,5 +197,6 @@
   "e_preview_start": "Un’anteprima senza data inizia di (se il negozio non indica la fine delle offerte in corso)",
   "no_offers_now": "Oggi nessuna offerta valida: i sensori non hanno offerte valide al momento (ad esempio tra due volantini). Le nuove compariranno qui.",
   "e_label": "Nome personalizzato per «{tab}» (vuoto = predefinito)",
-  "e_tab_counts": "Mostra i contatori sulle schede (es. «· 3»)"
+  "e_tab_counts": "Mostra i contatori sulle schede (es. «· 3»)",
+  "e_tab_icons": "Mostra le icone sulle schede (🛒 🏷️ ⭐)"
 }

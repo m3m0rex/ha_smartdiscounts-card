@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.33] – 2026-11-26
+
+### Fixed
+
+- **Own tab names keep their icon.** With `label_shop`, `label_all` or `label_watch` set, the 🛒 🏷️ ⭐ in front
+  of the name disappeared.
+
+### Added
+
+- **`show_tab_icons: false`** (visual editor → *Header and tabs*) hides the icons on all tabs.
+
 ## [1.3.32] – 2026-11-26
 
 ### Changed

@@ -74,6 +74,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `tile_flow` | `grid` | Kacheln untereinander im Raster (`grid`) oder in einer Zeile zum Wischen (`scroll`) |
 | `label_shop`, `label_all`, `label_watch` | – | Eigener Name für den Reiter „Meine Einkaufsliste“, „Alle Angebote“ bzw. „Merkliste“, z. B. `label_all: "🛒 Prospekte"`. Leer = der übliche Name mit Symbol. |
 | `show_tab_counts` | `true` | `false` blendet die Zähler an den Reitern aus („· 3“). |
+| `show_tab_icons` | `true` | `false` blendet die Symbole an den Reitern aus (🛒 🏷️ ⭐). Eigene Namen behalten das Symbol. |
 | `tabs` | `[shop, all, watch]` | Welche Reiter in welcher Reihenfolge – z. B. `[all, watch]`; bei nur einem Reiter entfällt die Leiste |
 | `group_by` | `store` | „Alle Angebote“ nach `store` (Markt) oder `category` (Kategorie) einsortieren; 🗂️ in der Karte schaltet um |
 | `categories_open` | `true` | Kategorien ausgeklappt; `false` = zugeklappt starten |

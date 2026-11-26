@@ -74,6 +74,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `tile_flow` | `grid` | Tiles top to bottom in a grid (`grid`) or in one row to swipe (`scroll`) |
 | `label_shop`, `label_all`, `label_watch` | – | Own name for the tab "My shopping list", "All offers" or "Watch list", e.g. `label_all: "🛒 Leaflets"`. Empty = the usual name with its icon. |
 | `show_tab_counts` | `true` | `false` hides the counters on the tabs ("· 3"). |
+| `show_tab_icons` | `true` | `false` hides the icons on the tabs (🛒 🏷️ ⭐). Own tab names keep the icon. |
 | `tabs` | `[shop, all, watch]` | Which tabs in which order – e.g. `[all, watch]`; with only one tab the bar disappears |
 | `group_by` | `store` | Group "All offers" by `store` or by `category`; 🗂️ in the card switches |
 | `categories_open` | `true` | Categories expanded; `false` = start folded |
