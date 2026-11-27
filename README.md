@@ -68,6 +68,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `title` | "Offers" | Heading |
 | `sources` | `auto` | `auto`, or a list of sources (see below) |
 | `stores` | – | Only these stores, e.g. `[REWE]` – selectable in the editor (one card per store) |
+| `stores_list` | `false` | Limit "My shopping list" to the stores in `stores` too; items without a store stay (embedded SmartLists card: SmartLists 4.1.10 or newer) |
 | `entities` | – | Only these offer sensors – selectable in the editor |
 | `add_to` | – | Add to this list, e.g. your own source list of a combined list (empty = `list`) |
 | `mine_only` | `false` | Combined SmartLists list: only consider items from lists that belong to the signed-in user |

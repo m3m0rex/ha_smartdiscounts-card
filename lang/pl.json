@@ -28,6 +28,7 @@
   "e_add_to": "Dodawaj do tej listy (puste = domyślna)",
   "read_only": "Na tej liście możesz tylko przeglądać lub odhaczać – dodawanie i zmiany nie są dla ciebie włączone.",
   "e_stores": "Tylko te sklepy (puste = wszystkie)",
+  "e_stores_list": "Ogranicz także listę zakupów do tych sklepów (produkty bez sklepu zostają)",
   "e_cat_open": "Kategorie początkowo rozwinięte",
   "more_n": "+{n} więcej",
   "on_n": "{n}× na liście",

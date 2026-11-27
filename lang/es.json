@@ -28,6 +28,7 @@
   "e_add_to": "Añadir a esta lista (vacío = la predeterminada)",
   "read_only": "En esta lista solo puedes ver o marcar – añadir y cambiar no está permitido para ti.",
   "e_stores": "Solo estas tiendas (vacío = todas)",
+  "e_stores_list": "Limitar también la lista de la compra a estas tiendas (los artículos sin tienda se quedan)",
   "e_cat_open": "Categorías desplegadas al inicio",
   "more_n": "+{n} más",
   "on_n": "{n}× en la lista",

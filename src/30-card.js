@@ -162,7 +162,7 @@ class SmartDiscountsCard extends HTMLElement {
       const r = await this._hass.callWS({ type: "todo/item/list", entity_id: id });
       this._items = (r.items || []).filter((i) => i.status !== "completed").map((i) => ({ uid: i.uid, text: i.summary || "", note: i.description || "", name: itemName(i.summary) }));
     } catch (e) { this._items = []; this._error = (e && e.message) || this._t.error; }
-    if (light && this._perm) return;
+    if (light && this._perm) { this._storeFilter(); return; }
     // Mit SmartLists: dessen Rechte für diese Liste und diesen Benutzer gelten auch hier (nur abhaken = nichts hinzufügen/ändern).
     this._perm = { add: true, rename: true, delete: true, note: true };
     this._mine = [];
@@ -176,6 +176,8 @@ class SmartDiscountsCard extends HTMLElement {
         // Kombinierte Liste: die eigenen Quell-Listen – daraus wählt jeder Benutzer in der Karte, wohin Neues kommt
         this._mine = r && r.type === "combined" && Array.isArray(r.sources) ? r.sources.filter((s) => s.mine).map((s) => ({ id: s.entity_id, name: s.name || s.entity_id })) : [];
         // Kombinierte Liste mit "mine_only": nur Artikel aus Quell-Listen, die zu diesem Benutzer gehören
+        // Markt je Eintrag, wie SmartLists ihn sieht (auch ohne @: Wort im Text, Standard-Markt der Liste) – für stores_list
+        this._itemStores = Array.isArray(r && r.items) ? Object.fromEntries(r.items.map((i) => [i.uid, (i.tags || []).filter((x) => x.kind === "store").map((x) => norm(x.value))])) : {};
         if (r && r.type === "combined" && this._config.mine_only && Array.isArray(r.sources) && Array.isArray(r.items)) {
           const mine = new Set(r.sources.filter((s) => s.mine).map((s) => s.entity_id));
           const src = Object.fromEntries(r.items.map((i) => [i.uid, i.source_entity]));
@@ -184,6 +186,20 @@ class SmartDiscountsCard extends HTMLElement {
       }
       catch (e) { /* keine SmartLists-Liste oder kein Zugriff: Home Assistant entscheidet beim Schreiben */ }
     }
+    this._storeFilter();
+  }
+  // "stores_list": auch die Einkaufsliste auf die Märkte aus "stores" beschränken. Einträge ohne Markt bleiben (gibt es
+  // überall); Markt aus SmartLists (sonst @Markt im Text) oder aus dem Angebot am Eintrag.
+  _storeFilter() {
+    const only = (Array.isArray(this._config.stores) ? this._config.stores : this._config.stores ? [this._config.stores] : []).map((x) => norm(x)).filter(Boolean);
+    if (!this._config.stores_list || !only.length || !Array.isArray(this._items)) return;
+    const known = this._itemStores || {};
+    this._items = this._items.filter((i) => {
+      const stores = known[i.uid] ? [...known[i.uid]] : [...String(i.text || "").matchAll(/(?:^|\s)@([\wÄÖÜäöüß][\wÄÖÜäöüß.\-]*)/g)].map((m) => norm(m[1]));
+      const o = this._noteOffer(i.note);
+      if (o && o.store) stores.push(norm(o.store));
+      return !stores.length || stores.some((s) => only.includes(s));
+    });
   }
   _may(what) { return !this._perm || this._perm[what] !== false; }
   async _refresh(force) {
@@ -529,7 +545,10 @@ class SmartDiscountsCard extends HTMLElement {
     if (c.shop_view === "smartlists" && this._smart() && customElements.get("smartlists-card")) {
       // shop_card reicht Einstellungen der SmartLists-Karte durch; shop_clear_done: false nimmt den Knopf „Erledigte entfernen“ weg
       const extra = c.shop_card && typeof c.shop_card === "object" && !Array.isArray(c.shop_card) ? c.shop_card : {};
-      const slCfg = { show_title: false, ...extra, ...(c.shop_clear_done === false ? { show_clear_done: false } : {}), type: "custom:smartlists-card", entity: c.list };
+      // stores_list: nur Artikel dieser Märkte (und ohne Markt); neue Artikel bekommen dadurch keinen Markt angehängt
+      const only = (Array.isArray(c.stores) ? c.stores : c.stores ? [c.stores] : []).filter(Boolean);
+      const byStore = c.stores_list && only.length ? { filter_store: only.join(","), filter_store_untagged: true, filter_tags_new_items: false } : {};
+      const slCfg = { show_title: false, ...byStore, ...extra, ...(c.shop_clear_done === false ? { show_clear_done: false } : {}), type: "custom:smartlists-card", entity: c.list };
       const slSig = JSON.stringify(slCfg);
       if (!this._slCard || this._slFor !== slSig) {
         try {

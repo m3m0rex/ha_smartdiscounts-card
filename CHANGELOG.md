@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.36] – 2026-11-28
+
+### Added
+
+- **`stores_list: true`** (visual editor, below "Only these stores"): "My shopping list" shows only items of the
+  stores in `stores`, plus items without a store. The store of an item comes from SmartLists (also a store word in
+  the text or the list's default store), otherwise from `@Store` in the text or the offer attached to the item. In
+  the embedded SmartLists card this needs SmartLists 4.1.10 or newer; new items added there get no store attached.
+
 ## [1.3.35] – 2026-11-27
 
 ### Fixed

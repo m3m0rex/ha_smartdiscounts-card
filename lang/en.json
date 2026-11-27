@@ -28,6 +28,7 @@
   "e_add_to": "Add to this list (empty = the list's default)",
   "read_only": "On this list you may only view or check off – adding and changing is not enabled for you.",
   "e_stores": "Only these stores (empty = all)",
+  "e_stores_list": "Limit the shopping list to these stores too (items without a store stay)",
   "e_cat_open": "Categories expanded at first",
   "more_n": "+{n} more",
   "on_n": "{n}× on the list",

@@ -28,6 +28,7 @@
   "e_add_to": "Ajouter à cette liste (vide = liste par défaut)",
   "read_only": "Sur cette liste, tu peux seulement consulter ou cocher – ajouter et modifier ne t'est pas autorisé.",
   "e_stores": "Seulement ces magasins (vide = tous)",
+  "e_stores_list": "Limiter aussi la liste de courses à ces magasins (les articles sans magasin restent)",
   "e_cat_open": "Catégories dépliées au départ",
   "more_n": "+{n} de plus",
   "on_n": "{n}× dans la liste",

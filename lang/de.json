@@ -28,6 +28,7 @@
   "e_add_to": "Hinzufügen in diese Liste (leer = Standard der Liste)",
   "read_only": "Auf dieser Liste darfst du nur ansehen oder abhaken – hinzufügen und ändern ist für dich nicht freigegeben.",
   "e_stores": "Nur diese Märkte (leer = alle)",
+  "e_stores_list": "Auch die Einkaufsliste auf diese Märkte beschränken (Artikel ohne Markt bleiben)",
   "e_cat_open": "Kategorien anfangs aufgeklappt",
   "more_n": "+{n} mehr",
   "on_n": "{n}× auf der Liste",
