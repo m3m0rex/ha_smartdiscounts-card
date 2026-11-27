@@ -127,17 +127,19 @@ function collectOffers(hass, cfg) {
       seen.set(dk, out[out.length - 1]);
     });
   }
-  // Vorschau ohne Startdatum: ab dem Tag nach dem Ende der laufenden Angebote desselben Markts (das häufigste „bis“),
-  // sonst ab dem nächsten eingestellten Wochentag (preview_start, Standard Montag)
+  // Vorschau ohne Startdatum: ab dem eingestellten Wochentag (preview_start, Standard Montag), der als erster nach dem Ende
+  // der laufenden Angebote desselben Markts kommt (das häufigste „bis“) – enden sie am Samstag, also ab Montag, nicht ab
+  // Sonntag. Ohne laufende Angebote ab dem nächsten solchen Tag (heute zählt mit).
   const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const onWeekday = (d) => { d.setDate(d.getDate() + ((PREVIEW_DAY - d.getDay() + 7) % 7)); return iso(d); };
   const ends = {};
   out.forEach((o) => { if (!o.pv && !o.soon && o.until && /^\d{4}-\d\d-\d\d$/.test(o.until)) { const m = ends[o.store] || (ends[o.store] = {}); m[o.until] = (m[o.until] || 0) + 1; } });
-  const weekday = (() => { const d = new Date(); d.setDate(d.getDate() + ((PREVIEW_DAY - d.getDay() + 7) % 7 || 7)); return iso(d); })();
+  const weekday = (() => { const d = new Date(); d.setHours(12, 0, 0, 0); return onWeekday(d); })();
   out.forEach((o) => {
     if (!o.pv) return;
     const m = ends[o.store], end = m ? Object.keys(m).sort((a, b) => m[b] - m[a] || (a < b ? -1 : 1))[0] : null;
     let from = weekday;
-    if (end) { const d = new Date(`${end}T12:00:00`); d.setDate(d.getDate() + 1); from = iso(d); }
+    if (end) { const d = new Date(`${end}T12:00:00`); d.setDate(d.getDate() + 1); from = onWeekday(d); }
     o.from = from; o.soon = from > today;
   });
   return out;

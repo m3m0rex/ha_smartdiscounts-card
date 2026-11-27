@@ -383,8 +383,8 @@ von den Adressen, die in den Sensoren stehen.
 
 Hat ein Angebot ein Startdatum in der Zukunft, erscheint unter „Alle Angebote“ oben der Umschalter „Jetzt / ab …“.
 Ein Sensor, der „preview“, „vorschau“ oder „next_week“ im Namen trägt (z. B. `sensor.rewe_preview`), gilt ganz als
-Vorschau: seine Angebote stehen unter „ab …“, auch ohne Startdatum: dann ab dem Tag, nach dem die laufenden Angebote desselben Markts enden, sonst ab dem
-Wochentag aus `preview_start` (Standard `monday`). Trägt dein Sensor
+Vorschau: seine Angebote stehen unter „ab …“, auch ohne Startdatum: dann ab dem Wochentag aus `preview_start` (Standard
+`monday`), der als erster nach dem Ende der laufenden Angebote desselben Markts kommt (enden sie samstags: ab Montag). Trägt dein Sensor
 einen anderen Namen, wähle ihn im Editor unter „Weitere“ bei „Sensoren mit den Angeboten der nächsten Woche“ aus
 (`preview_entities: [sensor.xyz]`). Mit eigenen `sources:` legt `preview: true` bzw. `preview: false` das je Quelle fest.
 

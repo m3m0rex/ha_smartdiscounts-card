@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.35] – 2026-11-27
+
+### Fixed
+
+- **A preview without a start date no longer starts on Sunday.** It started the day after the store's current offers
+  end – for offers ending on Saturday that was Sunday. It now starts on the first `preview_start` weekday (default
+  Monday) after that day. Without current offers it starts on the next such weekday, today included.
+
 ## [1.3.34] – 2026-11-27
 
 ### Changed

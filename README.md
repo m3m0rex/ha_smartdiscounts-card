@@ -382,8 +382,8 @@ browser from the addresses in the sensors.
 
 When an offer starts in the future, "All offers" shows a switch "Now / from …" at the top. A sensor with "preview",
 "vorschau" or "next_week" in its name (e.g. `sensor.rewe_preview`) counts as a preview as a whole: its offers are
-listed under "from …" even without a start date: then from the day after the store's current offers end, otherwise from the
-weekday in `preview_start` (default `monday`). If your sensor is named differently, pick it in the editor under "More" → "Sensors with next week's offers"
+listed under "from …" even without a start date: then from the weekday in `preview_start` (default `monday`) that
+first follows the end of the store's current offers (ending on Saturday: from Monday). If your sensor is named differently, pick it in the editor under "More" → "Sensors with next week's offers"
 (`preview_entities: [sensor.xyz]`). With your own `sources:`, `preview: true` or `preview: false` sets it per source.
 
 An offer added from the preview is listed under "My shopping list" in the block "Not valid yet" with "valid from …"
