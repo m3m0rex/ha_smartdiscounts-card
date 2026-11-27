@@ -51,8 +51,6 @@
   "w_err": "La liste de suivi n’a pas pu être chargée depuis Home Assistant. Rien n’a été enregistré.",
   "w_retry": "Réessayer",
   "w_adopted": "{n} produits repris de cet appareil.",
-  "w_list_unused": "Votre liste de suivi est maintenant enregistrée pour vous dans Home Assistant. La liste de tâches « {list} » des réglages de la carte n’est plus utilisée ; son contenu reste en place.",
-  "w_list_take": "Copier dans ma liste de suivi",
   "bonus_label": "{amount} de bonus",
   "bonus_help": "Offre bonus : tu paies le prix normal et reçois le crédit dans l'app {store} – seulement si tu l'utilises en caisse.",
   "e_bonus": "J'utilise les programmes bonus (comparer avec le bonus)",

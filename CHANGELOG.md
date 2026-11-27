@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.34] – 2026-11-27
+
+### Changed
+
+- **With SmartLists the visual editor no longer shows `watch_list`.** SmartLists keeps a watch list per user, so a
+  to-do list in the card settings has no effect there. Without SmartLists the setting stays as before (optional).
+- **Removed the "Copy to my watch list" hint.** With SmartLists installed and a `watch_list` still set, the card no
+  longer offers to copy the to-do list's entries into the user's own watch list.
+
 ## [1.3.33] – 2026-11-26
 
 ### Fixed

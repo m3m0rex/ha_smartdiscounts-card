@@ -72,7 +72,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       sec("sec_head", "mdi:page-layout-header", pick("title", "show_title", "tabs", "default_tab", "label_shop", "label_all", "label_watch", "show_tab_icons", "show_tab_counts")),
       sec("sec_shop", "mdi:cart-outline", [...pick(...(smart ? ["shop_view"] : []), "add_to", ...(smart ? ["mine_only"] : []), ...(LIST_TAB ? ["list_view", "collect_first"] : [])), smart && this._config.shop_view === "smartlists" ? flags("shop_clear_done") : null, LIST_TAB ? flags("hide_without_offer") : null]),
       sec("sec_all", "mdi:tag-multiple-outline", [...pick("all_view", "tile_flow", "group_by", "categories_open", ...(smart ? ["category_source"] : []), "max_per_store"), flags("show_images", "show_unit_price", "show_valid_until", "show_price_trend")]),
-      sec("sec_watch", "mdi:star-outline", pick("watch", "watch_list", "notify")),
+      sec("sec_watch", "mdi:star-outline", pick("watch", ...(smart ? [] : ["watch_list"]), "notify")),
       sec("sec_src", "mdi:connection", [...pick("entities", "preview_entities", "preview_start", "match"), flags("use_bonus"), ...pick("currency_symbol")]),
       sec("sec_lock", "mdi:lock-outline", pick("locked"))].filter(Boolean);
     this._form.hass = this._hass; this._form.schema = grouped; this._form.data = { ...DEFAULTS, ...this._config };

@@ -420,30 +420,13 @@ class SmartDiscountsCard extends HTMLElement {
     const t = this._t;
     if (this._watchSmart && this._watchErr) return h("div", { class: "msg", role: "alert", style: "text-align:left;color:var(--error-color,#db4437)" },
       `${t.w_err} (${this._watchErr}) `, h("button", { type: "button", class: "btn", onclick: () => { this._sig = null; this._refresh(true); } }, t.w_retry));
-    if (this._watchSmart) {
-      // früher lag die Merkliste in einer To-do-Liste (watch_list): sagen, dass sie nicht mehr benutzt wird, und das Übernehmen anbieten
-      const old = this._config.watch_list, st = old && this._hass.states[old];
-      const unused = st && !this._watchTook ? h("div", { class: "foot", style: "text-align:left" }, t.w_list_unused.replace("{list}", (st.attributes && st.attributes.friendly_name) || old), " ",
-        h("button", { type: "button", class: "btn", onclick: () => this._watchTakeOver(old) }, t.w_list_take)) : null;
-      return h("div", {}, h("div", { class: "foot" }, this._watchAdopted ? `${t.w_adopted.replace("{n}", this._watchAdopted)} ` : "", t.w_ha), unused);
-    }
+    if (this._watchSmart) return h("div", { class: "foot" }, this._watchAdopted ? `${t.w_adopted.replace("{n}", this._watchAdopted)} ` : "", t.w_ha);
     if (this._watchUser) return this._wtodo ? this._watchTodoPanel() : h("div", { class: "foot" }, this._watchAdopted ? `${t.w_adopted.replace("{n}", this._watchAdopted)} ` : "", t.w_user, " ",
       h("button", { type: "button", class: "btn", onclick: () => { this._wtodo = true; this._render(); } }, t.w_to_todo + " …"));
     if (this._watchLinked) { const st = this._hass.states[this._watchEntity];
       return h("div", { class: "foot" }, t.w_linked.replace("{list}", (st && st.attributes && st.attributes.friendly_name) || this._watchEntity), " ",
         h("button", { type: "button", class: "btn", onclick: () => this._watchUnlink() }, t.w_unlink)); }
     return this._watchShared ? null : h("div", { class: "foot" }, t.w_local);
-  }
-  // Offene Einträge der früheren To-do-Merkliste in die eigene Merkliste kopieren (dort bleibt alles stehen)
-  async _watchTakeOver(entity) {
-    try {
-      const r = await this._hass.callWS({ type: "todo/item/list", entity_id: entity });
-      const have = new Set((this._watchItems || []).map((x) => norm(x.name)));
-      const fresh = (r.items || []).filter((i) => i.status !== "completed").map((i) => itemName(i.summary) || String(i.summary || "")).filter((n) => n && !have.has(norm(n)) && have.add(norm(n)));
-      if (fresh.length) await this._hass.callWS({ type: "smartlists/watch_set", names: [...(this._watchItems || []).map((x) => x.name), ...fresh], ...this._wl() });
-      this._watchTook = true; this._watchAdopted = fresh.length;
-    } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; }
-    this._sig = null; await this._refresh(true);
   }
   _watchTerms() {
     const fixed = (Array.isArray(this._config.watch) ? this._config.watch : [this._config.watch]).filter((x) => typeof x === "string" && x.trim()).map((name) => ({ name: name.trim(), fixed: true }));

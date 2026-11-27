@@ -51,8 +51,6 @@
   "w_err": "Impossibile caricare la lista dei preferiti da Home Assistant. Non è stato salvato nulla.",
   "w_retry": "Riprova",
   "w_adopted": "{n} prodotti ripresi da questo dispositivo.",
-  "w_list_unused": "La tua lista dei preferiti ora è salvata per te in Home Assistant. La lista «{list}» delle impostazioni della scheda non viene più usata; ciò che contiene resta lì.",
-  "w_list_take": "Copia nella mia lista",
   "bonus_label": "{amount} di bonus",
   "bonus_help": "Offerta bonus: paghi il prezzo normale e ricevi il credito nell'app {store}, solo se la usi alla cassa.",
   "e_bonus": "Uso i programmi bonus (confronta con il bonus)",

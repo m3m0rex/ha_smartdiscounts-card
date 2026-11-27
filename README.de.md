@@ -97,7 +97,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `currency` | `EUR` | ISO-Code der Währung |
 | `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
 | `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Schokocreme]` |
-| `watch_list` | – | Nur **ohne** SmartLists: Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar. Mit SmartLists wird sie nicht benutzt (siehe unten). |
+| `watch_list` | – | Nur **ohne** SmartLists: Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar. Mit SmartLists wird sie nicht benutzt und im visuellen Editor ausgeblendet (siehe unten). |
 | `notify` | `false` | Nur **ohne** SmartLists: Benachrichtigung, wenn etwas von der Merkliste neu im Angebot ist (mit SmartLists meldet SmartLists) |
 | `notify_targets` | – | Zusätzlich an diese Ziele senden – im Editor auswählbar, z. B. `[notify.mobile_app_pixel]` (mehrere möglich) |
 
@@ -332,8 +332,8 @@ Wo die Merkliste gespeichert ist:
   Benutzer in Home Assistant (`.storage/smartlists/watch/<Benutzer>`), in jedem Browser und auf jedem Gerät gleich.
   Weitere Merklisten legt jeder in der Karte an („Neue Merkliste“), ohne Admin-Rechte; „Alle Merklisten“ zeigt alles
   des Benutzers zusammen. Andere Benutzer sehen sie nie, und sie tauchen in keiner Einkaufsliste und keiner
-  kombinierten Liste auf. `watch_list:` wird dann nicht benutzt – ist noch eine eingetragen, bietet die Karte an,
-  ihre offenen Einträge einmal zu übernehmen. SmartLists prüft auch ohne geöffnetes Dashboard auf neue Angebote;
+  kombinierten Liste auf. `watch_list:` wird dann nicht benutzt und im visuellen Editor
+  ausgeblendet. SmartLists prüft auch ohne geöffnetes Dashboard auf neue Angebote;
   seine Ziele wählt jeder Benutzer selbst in den SmartLists-Einstellungen (Global → Preise & Währung → Merkliste).
   Das Ziel „In Home Assistant“ sieht der ganze Haushalt, deshalb können es nur Admins wählen.
 - **Ohne SmartLists:** `watch:` – feste Produkte in der Konfiguration; `watch_list:` – eine To-do-Liste von Home

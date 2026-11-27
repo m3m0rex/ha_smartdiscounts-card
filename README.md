@@ -97,7 +97,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `currency` | `EUR` | ISO currency code for prices |
 | `currency_symbol` | – | Own symbol instead of `currency`, e.g. `₺` – shown after the amount |
 | `watch` | – | Watch list: a list of products, e.g. `[coffee, chocolate spread]` |
-| `watch_list` | – | Only **without** SmartLists: watch list as a to-do list – the same on all devices, editable in the card. With SmartLists it is ignored (see below). |
+| `watch_list` | – | Only **without** SmartLists: watch list as a to-do list – the same on all devices, editable in the card. With SmartLists it is ignored and hidden in the visual editor (see below). |
 | `notify` | `false` | Only **without** SmartLists: notification when something on the watch list is newly on offer (with SmartLists, SmartLists notifies) |
 | `notify_targets` | – | Also send to these targets – selectable in the editor, e.g. `[notify.mobile_app_pixel]` (several possible) |
 
@@ -332,8 +332,8 @@ Where the watch list is stored:
   user in Home Assistant (`.storage/smartlists/watch/<user>`), the same in every browser and on every device. Each
   user can create further watch lists in the card ("New watch list"), no admin rights needed; "All watch lists"
   shows everything of the user together. Other users never see them, and they never turn up in a shopping list
-  or a combined list. `watch_list:` is ignored then – if one is still set, the card offers to copy its open
-  entries once. SmartLists checks for new offers even with no dashboard open; each user picks their own targets
+  or a combined list. `watch_list:` is ignored then and hidden in the visual editor.
+  SmartLists checks for new offers even with no dashboard open; each user picks their own targets
   in the SmartLists settings (Global → Prices & currency → Watch list). The target "In Home Assistant" is seen by
   the whole household, so only admins can choose it.
 - **Without SmartLists:** `watch:` – fixed products in the configuration; `watch_list:` – a Home Assistant to-do
