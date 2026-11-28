@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.39] – 2026-11-28
+
+### Fixed
+
+- **Watch list cards, counts and input fields are visible in every theme.** Their background used
+  `--secondary-background-color`, which in many dark (and transparent) themes is nearly the card's own background –
+  everything looked flat. Surfaces and borders are now derived from the text colour (themable with
+  `--smartdiscounts-surface`); input fields get a visible border.
+- **Wide cards show the watch list cards side by side** instead of stretching each one across the full width.
+
 ## [1.3.38] – 2026-11-28
 
 ### Added

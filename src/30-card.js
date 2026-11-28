@@ -712,8 +712,8 @@ class SmartDiscountsCard extends HTMLElement {
     return h("div", {},
       h("div", { class: "wsum" }, h("div", { class: "now" }, h("b", {}, String(now.length)), h("small", {}, t.wv_now)),
         h("div", { class: "later" }, h("b", {}, String(soon.length)), h("small", {}, t.wv_soon)), h("div", {}, h("b", {}, String(none.length)), h("small", {}, t.wv_none))),
-      now.length ? [sec("now", t.wv_sec_now, now.length), now.map((x) => card(x, x.now[0], x.now, false))] : null,
-      soon.length ? [sec("later", t.wv_sec_soon, soon.length), soon.map((x) => card(x, x.next[0], x.next, true))] : null,
+      now.length ? [sec("now", t.wv_sec_now, now.length), h("div", { class: "wgrid" }, now.map((x) => card(x, x.now[0], x.now, false)))] : null,
+      soon.length ? [sec("later", t.wv_sec_soon, soon.length), h("div", { class: "wgrid" }, soon.map((x) => card(x, x.next[0], x.next, true)))] : null,
       none.length ? [sec("", t.wv_sec_none, none.length), h("div", { class: "wnone" }, none.map((x) => h("div", { class: "wr" }, h("span", {}, this._watchName(x.term, name(x)), h("small", {}, t.none)), remove(x.term))))] : null);
   }
   // Merkliste „kompakt“: eine Zeile je Produkt (Status, bester Preis, Markt); Antippen zeigt alle Angebote
