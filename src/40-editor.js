@@ -36,20 +36,21 @@ class SmartDiscountsCardEditor extends HTMLElement {
       { name: "label_watch", selector: { text: {} } },
       { name: "tabs", selector: { select: { multiple: true, reorder: true, mode: "list", options: [["shop", t.tab_shop], ...(LIST_TAB ? [["list", t.tab_list]] : []), ["all", t.tab_all], ["watch", t.tab_watch]].map(([value, label]) => ({ value, label })) } } },
       b("categories_open"),
-      { name: "locked", selector: { select: { multiple: true, mode: "list", options: [["list_view", t.lk_list], ["all_view", t.lk_all], ["group_by", t.lk_group], ...((this._hass.config.components || []).includes("smartlists") ? [["add_to", t.lk_add]] : [])].map(([value, label]) => ({ value, label })) } } },
+      { name: "locked", selector: { select: { multiple: true, mode: "list", options: [["list_view", t.lk_list], ["all_view", t.lk_all], ["group_by", t.lk_group], ["watch_view", t.lk_watch], ...((this._hass.config.components || []).includes("smartlists") ? [["add_to", t.lk_add]] : [])].map(([value, label]) => ({ value, label })) } } },
       { name: "category_source", selector: { select: { mode: "dropdown", options: [["auto", t.cs_auto], ["store", t.cs_store], ["store_only", t.cs_store_only]].map(([value, label]) => ({ value, label })) } } },
       { name: "tile_flow", selector: { select: { mode: "dropdown", options: [["grid", t.tf_grid], ["scroll", t.tf_scroll]].map(([value, label]) => ({ value, label })) } } },
       { name: "group_by", selector: { select: { mode: "dropdown", options: [["store", t.g_store], ["category", t.g_cat]].map(([value, label]) => ({ value, label })) } } },
       { name: "all_view", selector: { select: { mode: "dropdown", options: [["tiles", t.v_tiles], ["list", t.v_list]].map(([value, label]) => ({ value, label })) } } },
       { name: "max_per_store", selector: { number: { min: 1, max: 20, mode: "box" } } },
       { name: "watch", selector: { text: { multiple: true } } },
+      { name: "watch_view", selector: { select: { mode: "dropdown", options: [["normal", t.wv_normal], ["compact", t.wv_compact]].map(([value, label]) => ({ value, label })) } } },
       { name: "watch_list", selector: { entity: { domain: "todo" } } },
       b("notify"),
       { name: "currency_symbol", selector: { text: {} } },
     ];
     const labels = { title: t.e_title, show_tab_counts: t.e_tab_counts, show_tab_icons: t.e_tab_icons, label_shop: t.e_label.replace("{tab}", t.tab_shop), label_all: t.e_label.replace("{tab}", t.tab_all), label_watch: t.e_label.replace("{tab}", t.tab_watch), show_title: t.e_show_title, list: t.e_list, match: t.e_match, default_tab: t.e_tab, list_view: t.e_lview, all_view: t.e_view, group_by: t.e_group, entities: t.e_entities, preview_entities: t.e_preview, preview_start: t.e_preview_start, stores: t.e_stores, stores_list: t.e_stores_list, tabs: t.e_tabs, tile_flow: t.e_flow, sec_head: t.s_head, sec_shop: t.tab_shop, sec_all: t.tab_all, sec_watch: t.s_watch, sec_src: t.s_src, sec_lock: t.s_lock, mine_only: t.e_mine, add_to: t.e_add_to, collect_first: t.e_collect, shop_view: t.e_shop_view, shop_clear_done: t.e_shop_clear, category_source: t.e_cat_src, category_map: t.e_cat_map, locked: t.e_locked, categories_open: t.e_cat_open, show_images: t.e_images, show_unit_price: t.e_unit,
       show_valid_until: t.e_until, show_price_trend: t.e_trend, hide_without_offer: t.e_hide_none, use_bonus: t.e_bonus, max_per_store: t.e_max,
-      watch: t.e_watch, watch_list: t.e_watch_list, notify: t.e_notify,  currency_symbol: t.e_symbol };
+      watch: t.e_watch, watch_view: t.e_watch_view, watch_list: t.e_watch_list, notify: t.e_notify,  currency_symbol: t.e_symbol };
     if (!this._form) {
       this._form = document.createElement("ha-form");
       this._form.addEventListener("value-changed", (e) => { this._config = e.detail.value;
@@ -72,7 +73,7 @@ class SmartDiscountsCardEditor extends HTMLElement {
       sec("sec_head", "mdi:page-layout-header", pick("title", "show_title", "tabs", "default_tab", "label_shop", "label_all", "label_watch", "show_tab_icons", "show_tab_counts")),
       sec("sec_shop", "mdi:cart-outline", [...pick(...(smart ? ["shop_view"] : []), "add_to", ...(smart ? ["mine_only"] : []), ...(LIST_TAB ? ["list_view", "collect_first"] : [])), smart && this._config.shop_view === "smartlists" ? flags("shop_clear_done") : null, LIST_TAB ? flags("hide_without_offer") : null]),
       sec("sec_all", "mdi:tag-multiple-outline", [...pick("all_view", "tile_flow", "group_by", "categories_open", ...(smart ? ["category_source"] : []), "max_per_store"), flags("show_images", "show_unit_price", "show_valid_until", "show_price_trend")]),
-      sec("sec_watch", "mdi:star-outline", pick("watch", ...(smart ? [] : ["watch_list"]), "notify")),
+      sec("sec_watch", "mdi:star-outline", pick("watch", "watch_view", ...(smart ? [] : ["watch_list"]), "notify")),
       sec("sec_src", "mdi:connection", [...pick("entities", "preview_entities", "preview_start", "match"), flags("use_bonus"), ...pick("currency_symbol")]),
       sec("sec_lock", "mdi:lock-outline", pick("locked"))].filter(Boolean);
     this._form.hass = this._hass; this._form.schema = grouped; this._form.data = { ...DEFAULTS, ...this._config };

@@ -98,6 +98,7 @@ list: todo.shopping        # optional: any Home Assistant to-do list
 | `currency` | `EUR` | ISO currency code for prices |
 | `currency_symbol` | – | Own symbol instead of `currency`, e.g. `₺` – shown after the amount |
 | `watch` | – | Watch list: a list of products, e.g. `[coffee, chocolate spread]` |
+| `watch_view` | `normal` | Watch list `normal` (counts on top, then On offer now / Coming up / No offer right now as cards) or `compact` (one row per product, tap shows all offers); ☰ in the card switches, remembered per device |
 | `watch_list` | – | Only **without** SmartLists: watch list as a to-do list – the same on all devices, editable in the card. With SmartLists it is ignored and hidden in the visual editor (see below). |
 | `notify` | `false` | Only **without** SmartLists: notification when something on the watch list is newly on offer (with SmartLists, SmartLists notifies) |
 | `notify_targets` | – | Also send to these targets – selectable in the editor, e.g. `[notify.mobile_app_pixel]` (several possible) |

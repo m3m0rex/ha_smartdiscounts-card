@@ -30,6 +30,9 @@ class SmartDiscountsCard extends HTMLElement {
     // "locked": was hier steht, ist in der Karte nicht umschaltbar – es gilt die Einstellung, nicht die gemerkte Wahl
     const free = (k) => !this._locked(k);
     try { const v = localStorage.getItem(this._memKey("view")); if (free("all_view") && (v === "list" || v === "tiles")) this._view = v; } catch (e) { /* */ }
+    // Merkliste: normal (nach Status, Karten) oder kompakt (eine Zeile je Produkt) – in der Karte umschaltbar, je Gerät gemerkt
+    this._wview = this._config.watch_view === "compact" ? "compact" : "normal";
+    try { const v = localStorage.getItem(this._memKey("wview")); if (free("watch_view") && (v === "compact" || v === "normal")) this._wview = v; } catch (e) { /* */ }
     this._group = this._config.group_by === "category" ? "category" : "store";
     try { const v = localStorage.getItem(this._memKey("group")); if (free("group_by") && (v === "category" || v === "store")) this._group = v; } catch (e) { /* */ }
     // drei Ansichten; die frühere „Preise nebeneinander“ (chips) gibt es nicht mehr – wer sie eingetragen hat, sieht „rows“
@@ -627,16 +630,66 @@ class SmartDiscountsCard extends HTMLElement {
         h("div", { class: "pr" }, h("b", {}, this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct}%`) : null, this._trendEl(o)),
         this._slot(o));
     };
-    const blocks = terms.map((term) => {
-      // auch die Vorschau der nächsten Woche zeigen („ab 23.11.“) – gemeldet wird erst, wenn sie gilt
-      const offers = [...dealsForCached(this._all, term.name, c.match), ...dealsForCached(this._next || [], term.name, c.match)];
-      const from = this._watchSel === "all" && term.list ? (this._watchLists || []).find((x) => x.id === term.list) : null;
-      return h("div", { class: "shelf" }, h("h4", {}, "⭐ ", term.name, h("small", {}, offers.length ? `${offers.length} ${offers.length > 1 ? t.offers : t.offer1}` : t.none, from ? ` · ${from.name}` : ""), h("span", { class: "sp" }),
-        term.fixed ? h("small", {}, t.w_fixed) : h("button", { type: "button", "aria-label": `${t.exp_remove}: ${term.name}`, onclick: () => this._watchRemove(term) }, t.exp_remove)),
-        offers.length ? h("div", { class: "lrows" }, offers.map(row)) : null);
+    // je gemerktem Produkt: was jetzt gilt, was erst demnächst gilt (Vorschau) – jeweils das Günstigste zuerst
+    const info = terms.map((term) => {
+      const now = dealsForCached(this._all, term.name, c.match).slice().sort(cheaper);
+      const next = dealsForCached(this._next || [], term.name, c.match).slice().sort(cheaper);
+      const list = this._watchSel === "all" && term.list ? (this._watchLists || []).find((x) => x.id === term.list) : null;
+      return { term, now, next, list, state: now.length ? "now" : next.length ? "soon" : "none" };
     });
-    return h("div", {}, this._watchListBar(), h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: go }, t.w_add_btn)),
-      terms.length ? blocks : h("div", { class: "msg" }, t.w_empty), this._watchNote(), this._foot());
+    const remove = (term) => (term.fixed ? h("small", {}, t.w_fixed)
+      : h("button", { type: "button", class: "wrm", "aria-label": `${t.exp_remove}: ${term.name}`, onclick: () => this._watchRemove(term) }, t.exp_remove));
+    const thumb = (o) => (c.show_images ? h("div", { class: "thumb", style: o.image ? `background-image:url("${String(o.image).replace(/"/g, "%22")}");background-color:#fff` : null }, o.image ? null : "🏷️") : null);
+    // andere Märkte: je Markt das günstigste, höchstens drei
+    const others = (list, best) => { const seen = new Set([best.store]); return list.filter((o) => !seen.has(o.store) && seen.add(o.store)).slice(0, 3); };
+    const compact = this._wview === "compact";
+    const toggle = this._locked("watch_view") || !terms.length ? null : h("button", { type: "button", class: "btn vbtn", title: compact ? t.wv_normal : t.wv_compact, "aria-label": compact ? t.wv_normal : t.wv_compact,
+      onclick: () => { this._wview = compact ? "normal" : "compact"; try { localStorage.setItem(this._memKey("wview"), this._wview); } catch (e) { /* */ } this._render(); } }, compact ? "▦" : "☰");
+    const order = { now: 0, soon: 1, none: 2 };
+    const body = !terms.length ? h("div", { class: "msg" }, t.w_empty) : compact ? this._watchCompact(info.slice().sort((a, b) => order[a.state] - order[b.state]), row, remove)
+      : this._watchNormal(info, { thumb, others, remove });
+    return h("div", {}, this._watchListBar(), h("div", { class: "filters one" }, input, h("button", { type: "button", class: "btn pri", onclick: go }, t.w_add_btn), toggle),
+      body, this._watchNote(), this._foot());
+  }
+  // Merkliste „normal“: oben die Zahlen, dann Jetzt im Angebot (Karten) · Demnächst (Vorschau) · Gerade kein Angebot
+  _watchNormal(info, { thumb, others, remove }) {
+    const t = this._t, c = this._config;
+    const now = info.filter((x) => x.state === "now"), soon = info.filter((x) => x.state === "soon"), none = info.filter((x) => x.state === "none");
+    const name = (x) => [x.term.name, x.list ? h("small", {}, ` · ${x.list.name}`) : null];
+    const priceBlock = (o) => h("div", { class: "wp" },
+      h("div", {}, h("span", { class: "big" }, this._pr(o)), o.old ? h("s", {}, this._money(o.old)) : null, o.pct ? h("span", { class: "pct" }, `−${o.pct} %`) : null, this._trendEl(o)),
+      h("small", {}, this._storeBadge(o), " ", [c.show_unit_price ? this._unitLabel(o) : "", o.today ? "" : this._valid(o)].filter(Boolean).join(" · ")));
+    const also = (list) => (list.length ? h("div", { class: "also" }, h("span", {}, t.wv_also), list.map((o) => h("span", {}, this._storeBadge(o), " ", this._money(o.full ?? o.price)))) : null);
+    const card = (x, best, list, soonCard) => h("div", { class: `wcard ${soonCard ? "later" : ""}` },
+      h("div", { class: "wh" }, h("span", { class: "nm" }, name(x)), best.today ? h("span", { class: "wpill" }, t.today) : null, remove(x.term)),
+      h("div", { class: "wm" }, thumb(best), priceBlock(best), this._slot(best)),
+      also(others(list, best)),
+      // gilt jetzt etwas, und die Vorschau hat es demnächst auch: kurz dazu
+      !soonCard && x.next.length ? h("div", { class: "also" }, h("span", {}, `📅 ${t.from} ${this._day(x.next[0].from)}:`), this._storeBadge(x.next[0]), this._money(x.next[0].full ?? x.next[0].price)) : null);
+    const sec = (cls, label, n) => h("div", { class: "wsec" }, h("span", { class: `wdot ${cls}` }), label, h("small", {}, String(n)));
+    return h("div", {},
+      h("div", { class: "wsum" }, h("div", { class: "now" }, h("b", {}, String(now.length)), h("small", {}, t.wv_now)),
+        h("div", { class: "later" }, h("b", {}, String(soon.length)), h("small", {}, t.wv_soon)), h("div", {}, h("b", {}, String(none.length)), h("small", {}, t.wv_none))),
+      now.length ? [sec("now", t.wv_sec_now, now.length), now.map((x) => card(x, x.now[0], x.now, false))] : null,
+      soon.length ? [sec("later", t.wv_sec_soon, soon.length), soon.map((x) => card(x, x.next[0], x.next, true))] : null,
+      none.length ? [sec("", t.wv_sec_none, none.length), h("div", { class: "wnone" }, none.map((x) => h("div", { class: "wr" }, h("span", {}, name(x), h("small", {}, t.none)), remove(x.term))))] : null);
+  }
+  // Merkliste „kompakt“: eine Zeile je Produkt (Status, bester Preis, Markt); Antippen zeigt alle Angebote
+  _watchCompact(info, row, remove) {
+    const t = this._t, open = this._wopen || (this._wopen = new Set());
+    return h("div", {}, h("div", { class: "wlist" }, info.map((x) => {
+      const best = x.now[0] || x.next[0], isOpen = open.has(x.term.name);
+      const stores = new Set(x.now.map((o) => o.store)).size;
+      const sub = x.state === "now" ? [this._valid(best), stores > 1 ? t.wv_stores.replace("{n}", stores) : ""].filter(Boolean).join(" · ")
+        : x.state === "soon" ? this._valid(best) || `${t.from} ${this._day(best.from)}` : t.none;
+      return h("div", { class: `wrow ${isOpen ? "open" : ""}` },
+        h("button", { type: "button", class: "wt", "aria-expanded": String(isOpen), onclick: () => { if (isOpen) open.delete(x.term.name); else open.add(x.term.name); this._render(); } },
+          h("span", { class: `wdot ${x.state === "now" ? "now" : x.state === "soon" ? "later" : ""}` }),
+          h("span", { class: "nm" }, h("b", {}, x.term.name, x.list ? h("small", {}, ` · ${x.list.name}`) : null), h("small", { class: best && best.today && x.state === "now" ? "today" : "" }, sub)),
+          best ? h("span", { class: "pz" }, h("b", {}, this._pr(best)), this._storeBadge(best)) : null,
+          h("span", { class: "chev", "aria-hidden": "true" }, "⌄")),
+        isOpen ? h("div", { class: "wx" }, [...x.now, ...x.next].length ? h("div", { class: "lrows" }, [...x.now, ...x.next].map(row)) : null, h("div", { class: "acts" }, remove(x.term))) : null);
+    })), h("div", { class: "wleg" }, h("span", {}, h("span", { class: "wdot now" }), t.wv_now), h("span", {}, h("span", { class: "wdot later" }), t.wv_soon), h("span", {}, h("span", { class: "wdot" }), t.wv_none)));
   }
   _matchesFor(item) { return item.name ? dealsForCached(this._all, item.name, this._config.match) : []; }
   _attached(item) { return /[⚙⚙]️?\s*OFFER\s*:|🏷️/.test(item.note || ""); }
@@ -645,11 +698,11 @@ class SmartDiscountsCard extends HTMLElement {
     const t = this._t, c = this._config;
     const stores = [...new Set(this._all.map((o) => o.store))];
     const head = c.show_title === false ? null : h("div", { class: "head" }, h("h1", {}, c.title || t.title), h("small", {}, `${this._all.length} ${t.offers} · ${stores.length ? stores.join(", ") : "–"}`));
-    const hits = this._watchHits();
+    const hits = this._watchHits(), soonN = this._watchSoon();
     // eigene Namen für die Reiter (label_shop / label_all / label_watch); das Symbol bleibt davor, außer show_tab_icons: false
     const cnt = (text) => (c.show_tab_counts === false ? "" : text);  // Zähler hinter den Namen abschaltbar
     const own = (k, icon, std) => (c.show_tab_icons === false ? "" : icon + " ") + (String(c[`label_${k}`] || "").trim() || std);
-    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), shop: own("shop", "🛒", t.tab_shop) + cnt(this._items && this._items.length ? ` · ${this._items.length}` : ""), all: own("all", "🏷️", t.tab_all), watch: own("watch", "⭐", t.tab_watch) + cnt(hits ? ` · ${hits}` : "") };
+    const names = { list: "📝 " + t.tab_list + (this._collect() && this._staged.length ? ` · 🛒 ${this._staged.length}` : ""), shop: own("shop", "🛒", t.tab_shop) + cnt(this._items && this._items.length ? ` · ${this._items.length}` : ""), all: own("all", "🏷️", t.tab_all), watch: own("watch", "⭐", t.tab_watch) + cnt((hits ? ` · ${hits}` : "") + (soonN ? ` · 📅 ${soonN}` : "")) };
     const shown = this._tabs();
     // nur ein Reiter gewählt: keine Reiter-Leiste
     const tabs = shown.length > 1 ? h("div", { class: "tabs" }, shown.map((v) =>
@@ -726,6 +779,8 @@ class SmartDiscountsCard extends HTMLElement {
     this._hass.callWS({ type: "smartlists/watch_sources", sources: own.map((s) => ({ entity: s.entity, attribute: s.attribute, store: s.store, map: s.map })) }).catch(() => {});
   }
   _watchHits() { return this._watchTerms().filter((x) => dealsForCached(this._all, x.name, this._config.match).length).length; }
+  // gemerkte Produkte, die nur in der Vorschau im Angebot sind (gilt erst demnächst)
+  _watchSoon() { return this._watchTerms().filter((x) => !dealsForCached(this._all, x.name, this._config.match).length && dealsForCached(this._next || [], x.name, this._config.match).length).length; }
   _storeBadge(o) {
     const store = h("span", { class: "store", style: `background:${o.color};${/^#(f|e)[0-9a-f]{5}$/i.test(o.color) ? "color:#1a1a1a" : ""}` }, o.store);
     return o.bonus ? [store, " ", this._bonusEl(o)] : store;

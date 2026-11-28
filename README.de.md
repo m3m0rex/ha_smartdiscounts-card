@@ -98,6 +98,7 @@ list: todo.einkauf        # optional: irgendeine To-do-Liste von Home Assistant
 | `currency` | `EUR` | ISO-Code der Währung |
 | `currency_symbol` | – | Eigenes Symbol statt `currency`, z. B. `₺` – steht hinter dem Betrag |
 | `watch` | – | Merkliste: Liste von Produkten, z. B. `[Kaffee, Schokocreme]` |
+| `watch_view` | `normal` | Merkliste `normal` (oben die Zahlen, dann Jetzt im Angebot / Demnächst / Gerade kein Angebot als Karten) oder `compact` (eine Zeile je Produkt, Antippen zeigt alle Angebote); ☰ in der Karte schaltet um, je Gerät gemerkt |
 | `watch_list` | – | Nur **ohne** SmartLists: Merkliste als To-do-Liste – gilt auf allen Geräten, in der Karte bearbeitbar. Mit SmartLists wird sie nicht benutzt und im visuellen Editor ausgeblendet (siehe unten). |
 | `notify` | `false` | Nur **ohne** SmartLists: Benachrichtigung, wenn etwas von der Merkliste neu im Angebot ist (mit SmartLists meldet SmartLists) |
 | `notify_targets` | – | Zusätzlich an diese Ziele senden – im Editor auswählbar, z. B. `[notify.mobile_app_pixel]` (mehrere möglich) |

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.37] – 2026-11-28
+
+### Added
+
+- **New watch list layout, in two flavours – `watch_view: normal | compact`** (visual editor → *Watch list*, ☰ in
+  the card switches, remembered per device; `locked: [watch_view]` keeps the setting).
+  - **Normal:** counts on top (on offer · coming up · not now), then *On offer now* as cards with the cheapest offer
+    (price, old price, −%, unit price, valid until, "only today", price trend, ＋ for the list) and the other stores
+    below, *Coming up* with the preview offers, and *No offer right now* as short rows.
+  - **Compact:** one row per product with a status dot, the best price and its store; tapping shows all offers.
+- **The watch list tab counts preview hits separately:** "Watch list · 2 · 📅 1" – products only on offer from next
+  week no longer go uncounted.
+
 ## [1.3.36] – 2026-11-28
 
 ### Added
