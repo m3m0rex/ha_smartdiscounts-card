@@ -58,6 +58,7 @@
   "wv_sec_none": "No offer right now",
   "wv_also": "Also at",
   "wv_stores": "{n} stores",
+  "wv_rename": "Rename",
   "w_empty": "Nothing here yet. Enter products you are waiting to see on offer.",
   "w_local": "Stored on this device. With \"watch_list\" (a to-do list) the watch list applies on all devices.",
   "w_ha": "Saved in Home Assistant – the same on all your devices.",

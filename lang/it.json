@@ -58,6 +58,7 @@
   "wv_sec_none": "Nessuna offerta ora",
   "wv_also": "Anche da",
   "wv_stores": "{n} negozi",
+  "wv_rename": "Rinomina",
   "w_empty": "Ancora niente. Inserisci i prodotti di cui aspetti un'offerta.",
   "w_local": "Salvato su questo dispositivo. Con «watch_list» (una lista di cose da fare) vale su tutti i dispositivi.",
   "w_ha": "Salvata in Home Assistant: uguale su tutti i tuoi dispositivi.",

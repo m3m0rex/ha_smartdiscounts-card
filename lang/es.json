@@ -58,6 +58,7 @@
   "wv_sec_none": "Sin oferta ahora",
   "wv_also": "También en",
   "wv_stores": "{n} tiendas",
+  "wv_rename": "Renombrar",
   "w_empty": "Aún no hay nada. Escribe los productos de los que esperas una oferta.",
   "w_local": "Guardado en este dispositivo. Con «watch_list» (una lista de tareas) el seguimiento vale en todos los dispositivos.",
   "w_ha": "Guardada en Home Assistant: igual en todos tus dispositivos.",

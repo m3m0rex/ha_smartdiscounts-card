@@ -460,6 +460,48 @@ class SmartDiscountsCard extends HTMLElement {
     else { try { localStorage.setItem("smartdiscounts-watch", JSON.stringify([...(this._watchItems || []).map((x) => x.name), name])); } catch (e) { /* */ } }
     this._sig = null; await this._refresh(true);
   }
+  // Eintrag der Merkliste umbenennen; an derselben Stelle der Liste. Gibt es den neuen Namen schon, fällt der alte weg.
+  async _watchRename(term, name) {
+    name = String(name || "").trim().slice(0, 60);
+    if (!name || name === term.name) { this._render(); return; }
+    const dup = this._watchTerms().some((x) => x.name !== term.name && norm(x.name) === norm(name));
+    try {
+      if (this._watchSmart || this._watchUser) {
+        const list = term.list || (this._watchSel && this._watchSel !== "all" ? this._watchSel : null);
+        if (dup) await this._wset({ remove: term.name, ...(list ? { list } : this._wl()) });
+        else if (list || this._watchSel !== "all") {
+          const names = (this._watchItems || []).filter((x) => !term.list || x.list === term.list).map((x) => (x.name === term.name ? name : x.name));
+          await this._wset({ names, ...(list ? { list } : {}) });
+        } else { await this._wset({ remove: term.name, list: "all" }); await this._wset({ add: name, list: "all" }); }
+      } else if (this._watchShared && term.uid) {
+        if (dup) await this._hass.callService("todo", "remove_item", { item: term.uid }, { entity_id: this._watchEntity });
+        else await this._hass.callService("todo", "update_item", { item: term.uid, rename: name }, { entity_id: this._watchEntity });
+      } else {
+        const names = (this._watchItems || []).map((x) => x.name);
+        try { localStorage.setItem("smartdiscounts-watch", JSON.stringify(dup ? names.filter((n) => n !== term.name) : names.map((n) => (n === term.name ? name : n)))); } catch (e) { /* */ }
+      }
+    } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; }
+    this._sig = null; await this._refresh(true);
+  }
+  // Name eines Eintrags: antippen = umbenennen (Enter speichert, Esc bricht ab). Einträge aus "watch:" nur in der Konfiguration.
+  _watchName(term, content) {
+    const t = this._t;
+    if (term.fixed) return h("span", {}, content);
+    if (this._wedit !== term.name) {
+      return h("button", { type: "button", class: "wname", title: t.wv_rename, "aria-label": `${t.wv_rename}: ${term.name}`,
+        onclick: (e) => { e.stopPropagation(); this._wedit = term.name; this._weditVal = term.name; this._render(); } }, content);
+    }
+    let done = false;
+    const inp = h("input", { class: "search wedit", type: "text", value: this._weditVal ?? term.name, maxlength: "60", "aria-label": `${t.wv_rename}: ${term.name}` });
+    const fin = (save) => { if (done) return; done = true; this._wedit = null; if (save) this._watchRename(term, inp.value); else this._render(); };
+    inp.addEventListener("input", () => { this._weditVal = inp.value; });
+    inp.addEventListener("click", (e) => e.stopPropagation());
+    inp.addEventListener("keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); fin(true); } else if (e.key === "Escape") { e.preventDefault(); fin(false); } });
+    // neu gezeichnet (Home Assistant meldet etwas): das alte Feld verliert den Fokus, ohne dass gespeichert wird
+    inp.addEventListener("blur", () => setTimeout(() => { if (inp.isConnected) fin(true); }, 0));
+    requestAnimationFrame(() => { if (inp.isConnected) { inp.focus(); inp.select(); } });
+    return inp;
+  }
   async _watchRemove(term) {
     if (this._watchSmart || this._watchUser) { try { await this._wset({ remove: term.name, ...this._wl() }); } catch (e) { this._watchErr = (e && e.message) || this._t.error || "Error"; this._render(); return; } }
     else if (this._watchShared && term.uid) await this._hass.callService("todo", "remove_item", { item: term.uid }, { entity_id: this._watchEntity });
@@ -661,7 +703,7 @@ class SmartDiscountsCard extends HTMLElement {
       h("small", {}, this._storeBadge(o), " ", [c.show_unit_price ? this._unitLabel(o) : "", o.today ? "" : this._valid(o)].filter(Boolean).join(" · ")));
     const also = (list) => (list.length ? h("div", { class: "also" }, h("span", {}, t.wv_also), list.map((o) => h("span", {}, this._storeBadge(o), " ", this._money(o.full ?? o.price)))) : null);
     const card = (x, best, list, soonCard) => h("div", { class: `wcard ${soonCard ? "later" : ""}` },
-      h("div", { class: "wh" }, h("span", { class: "nm" }, name(x)), best.today ? h("span", { class: "wpill" }, t.today) : null, remove(x.term)),
+      h("div", { class: "wh" }, h("span", { class: "nm" }, this._watchName(x.term, name(x))), best.today ? h("span", { class: "wpill" }, t.today) : null, remove(x.term)),
       h("div", { class: "wm" }, thumb(best), priceBlock(best), this._slot(best)),
       also(others(list, best)),
       // gilt jetzt etwas, und die Vorschau hat es demnächst auch: kurz dazu
@@ -672,7 +714,7 @@ class SmartDiscountsCard extends HTMLElement {
         h("div", { class: "later" }, h("b", {}, String(soon.length)), h("small", {}, t.wv_soon)), h("div", {}, h("b", {}, String(none.length)), h("small", {}, t.wv_none))),
       now.length ? [sec("now", t.wv_sec_now, now.length), now.map((x) => card(x, x.now[0], x.now, false))] : null,
       soon.length ? [sec("later", t.wv_sec_soon, soon.length), soon.map((x) => card(x, x.next[0], x.next, true))] : null,
-      none.length ? [sec("", t.wv_sec_none, none.length), h("div", { class: "wnone" }, none.map((x) => h("div", { class: "wr" }, h("span", {}, name(x), h("small", {}, t.none)), remove(x.term))))] : null);
+      none.length ? [sec("", t.wv_sec_none, none.length), h("div", { class: "wnone" }, none.map((x) => h("div", { class: "wr" }, h("span", {}, this._watchName(x.term, name(x)), h("small", {}, t.none)), remove(x.term))))] : null);
   }
   // Merkliste „kompakt“: eine Zeile je Produkt (Status, bester Preis, Markt); Antippen zeigt alle Angebote
   _watchCompact(info, row, remove) {
@@ -688,7 +730,10 @@ class SmartDiscountsCard extends HTMLElement {
           h("span", { class: "nm" }, h("b", {}, x.term.name, x.list ? h("small", {}, ` · ${x.list.name}`) : null), h("small", { class: best && best.today && x.state === "now" ? "today" : "" }, sub)),
           best ? h("span", { class: "pz" }, h("b", {}, this._pr(best)), this._storeBadge(best)) : null,
           h("span", { class: "chev", "aria-hidden": "true" }, "⌄")),
-        isOpen ? h("div", { class: "wx" }, [...x.now, ...x.next].length ? h("div", { class: "lrows" }, [...x.now, ...x.next].map(row)) : null, h("div", { class: "acts" }, remove(x.term))) : null);
+        isOpen ? h("div", { class: "wx" }, this._wedit === x.term.name ? h("div", { class: "wedrow" }, this._watchName(x.term, x.term.name)) : null,
+          [...x.now, ...x.next].length ? h("div", { class: "lrows" }, [...x.now, ...x.next].map(row)) : null,
+          h("div", { class: "acts" }, x.term.fixed || this._wedit === x.term.name ? null : h("button", { type: "button", class: "wrm", "aria-label": `${t.wv_rename}: ${x.term.name}`,
+            onclick: () => { this._wedit = x.term.name; this._weditVal = x.term.name; this._render(); } }, t.wv_rename), remove(x.term))) : null);
     })), h("div", { class: "wleg" }, h("span", {}, h("span", { class: "wdot now" }), t.wv_now), h("span", {}, h("span", { class: "wdot later" }), t.wv_soon), h("span", {}, h("span", { class: "wdot" }), t.wv_none)));
   }
   _matchesFor(item) { return item.name ? dealsForCached(this._all, item.name, this._config.match) : []; }

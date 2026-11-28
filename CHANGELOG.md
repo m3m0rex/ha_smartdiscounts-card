@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.38] – 2026-11-28
+
+### Added
+
+- **Rename an item on the watch list:** tap its name (normal layout) or *Rename* in the opened row (compact layout),
+  edit, Enter saves, Esc cancels. The item keeps its place; if the new name is already on the list, the old one is
+  dropped. Works with SmartLists, the per-user store, a to-do list and on this device; items from `watch:` in the card
+  configuration are changed there.
+
 ## [1.3.37] – 2026-11-28
 
 ### Added

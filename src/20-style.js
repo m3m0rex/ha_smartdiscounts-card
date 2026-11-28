@@ -149,6 +149,10 @@ const STYLE = `
   .wrow .pz { display:flex; flex-direction:column; align-items:flex-end; gap:2px; white-space:nowrap; font-variant-numeric:tabular-nums; }
   .wrow .chev { color:var(--secondary-text-color); transition:transform .15s; } .wrow.open .chev { transform:rotate(180deg); }
   .wrow .wx { padding:0 12px 8px 31px; } .wrow .wx .acts { display:flex; justify-content:flex-end; }
+  .wname { background:none; border:0; padding:0; color:inherit; font:inherit; text-align:left; cursor:text; border-bottom:1px dashed transparent; }
+  .wname:hover, .wname:focus-visible { border-bottom-color:var(--secondary-text-color); }
+  .wedit { width:100%; box-sizing:border-box; padding:6px 8px !important; font-size:.95rem; }
+  .wedrow { margin:2px 0 6px; } .wrow .wx .acts { gap:4px; }
   .wleg { display:flex; flex-wrap:wrap; gap:4px 14px; margin:8px 2px 0; font-size:.74rem; color:var(--secondary-text-color); } .wleg > span { display:inline-flex; align-items:center; gap:6px; }
   .rail { display:flex; gap:8px; overflow-x:auto; scrollbar-width:thin; padding-bottom:4px; }
   .rail.open { display:grid; grid-template-columns:repeat(auto-fill, minmax(124px,1fr)); overflow:visible; }

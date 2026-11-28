@@ -58,6 +58,7 @@
   "wv_sec_none": "Teraz bez promocji",
   "wv_also": "Także w",
   "wv_stores": "{n} sklepy",
+  "wv_rename": "Zmień nazwę",
   "w_empty": "Jeszcze nic. Wpisz produkty, na których promocję czekasz.",
   "w_local": "Zapisane na tym urządzeniu. Z „watch_list” (lista zadań) obserwowane działają na wszystkich urządzeniach.",
   "w_ha": "Zapisana w Home Assistant – taka sama na wszystkich Twoich urządzeniach.",

@@ -58,6 +58,7 @@
   "wv_sec_none": "Pas de promo en ce moment",
   "wv_also": "Aussi chez",
   "wv_stores": "{n} magasins",
+  "wv_rename": "Renommer",
   "w_empty": "Rien pour l'instant. Saisis les produits dont tu attends une promo.",
   "w_local": "Enregistré sur cet appareil. Avec « watch_list » (une liste de tâches), la liste vaut sur tous les appareils.",
   "w_ha": "Enregistrée dans Home Assistant – identique sur tous vos appareils.",

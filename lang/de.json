@@ -58,6 +58,7 @@
   "wv_sec_none": "Gerade kein Angebot",
   "wv_also": "Auch bei",
   "wv_stores": "{n} Märkte",
+  "wv_rename": "Umbenennen",
   "w_empty": "Noch nichts gemerkt. Trage Produkte ein, bei denen du auf ein Angebot wartest.",
   "w_local": "Auf diesem Gerät gespeichert. Mit „watch_list“ (eine To-do-Liste) gilt die Merkliste auf allen Geräten.",
   "w_ha": "In Home Assistant gespeichert – auf allen deinen Geräten gleich.",
